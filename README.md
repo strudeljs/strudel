@@ -10,6 +10,10 @@ Strudel (@) is a JavaScript library for decorating web pages with functionality 
 * **Component-Based**: Strudel is component oriented so every dom element is related with ES6 class
 * **Lightweight and extensible**: Mix and match with all your favourite frameworks
 
+## Note
+
+This library cannot be used without **Babel** and plugin enabling **Decorators** (`babel-decorators-legacy`)
+
 ## Examples
 
 Here is simplest component to get you started:
