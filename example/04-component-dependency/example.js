@@ -1,4 +1,4 @@
-import { Component } from 'quantum';
+import { Component, Inject } from 'quantum';
 
 class Browser {
   isLegacyBrowser() {
@@ -6,14 +6,11 @@ class Browser {
   }
 }
 
-@Component({
-  selector: '.canvas',
-  require: ['element', 'Browser']
-})
+@Component('.canvas')
 class Canvas {
-  constructor(element, browser) {
+  @Inject('element', 'Browser');
+  constructor({element, browser}) {
     this.element = element;
-
     if (browser.isLegacyBrowser()) {
       throw new Error();
     }

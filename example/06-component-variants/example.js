@@ -1,8 +1,6 @@
 import { Component, DOMEvent } from 'quantum';
 
-@Component({
-  selector: '.carousel'
-})
+@Component('.carousel')
 class Carousel {
   constructor(element) {
     this.element = element;

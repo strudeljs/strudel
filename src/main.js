@@ -1,7 +1,7 @@
 import bootstrap from './core/bootstrap';
 
-let Quantum = {};
-Quantum.version = '0.1.0-alpha';
+let Strudel = {};
+Strudel.version = '0.1.0';
 
 bootstrap();
 

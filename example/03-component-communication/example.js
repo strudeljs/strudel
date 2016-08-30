@@ -1,8 +1,6 @@
-import { Component, DOMEvent } from 'quantum';
+import { Component, Observe, DOMEvent } from 'cogito';
 
-@Component({
-  selector: '.counter'
-})
+@Component('.counter')
 class Counter {
   @DOMEvent('click .counter-increment')
   increment() {
@@ -15,9 +13,7 @@ class Counter {
   }
 }
 
-@Component({
-  selector: '.count'
-})
+@Component('.count')
 class Count {
   constructor(element) {
     this.element = element;
@@ -26,15 +22,7 @@ class Count {
     this.on('counter.decrement', () => this.count--);
   }
 
-  get count() {
-    return this.count;
-  }
-
-  set count(val) {
-    this.count = val;
-    this.render();
-  }
-
+  @Observe(count)
   render() {
     this.element.html(`<h1>Count: ${this.count}</h1>`);
   }

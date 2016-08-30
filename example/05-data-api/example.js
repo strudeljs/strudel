@@ -2,9 +2,7 @@ import { Component, DOMEvent } from 'quantum';
 
 const URL = 'http://www.metaweather.com/api/location/';
 
-@Component({
-  selector: '.weather'
-})
+@Component('.weather')
 class Weather {
   constructor(element, props) {
     this.element = element;

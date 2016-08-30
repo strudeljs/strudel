@@ -1,8 +1,6 @@
 import { Component } from 'quantum';
 
-@Component({
-  selector: '.greeter'
-})
+@Component('.greeter')
 class Greeter {
   constructor(element) {
     element.html("Hello world!");

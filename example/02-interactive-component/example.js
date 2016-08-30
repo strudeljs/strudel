@@ -1,10 +1,8 @@
 import { Component, DOMEvent } from 'quantum';
 
-@Component({
-  selector: '.toggle'
-})
+@Component('.toggle')
 class Toggle {
-  constructor(element) {
+  constructor({element}) {
     this.element = element;
   }
 

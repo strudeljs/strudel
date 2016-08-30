@@ -1,19 +1,29 @@
 {
-  "name": "quantum-build",
-  "version": "0.1.0-alpha",
-  "description": "Quantum - modern framework for enhancing pages",
-  "private": true,
+  "name": "strudel",
+  "version": "0.0.1",
+  "description": "Simple library for provide interactivity to pages",
+  "author": "Mateusz Łuczak <mateusz.luczak@outlook.com>",
+  "license": "BSD",
   "directories": {
     "example": "examples"
   },
   "scripts": {
-    "build-dev": "rollup -c rollup.config.js",
-    "build-min": "rollup -c rollup.config.min.js",
+    "build": "babel-node --presets es2015 rollup-build.js",
     "test": "mocha ./test/**/*.js --compilers js:babel-core/register"
   },
-  "license": "BSD",
+  "main": "dist/quantum.js",
+  "files": [
+    "build/quantum.js",
+    "build/quantum.min.js",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hayalet/strudel"
+  },
   "devDependencies": {
     "babel": "^6.5.2",
+    "babel-cli": "^6.14.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-es2015-rollup": "^1.2.0",
