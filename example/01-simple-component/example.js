@@ -1,4 +1,4 @@
-import { Component } from 'quantum';
+import { Component } from 'strudel';
 
 @Component('.greeter')
 class Greeter {

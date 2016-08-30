@@ -1,4 +1,4 @@
-import { Component, Observe, DOMEvent } from 'cogito';
+import { Component, Observe, DOMEvent } from 'strudel';
 
 @Component('.counter')
 class Counter {

@@ -1,4 +1,4 @@
-import { Component, Inject } from 'quantum';
+import { Component, Inject } from 'strudel';
 
 class Browser {
   isLegacyBrowser() {

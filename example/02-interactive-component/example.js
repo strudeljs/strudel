@@ -1,4 +1,4 @@
-import { Component, DOMEvent } from 'quantum';
+import { Component, DOMEvent } from 'strudel';
 
 @Component('.toggle')
 class Toggle {
