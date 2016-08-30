@@ -1,9 +1,16 @@
 # Strudel
 
-Strudel is JavaScript library for enhancing html with interactions. You not always need fancy MVC framework for adding simple interactions to the page. Quantum will make that a pleasure.
+<p align="center">
+  <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/v/strudel.svg" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/l/strudel.svg" alt="License"></a>
+  <br>
+  <a href="https://saucelabs.com/u/vuejs"><img src="https://saucelabs.com/browser-matrix/vuejs.svg" alt="Sauce Test Status"></a>
+</p>
 
-* **Decorator**: Boilerplate is reduced to minimum thanks to using decorators
-* **Component-Based**: Strudel is component oriented, every dom element is related with ES6 class
+Strudel (@) is a JavaScript library for decorating HTML with functionality using ES7 decorators.
+
+* **Decorators**: Boilerplate is reduced to minimum thanks to many useful decorators
+* **Component-Based**: Strudel is component oriented so every dom element is related with ES6 class
 * **Lightweight and extensible**: Mix and match with all your favourite frameworks
 
 ## Examples
@@ -32,7 +39,7 @@ Once you have repository cloned, building a copy of Quantum is really easy
 
 ```
 npm install
-npm run build-dev
+npm run build
 ```
 
 ## Contributing
