@@ -4,7 +4,7 @@
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/v/strudel.svg" alt="Version"></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/l/strudel.svg" alt="License"></a>
 
-Strudel (@) is a JavaScript library for decorating HTML with functionality using ES7 decorators.
+Strudel (@) is a JavaScript library for decorating web pages with functionality using ES7 decorators.
 
 * **Decorators**: Boilerplate is reduced to minimum thanks to many useful decorators
 * **Component-Based**: Strudel is component oriented so every dom element is related with ES6 class
