@@ -1,3 +1,5 @@
+<img width="200px" src="https://dl.dropboxusercontent.com/s/1rywrcxbh9p77mr/strudel.png">
+
 # Strudel
 
 <a href="https://circleci.com/gh/hayalet/strudel/tree/master"><img src="https://img.shields.io/circleci/token/2332b587f2c012314b7e865cd57730587cd75ba7/project/hayalet/strudel/master.svg" alt="Build Status"></a>
