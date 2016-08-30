@@ -8,7 +8,7 @@
     "example": "examples"
   },
   "scripts": {
-    "build": "babel-node --presets es2015 rollup-build.js",
+    "build": "babel-node --presets es2015 build/rollup-build.js",
     "test": "mocha ./test/**/*.js --compilers js:babel-core/register"
   },
   "main": "dist/quantum.js",
