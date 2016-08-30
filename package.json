@@ -1,7 +1,7 @@
 {
   "name": "strudel",
   "version": "0.0.2",
-  "description": "Simple library for provide interactivity to pages",
+  "description": "Library for providing interactivity to pages",
   "author": "Mateusz Łuczak <mateusz.luczak@outlook.com>",
   "license": "BSD",
   "directories": {
@@ -11,10 +11,10 @@
     "build": "babel-node --presets es2015 build/rollup-build.js",
     "test": "mocha ./test/**/*.js --compilers js:babel-core/register"
   },
-  "main": "dist/quantum.js",
+  "main": "dist/strudel.js",
   "files": [
-    "build/quantum.js",
-    "build/quantum.min.js",
+    "dist/strudel.js",
+    "dist/strudel.min.js",
     "src"
   ],
   "repository": {
@@ -24,6 +24,7 @@
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-cli": "^6.14.0",
+    "babel-core": "^6.14.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-es2015-rollup": "^1.2.0",
