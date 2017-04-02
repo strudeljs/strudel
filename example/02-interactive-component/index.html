@@ -1,0 +1,18 @@
+<body>
+<div class="toggle"></div>
+
+<script src="external-helpers.js"></script>
+<script src="strudel.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+<script type="text/babel" data-plugins="transform-decorators-legacy">
+  @Strudel.Component('.toggle')
+  class Toggle {
+    @Evt('click .toggle-trigger')
+    toggle() {
+      this.element.find('.toggle-content').toggleClass('is-visible');
+    }
+  }
+
+  document.dispatchEvent(new Event('contentloaded'))
+</script>
+</body>

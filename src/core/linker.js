@@ -1,3 +1,5 @@
+import DOMElement from './dom';
+
 /**
  * Class linking components with DOM
  */
@@ -23,8 +25,11 @@ class Linker {
    */
   link(container) {
     for (let selector of this.registry.getSelectors()) {
-      [].forEach(container.querySelectorAll(selector), (element) => {
-        this.createComponent(element, this.registry.getComponent(selector));
+      [].forEach.call(container.querySelectorAll(selector), (element) => {
+        if (!element._instance) {
+          const el = new DOMElement(element);
+          element._instance = this.createComponent(el, this.registry.getComponent(selector));
+        }
       });
     }
   }
@@ -35,7 +40,8 @@ class Linker {
    * @param {Function} constructor
      */
   createComponent(element, klass) {
-    return new klass(element);
+    const data = element.data();
+    return new klass({element, data});
   }
 }
 

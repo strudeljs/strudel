@@ -1,8 +1,6 @@
-import chai from 'chai';
 import Registry from '../../src/core/registry.js';
 import Component from '../../src/core/component.js';
 
-let expect = chai.expect;
 let registry = new Registry();
 
 describe('Registry', () => {

@@ -9,13 +9,13 @@ const registry = new Registry();
  * @param {Object} params
  * @returns (Function} decorator
  */
-export default function decorator(params) {
+export default function decorator(selector) {
   return function _decorator(klass) {
-    if (!params || !params.selector) {
+    if (!selector) {
       throw new Error('Selector must be provided for Component decorator');
     }
     mixin(klass, Component);
-    Object.defineProperty(klass.prototype, '_selector', { value: params.selector });
-    registry.registerComponent(params.selector, klass);
+    Object.defineProperty(klass.prototype, '_selector', { value: selector });
+    registry.registerComponent(selector, klass);
   }
 }

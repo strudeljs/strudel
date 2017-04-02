@@ -1,3 +1,18 @@
 <body>
-  <div class="greeter"></div>
+  <div class="greeter" data-msg="User"></div>
+
+  <script src="external-helpers.js"></script>
+  <script src="strudel.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  <script type="text/babel" data-plugins="transform-decorators-legacy">
+
+    @Strudel.Component('.greeter')
+    class Greeter {
+      constructor({element, data}) {
+        element.html(`Greetings: ${data.msg}!`);
+      }
+    }
+
+    document.dispatchEvent(new Event('contentloaded'));
+  </script>
 </body>

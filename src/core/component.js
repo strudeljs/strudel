@@ -6,6 +6,13 @@ const emitter = new EventEmitter();
  * Base class for all components, implementing event emitter
  */
 class Component {
+  constructor({element, data}) {
+    this.element = element;
+    this.data = data;
+
+    console.log(this._events);
+  }
+
   /**
    * Facade for EventEmitter addListener
    * @link EventEmitter#addListener

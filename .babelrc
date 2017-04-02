@@ -1,4 +1,13 @@
 {
-  "presets": ["es2015"],
-  "plugins": ["transform-decorators-legacy"]
+  "presets": [
+    [
+      "es2015"
+    ]
+  ],
+  "plugins": [
+    "transform-runtime",
+    "external-helpers",
+    "transform-decorators-legacy"
+  ]
 }
+
