@@ -1,4 +1,5 @@
 import EventEmitter from '../util/eventemitter';
+import { delegateEvents } from '../util/delegateEvents';
 
 const emitter = new EventEmitter();
 
@@ -6,11 +7,14 @@ const emitter = new EventEmitter();
  * Base class for all components, implementing event emitter
  */
 class Component {
-  constructor({element, data}) {
+  constructor({element, data} = {}) {
     this.element = element;
     this.data = data;
 
-    console.log(this._events);
+    delegateEvents(this, this._events);
+
+    this.beforeInit && this.beforeInit();
+    this.init && this.init();
   }
 
   /**

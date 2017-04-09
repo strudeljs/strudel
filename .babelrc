@@ -6,7 +6,6 @@
   ],
   "plugins": [
     "transform-runtime",
-    "external-helpers",
     "transform-decorators-legacy"
   ]
 }

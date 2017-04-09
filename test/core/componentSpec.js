@@ -2,12 +2,6 @@ import Component from '../../src/core/component.js';
 
 describe('Component', () => {
 
-  it('fails without params', () => {
-      expect(function () {
-        new Component()
-      }).to.throw(TypeError);
-  });
-
   it('instantiates', () => {
     let component = new Component({});
     expect(component).to.be.an.instanceof(Component);

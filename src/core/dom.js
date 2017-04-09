@@ -40,6 +40,25 @@ class DOMElement {
     return this;
   }
 
+  on(eventName, delegate, listener) {
+    this["0"].addEventListener(eventName, (e) => {
+      if (e.target && e.target.matches(delegate)) {
+        listener(e);
+      }
+    }, false);
+  }
+
+  off(eventName, listener) {
+    this["0"].removeEventListener(eventName, listener, false);
+  }
+
+  trigger(eventName, data) {
+    this["0"].dispatchEvent(new CustomEvent(eventName, {
+      detail: data,
+      bubbles: true
+    }));
+  }
+
   data() {
     return this["0"].dataset;
   }

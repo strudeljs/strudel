@@ -4,18 +4,24 @@ import mixin from '../util/mixin';
 
 const registry = new Registry();
 
-/**
- * Component decorator for classes
- * @param {Object} params
- * @returns (Function} decorator
- */
-export default function decorator(selector) {
-  return function _decorator(klass) {
-    if (!selector) {
-      throw new Error('Selector must be provided for Component decorator');
-    }
-    mixin(klass, Component);
-    Object.defineProperty(klass.prototype, '_selector', { value: selector });
-    registry.registerComponent(selector, klass);
+const component = (target, selector) => {
+  if (!selector) {
+    throw new Error('Selector must be provided for Component decorator');
   }
+
+  let component = class extends Component {
+    constructor(...args) {
+      super(...args);
+    }
+  }
+
+  mixin(component, target);
+  Object.defineProperty(component.prototype, '_selector', { value: selector });
+  registry.registerComponent(selector, component);
+
+  return component;
+}
+
+export default (selector) => {
+  return (target) => component(target, selector)
 }
