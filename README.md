@@ -1,4 +1,4 @@
-<p align="center"><img width="150px" src="https://avatars0.githubusercontent.com/u/27229624?v=3&s=200"></p>
+<p align="center"><img width="100px" src="https://avatars0.githubusercontent.com/u/27229624?v=3&s=200"></p>
 <br>
 <p align="center">
 <a href="https://circleci.com/gh/hayalet/strudel/tree/master"><img src="https://img.shields.io/circleci/token/2332b587f2c012314b7e865cd57730587cd75ba7/project/hayalet/strudel/master.svg" alt="Build Status"></a>
