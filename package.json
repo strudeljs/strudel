@@ -11,7 +11,7 @@
     "build": "node ./build/build.js",
     "test": "NODE_ENV=test mocha --opts ./test/mocha.opts ./test/**/*.js",
     "coverage": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm test",
-    "codecov": "NODE_ENV=test nyc report --reporter=lcov npm test | codecov"
+    "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov"
   },
   "nyc": {
     "require": [
