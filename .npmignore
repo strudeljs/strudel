@@ -3,4 +3,7 @@
 
 /example
 /test
-/rollup.build.js
+/build
+
+/coverage
+/.nyc_output
