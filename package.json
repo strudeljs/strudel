@@ -10,7 +10,8 @@
   "scripts": {
     "build": "node ./build/build.js",
     "test": "NODE_ENV=test mocha --opts ./test/mocha.opts ./test/**/*.js",
-    "coverage": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm test"
+    "coverage": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm test",
+    "report-coverage": "NODE_ENV=test nyc report --reporter=lcov > coverage.lcov && codecov"
   },
   "nyc": {
     "require": [
@@ -50,6 +51,7 @@
     "nyc": "^10.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
-    "uglify-js": "^2.8.22"
+    "uglify-js": "^2.8.22",
+    "codecov": "^2.1.0"
   }
 }
