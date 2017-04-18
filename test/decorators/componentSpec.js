@@ -10,12 +10,17 @@ class TestComponent {
     return 'test';
   }
 }
+
 describe('Component Decorator', () => {
 
   it('registers', () => {
     let registry = new Registry();
     expect(registry.getComponent('test')).to.be.a('function');
     registry.clear();
+  });
+
+  it('fails without selector', () => {
+    expect(Component()).to.throw('Selector must be provided for Component decorator');
   });
 
   it('has selector', () => {

@@ -13,9 +13,14 @@ class TestComponent {
     return 'element2';
   }
 }
+
 describe('Event Decorator', () => {
   it('attaches event', () => {
     let component = new TestComponent();
     expect(Object.keys(component._events)).to.deep.equal(['click .element1', 'click .element2']);
-  })
+  });
+
+  it('fails without descriptor', () => {
+    expect(Evt()).to.throw('Event descriptor must be provided for Evt decorator');
+  });
 });

@@ -3,3 +3,6 @@ node_modules
 *.log*
 .idea
 npm-debug.log
+coverage
+.nyc_output
+dist

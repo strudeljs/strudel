@@ -1,12 +1,29 @@
 {
   "presets": [
     [
-      "es2015"
+      "es2015",
+      {
+        "modules": false
+      }
     ]
   ],
   "plugins": [
-    "transform-runtime",
+    "external-helpers",
     "transform-decorators-legacy"
-  ]
+  ],
+  "env": {
+    "test": {
+      "presets": [
+        [
+          "es2015"
+        ]
+      ],
+      "plugins": [
+        "transform-decorators-legacy",
+        "transform-runtime",
+        "istanbul"
+      ]
+    }
+  }
 }
 
