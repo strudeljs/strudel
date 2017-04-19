@@ -12,14 +12,23 @@
     @Strudel.Component('.count')
     class Count {
       init() {
-      	this.value = parseInt(this.data.start, 10)
-        this.element.html(this.value);
+      	this.value = parseInt(this.data.start, 10);
+
+      	this.on('counter.increment', function () {
+      		this.value++;
+      		this.render();
+        }.bind(this));
+
+        this.on('counter.decrement', function () {
+          this.value--;
+          this.render();
+        }.bind(this));
+
+        this.render();
       }
 
-      @Strudel.Evt('counter.increment body')
-      render(e) {
-      	console.log(e)
-        this.element.html(0);
+      render() {
+        this.element.html(this.value);
       }
     }
 
@@ -28,7 +37,7 @@
       @Strudel.Evt('click .control-increment')
       increment() {
         console.log("+1");
-        this.element.trigger('counter.increment');
+        this.emit('counter.increment');
       }
 
       @Strudel.Evt('click .control-decrement')

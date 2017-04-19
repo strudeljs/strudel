@@ -1,5 +1,5 @@
-import Component from '../../src/decorators/component.js';
-import Evt from '../../src/decorators/event.js';
+import Component from '../../../src/decorators/component.js';
+import Evt from '../../../src/decorators/event.js';
 
 @Component('test')
 class TestComponent {

@@ -9,9 +9,10 @@
   },
   "scripts": {
     "build": "node ./build/build.js",
-    "test": "NODE_ENV=test mocha --opts ./test/mocha.opts ./test/**/*.js",
-    "coverage": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm test",
-    "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov -t 'a734e7b0-1fd1-4ce1-9255-2aa27314a738'"
+    "test:unit": "NODE_ENV=test mocha --opts ./test/unit/mocha.opts ./test/unit/**/*.js",
+    "test:e2e": "nightwatch --config ./test/e2e/config.js --env chrome",
+    "test:cover": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm test",
+    "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov"
   },
   "nyc": {
     "require": [
@@ -43,15 +44,19 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.22.0",
     "chai": "^3.5.0",
+    "chromedriver": "^2.29.0",
+    "codecov": "^2.1.0",
     "cors": "^2.8.1",
     "gulp": "^3.9.1",
     "gulp-connect": "^5.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.0.2",
+    "nightwatch": "^0.9.14",
+    "nightwatch-helpers": "^1.2.0",
     "nyc": "^10.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
-    "uglify-js": "^2.8.22",
-    "codecov": "^2.1.0"
+    "selenium-server": "^3.3.1",
+    "uglify-js": "^2.8.22"
   }
 }

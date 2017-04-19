@@ -1,5 +1,5 @@
 import chai from 'chai';
-import EventEmitter from '../../src/util/eventemitter.js';
+import EventEmitter from '../../../src/util/eventemitter.js';
 
 let expect = chai.expect;
 

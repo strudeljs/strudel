@@ -1,8 +1,6 @@
-import Component from '../../src/decorators/component.js';
-import ComponentType from '../../src/core/component.js';
-import Registry from '../../src/core/registry.js';
-
-console.log('TEST Component');
+import Component from '../../../src/decorators/component.js';
+import ComponentType from '../../../src/core/component.js';
+import Registry from '../../../src/core/registry.js';
 
 @Component('test')
 class TestComponent {

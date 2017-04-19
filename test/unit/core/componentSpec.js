@@ -1,4 +1,4 @@
-import Component from '../../src/core/component.js';
+import Component from '../../../src/core/component.js';
 
 describe('Component', () => {
 

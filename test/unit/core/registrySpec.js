@@ -1,5 +1,5 @@
-import Registry from '../../src/core/registry.js';
-import Component from '../../src/core/component.js';
+import Registry from '../../../src/core/registry.js';
+import Component from '../../../src/core/component.js';
 
 let registry = new Registry();
 
