@@ -4,14 +4,14 @@
  * @param {Function} source
  */
 const mixin = (target, source) => {
-  target = target.prototype;
-  source = source.prototype;
+  const targetProto = target.prototype;
+  const sourceProto = source.prototype;
 
-  Object.getOwnPropertyNames(source).forEach(function (name) {
-    if (name !== "constructor") {
-      Object.defineProperty(target, name, Object.getOwnPropertyDescriptor(source, name));
+  Object.getOwnPropertyNames(sourceProto).forEach((name) => {
+    if (name !== 'constructor') {
+      Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
     }
   });
-}
+};
 
 export default mixin;

@@ -1,21 +1,20 @@
-import Registry from '../../../src/core/registry.js';
-import Component from '../../../src/core/component.js';
+import Registry from '../../../src/core/registry';
+import Component from '../../../src/core/component';
 
-let registry = new Registry();
+const registry = new Registry();
 
 describe('Registry', () => {
-
   beforeEach(() => {
     registry.clear();
-  })
+  });
 
   it('instantiates', () => {
     expect(registry).to.be.an.instanceof(Registry);
   });
 
   it('is singleton', () => {
-    let registry2 = new Registry();
-    expect(registry2).to.be.equal(registry)
+    const registry2 = new Registry();
+    expect(registry2).to.be.equal(registry);
   });
 
   it('adds component', () => {
@@ -28,5 +27,4 @@ describe('Registry', () => {
     registry.registerComponent('test', Component);
     expect(registry.getComponent('test')).to.be.a('function');
   });
-
 });

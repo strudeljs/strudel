@@ -41,7 +41,7 @@ class Linker {
      */
   createComponent(element, klass) {
     const data = element.data();
-    return new klass({element, data});
+    return new klass({ element, data });
   }
 }
 

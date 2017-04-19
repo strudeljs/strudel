@@ -7,14 +7,14 @@ const emitter = new EventEmitter();
  * Base class for all components, implementing event emitter
  */
 class Component {
-  constructor({element, data} = {}) {
+  constructor({ element, data } = {}) {
     this.element = element;
     this.data = data;
 
     delegateEvents(this, this._events);
 
-    this.beforeInit && this.beforeInit();
-    this.init && this.init();
+    this.beforeInit();
+    this.init();
   }
 
   /**
@@ -40,6 +40,10 @@ class Component {
   emit(label, ...args) {
     emitter.emit(label, ...args);
   }
+
+  beforeInit() {}
+
+  init() {}
 }
 
-export default Component
+export default Component;

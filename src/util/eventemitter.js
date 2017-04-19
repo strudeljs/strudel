@@ -4,8 +4,8 @@
  * @returns {boolean}
  */
 const isFunction = (obj) => {
-  return typeof obj == 'function' || false;
-}
+  return typeof obj === 'function' || false;
+};
 
 /**
  * Simple Event Emitter implementation
@@ -35,11 +35,10 @@ class EventEmitter {
    * @returns {boolean}
    */
   removeListener(label, callback) {
-    let listeners = this._listeners.get(label),
-      index;
+    let listeners = this._listeners.get(label);
 
     if (listeners && listeners.length) {
-      index = listeners.reduce((i, listener, index) => {
+      let index = listeners.reduce((i, listener, index) => {
         return (isFunction(listener) && listener === callback) ? i = index : i;
       }, -1);
 

@@ -1,3 +1,5 @@
+/* eslint quote-props: 0 */
+
 module.exports = {
   'src_folders': ['test/e2e/specs'],
   'output_folder': 'test/e2e/reports',

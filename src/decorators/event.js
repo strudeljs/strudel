@@ -12,5 +12,5 @@ export default function decorator(event) {
       klass._events = [];
     }
     klass._events[event] = klass[method];
-  }
+  };
 }

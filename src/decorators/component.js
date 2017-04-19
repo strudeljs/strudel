@@ -9,19 +9,19 @@ const component = (target, selector) => {
     throw new Error('Selector must be provided for Component decorator');
   }
 
-  let component = class extends Component {
+  const component = class extends Component {
     constructor(...args) {
       super(...args);
     }
-  }
+  };
 
   mixin(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   registry.registerComponent(selector, component);
 
   return component;
-}
+};
 
 export default (selector) => {
-  return (target) => component(target, selector)
-}
+  return (target) => component(target, selector);
+};
