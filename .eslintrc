@@ -1,0 +1,23 @@
+{
+  "root": true,
+  "parser": "babel-eslint",
+  "extends": "airbnb/base",
+  "env": {
+    "browser": true,
+    "mocha": true,
+    "jasmine": true,
+    "node": true
+  },
+  "rules": {
+    "class-methods-use-this": 0,
+    "no-underscore-dangle": 0,
+    "comma-dangle": [
+      2,
+      "never"
+    ],
+    "arrow-parens": [
+      2,
+      "always"
+    ]
+  }
+}
