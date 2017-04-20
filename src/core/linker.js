@@ -1,4 +1,4 @@
-import DOMElement from './dom';
+import $ from './element';
 
 /**
  * Class linking components with DOM
@@ -27,7 +27,7 @@ class Linker {
     for (let selector of this.registry.getSelectors()) {
       [].forEach.call(container.querySelectorAll(selector), (element) => {
         if (!element._instance) {
-          const el = new DOMElement(element);
+          const el = $(element);
           element._instance = this.createComponent(el, this.registry.getComponent(selector));
         }
       });

@@ -1,0 +1,30 @@
+<body>
+  <div class="tabs">
+    <ul class="tabs-nav" role="tablist">
+      <li role="presentation" class="active">
+        <a href="#home" id="home-tab" role="tab" data-toggle="tab">1</a>
+      </li>
+      <li role="presentation" class="">
+        <a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile">2</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane active" role="tabpanel" id="home" aria-labelledby="home-tab">
+        <p>Content 1</p>
+      </div>
+      <div class="tab-pane active" role="tabpanel" id="home" aria-labelledby="profile-tab">
+        <p>Content 2</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../strudel.js"></script>
+
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  <script type="text/babel" data-plugins="transform-decorators-legacy">
+
+    console.log(Strudel.element('.tabs'));
+
+    document.dispatchEvent(new Event('contentloaded'));
+  </script>
+</body>

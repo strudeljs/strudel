@@ -8,8 +8,8 @@ const examples = () => {
   const path = require('path');
 
   connect.server({
-    root: path.resolve(__dirname, 'examples'),
-    port: 8001,
+    root: ['examples', 'dist'],
+    port: 8888,
     livereload: false,
     open: false,
     middleware: (connect, opt) => [cors()],

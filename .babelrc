@@ -9,7 +9,8 @@
   ],
   "plugins": [
     "external-helpers",
-    "transform-decorators-legacy"
+    "transform-decorators-legacy",
+    "transform-class-properties"
   ],
   "env": {
     "test": {
@@ -20,6 +21,7 @@
       ],
       "plugins": [
         "transform-decorators-legacy",
+        "transform-class-properties",
         "transform-runtime",
         "istanbul"
       ]

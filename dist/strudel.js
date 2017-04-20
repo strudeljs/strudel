@@ -9,6 +9,22 @@
 	(factory((global.Strudel = global.Strudel || {})));
 }(this, (function (exports) { 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
+
+
+
+
+
+
+
+
+
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -75,87 +91,281 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
-var DOMElement = function () {
-  function DOMElement(element) {
-    classCallCheck(this, DOMElement);
-
-    this["0"] = element;
+var select = function select(selector, context) {
+  if (context) {
+    return byCss(selector, context);
   }
 
-  createClass(DOMElement, [{
-    key: "html",
-    value: function html(_html) {
-      if (!arguments.length) {
-        return this["0"].innerHTML;
+  return byCss(selector);
+};
+
+var byCss = function byCss(selector, context) {
+  return (context || document).querySelectorAll(selector);
+};
+
+var Element = function () {
+  function Element(selector, context) {
+    classCallCheck(this, Element);
+
+    if (selector instanceof Element) {
+      return selector;
+    }
+
+    if (typeof selector === 'string') {
+      selector = select(selector, context);
+    }
+
+    if (selector && selector.nodeName) {
+      selector = [selector];
+    }
+
+    this._nodes = this.slice(selector);
+  }
+
+  createClass(Element, [{
+    key: 'array',
+    value: function array(callback) {
+      callback = callback;
+      var self = this;
+      return this._nodes.reduce(function (list, node, i) {
+        var val;
+        if (callback) {
+          val = callback.call(self, node, i);
+          if (!val) val = false;
+          if (typeof val === 'string') val = u(val);
+          if (val instanceof Element) val = val._nodes;
+        } else {
+          val = node.innerHTML;
+        }
+        return list.concat(val !== false ? val : []);
+      }, []);
+    }
+  }, {
+    key: 'str',
+    value: function str(node, i) {
+      return function (arg) {
+        if (typeof arg === 'function') {
+          return arg.call(this, node, i);
+        }
+
+        return arg.toString();
+      };
+    }
+  }, {
+    key: 'first',
+    value: function first() {
+      return this._nodes[0] || false;
+    }
+  }, {
+    key: 'slice',
+    value: function slice(pseudo) {
+      if (!pseudo || pseudo.length === 0 || typeof pseudo === 'string' || pseudo.toString() === '[object Function]') return [];
+
+      return pseudo.length ? [].slice.call(pseudo._nodes || pseudo) : [pseudo];
+    }
+  }, {
+    key: 'unique',
+    value: function unique() {
+      return new Element(this._nodes.reduce(function (clean, node) {
+        var isTruthy = node !== null && node !== undefined && node !== false;
+        return isTruthy && clean.indexOf(node) === -1 ? clean.concat(node) : clean;
+      }, []));
+    }
+  }, {
+    key: 'args',
+    value: function args(_args, node, i) {
+      if (typeof _args === 'function') {
+        _args = _args(node, i);
       }
-      this["0"].innerHTML = _html;
+
+      if (typeof _args !== 'string') {
+        _args = this.slice(_args).map(this.str(node, i));
+      }
+
+      return _args.toString().split(/[\s,]+/).filter(function (e) {
+        return e.length;
+      });
+    }
+  }, {
+    key: 'each',
+    value: function each(callback) {
+      this._nodes.forEach(callback.bind(this));
       return this;
     }
   }, {
-    key: "detach",
-    value: function detach() {
-      this["0"].remove();
-      return this;
+    key: 'eacharg',
+    value: function eacharg(args, callback) {
+      return this.each(function (node, i) {
+        this.args(args, node, i).forEach(function (arg) {
+          callback.call(this, node, arg);
+        }, this);
+      });
     }
   }, {
-    key: "append",
-    value: function append(element) {
-      this["0"].appendChild(element);
-      return this;
+    key: 'isInPage',
+    value: function isInPage(node) {
+      return node === document.body ? false : document.body.contains(node);
     }
   }, {
-    key: "find",
+    key: 'map',
+    value: function map(callback) {
+      return callback ? new Element(this.array(callback)).unique() : this;
+    }
+  }, {
+    key: 'adjacent',
+    value: function adjacent(html, data, callback) {
+      if (typeof data === 'number') {
+        if (data === 0) {
+          data = [];
+        } else {
+          data = new Array(data).join().split(',').map(Number.call, Number);
+        }
+      }
+
+      return this.each(function (node, j) {
+        var fragment = document.createDocumentFragment();
+
+        new Element(data || {}).map(function (el, i) {
+          var part = typeof html === 'function' ? html.call(this, el, i, node, j) : html;
+
+          if (typeof part === 'string') {
+            return this.generate(part);
+          }
+
+          return u(part);
+        }).each(function (n) {
+          this.isInPage(n) ? fragment.appendChild(u(n).clone().first()) : fragment.appendChild(n);
+        });
+
+        callback.call(this, node, fragment);
+      });
+    }
+  }, {
+    key: 'html',
+    value: function html(text) {
+      if (text === undefined) {
+        return this.first().innerHTML || '';
+      }
+
+      return this.each(function (node) {
+        node.innerHTML = text;
+      });
+    }
+  }, {
+    key: 'text',
+    value: function text(_text) {
+      if (_text === undefined) {
+        return this.first().textContent || '';
+      }
+
+      return this.each(function (node) {
+        node.textContent = _text;
+      });
+    }
+  }, {
+    key: 'remove',
+    value: function remove() {
+      return this.each(function (node) {
+        node.parentNode.removeChild(node);
+      });
+    }
+  }, {
+    key: 'append',
+    value: function append(html, data) {
+      return this.adjacent(html, data, function (node, fragment) {
+        node.appendChild(fragment);
+      });
+    }
+  }, {
+    key: 'find',
     value: function find(selector) {
-      return this["0"].querySelector(selector);
+      return this.map(function (node) {
+        return new Element(selector || '*', node);
+      });
     }
   }, {
-    key: "addClass",
+    key: 'addClass',
     value: function addClass() {
-      this["0"].classList.add(className);
-      return this;
+      return this.eacharg(arguments, function (el, name) {
+        el.classList.add(name);
+      });
     }
   }, {
-    key: "removeClass",
-    value: function removeClass(className) {
-      this["0"].classList.remove(className);
-      return this;
+    key: 'removeClass',
+    value: function removeClass() {
+      return this.eacharg(arguments, function (el, name) {
+        el.classList.remove(name);
+      });
     }
   }, {
-    key: "toggleClass",
-    value: function toggleClass(className, condition) {
-      this["0"].classList.toggle(className, condition);
-      return this;
-    }
-  }, {
-    key: "on",
+    key: 'on',
     value: function on(eventName, delegate, listener) {
-      this["0"].addEventListener(eventName, function (e) {
+      this['0'].addEventListener(eventName, function (e) {
         if (e.target && e.target.matches(delegate)) {
           listener(e);
         }
       }, false);
     }
   }, {
-    key: "off",
+    key: 'off',
     value: function off(eventName, listener) {
-      this["0"].removeEventListener(eventName, listener, false);
+      this['0'].removeEventListener(eventName, listener, false);
     }
   }, {
-    key: "trigger",
-    value: function trigger(eventName, data) {
-      this["0"].dispatchEvent(new CustomEvent(eventName, {
-        detail: data,
-        bubbles: true
-      }));
+    key: 'trigger',
+    value: function trigger(events) {
+      var data = this.slice(arguments).slice(1);
+
+      return this.eacharg(events, function (node, event) {
+        var ev;
+        var opts = { bubbles: true, cancelable: true, detail: data };
+
+        try {
+          ev = new window.CustomEvent(event, opts);
+        } catch (e) {
+          ev = document.createEvent('CustomEvent');
+          ev.initCustomEvent(event, true, true, data);
+        }
+
+        node.dispatchEvent(ev);
+      });
     }
   }, {
-    key: "data",
-    value: function data() {
-      return this["0"].dataset;
+    key: 'attr',
+    value: function attr(name, value, data) {
+      data = data ? 'data-' : '';
+
+      if (value !== undefined) {
+        var nm = name;
+        name = {};
+        name[nm] = value;
+      }
+
+      if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
+        return this.each(function (node) {
+          for (var key in name) {
+            node.setAttribute(data + key, name[key]);
+          }
+        });
+      }
+
+      return this.length ? this.first().getAttribute(data + name) : '';
+    }
+  }, {
+    key: 'data',
+    value: function data(name, value) {
+      if (!name) {
+        return this.first().dataset;
+      }
+      return this.attr(name, value, true);
     }
   }]);
-  return DOMElement;
+  return Element;
 }();
+
+var $ = (function (selector, element) {
+  return new Element(selector, element);
+});
 
 /**
  * Class linking components with DOM
@@ -203,7 +413,7 @@ var Linker = function () {
 
           [].forEach.call(container.querySelectorAll(selector), function (element) {
             if (!element._instance) {
-              var el = new DOMElement(element);
+              var el = $(element);
               element._instance = _this.createComponent(el, _this.registry.getComponent(selector));
             }
           });
@@ -342,7 +552,7 @@ var bootstrap = function bootstrap() {
  * @returns {boolean}
  */
 var isFunction = function isFunction(obj) {
-  return typeof obj == 'function' || false;
+  return typeof obj === 'function' || false;
 };
 
 /**
@@ -383,11 +593,10 @@ var EventEmitter = function () {
   }, {
     key: 'removeListener',
     value: function removeListener(label, callback) {
-      var listeners = this._listeners.get(label),
-          index = void 0;
+      var listeners = this._listeners.get(label);
 
       if (listeners && listeners.length) {
-        index = listeners.reduce(function (i, listener, index) {
+        var index = listeners.reduce(function (i, listener, index) {
           return isFunction(listener) && listener === callback ? i = index : i;
         }, -1);
 
@@ -430,18 +639,22 @@ var EventEmitter = function () {
 
 var DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
 
+var delegate = function delegate(element, eventName, selector, listener) {
+  element.on(eventName, selector, listener);
+};
+
 var delegateEvents = function delegateEvents(context, events) {
-  for (var key in events) {
+  if (!events) {
+    return false;
+  }
+
+  return Object.keys(events).forEach(function (key) {
     var method = events[key];
     var match = key.match(DELEGATE_EVENT_SPLITTER);
     if (context.element) {
       delegate(context.element, match[1], match[2], method.bind(context));
     }
-  }
-};
-
-var delegate = function delegate(element, eventName, selector, listener) {
-  element.on(eventName, selector, listener);
+  });
 };
 
 var emitter = new EventEmitter();
@@ -463,8 +676,8 @@ var Component = function () {
 
     delegateEvents(this, this._events);
 
-    this.beforeInit && this.beforeInit();
-    this.init && this.init();
+    this.beforeInit();
+    this.init();
   }
 
   /**
@@ -504,6 +717,12 @@ var Component = function () {
 
       emitter.emit.apply(emitter, [label].concat(args));
     }
+  }, {
+    key: 'beforeInit',
+    value: function beforeInit() {}
+  }, {
+    key: 'init',
+    value: function init() {}
   }]);
   return Component;
 }();
@@ -514,12 +733,12 @@ var Component = function () {
  * @param {Function} source
  */
 var mixin = function mixin(target, source) {
-  target = target.prototype;
-  source = source.prototype;
+  var targetProto = target.prototype;
+  var sourceProto = source.prototype;
 
-  Object.getOwnPropertyNames(source).forEach(function (name) {
-    if (name !== "constructor") {
-      Object.defineProperty(target, name, Object.getOwnPropertyDescriptor(source, name));
+  Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
+    if (name !== 'constructor') {
+      Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
     }
   });
 };
@@ -579,11 +798,30 @@ function decorator(event) {
   };
 }
 
+/**
+ * Dom decorator for functions
+ * @param {Object} params
+ * @returns (Function} decorator
+ */
+function decorator$1(selector) {
+  return function _decorator(klass, property) {
+    if (!event) {
+      throw new Error('Selector must be provided for Evt decorator');
+    }
+    if (!klass._dom) {
+      klass._dom = [];
+    }
+    klass._dom[selector] = klass[property];
+  };
+}
+
 bootstrap();
 
 exports.Component = component$1;
 exports.EventEmitter = EventEmitter;
 exports.Evt = decorator;
+exports.Dom = decorator$1;
+exports.element = $;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
