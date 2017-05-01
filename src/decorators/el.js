@@ -1,16 +1,16 @@
 /**
- * Dom decorator for functions
+ * Element decorator for functions
  * @param {Object} params
  * @returns (Function} decorator
  */
 export default function decorator(selector) {
   return function _decorator(klass, property) {
     if (!event) {
-      throw new Error('Selector must be provided for Evt decorator');
+      throw new Error('Selector must be provided for El decorator');
     }
-    if (!klass._dom) {
-      klass._dom = [];
+    if (!klass._els) {
+      klass._els = [];
     }
-    klass._dom[selector] = klass[property];
+    klass._els[selector] = property;
   };
 }

@@ -152,6 +152,24 @@ var Element = function () {
       };
     }
   }, {
+    key: 'filter',
+    value: function filter(selector) {
+      var callback = function callback(node) {
+        node.matches = node.matches || node.msMatchesSelector || node.webkitMatchesSelector;
+        return node.matches(selector || '*');
+      };
+
+      if (typeof selector === 'function') callback = selector;
+
+      if (selector instanceof Element) {
+        callback = function callback(node) {
+          return selector._nodes.indexOf(node) !== -1;
+        };
+      }
+
+      return new Element(this._nodes.filter(callback));
+    }
+  }, {
     key: 'first',
     value: function first() {
       return this._nodes[0] || false;
@@ -299,12 +317,37 @@ var Element = function () {
     }
   }, {
     key: 'on',
-    value: function on(eventName, delegate, listener) {
-      this['0'].addEventListener(eventName, function (e) {
-        if (e.target && e.target.matches(delegate)) {
-          listener(e);
-        }
-      }, false);
+    value: function on(events, cb, cb2) {
+      if (typeof cb === 'string') {
+        var sel = cb;
+        cb = function cb(e) {
+          var args = arguments;
+          new Element(e.currentTarget).find(sel).each(function (target) {
+            if (target === e.target || target.contains(e.target)) {
+              try {
+                Object.defineProperty(e, 'currentTarget', {
+                  get: function get$$1() {
+                    return target;
+                  }
+                });
+              } catch (err) {}
+              cb2.apply(target, args);
+            }
+          });
+        };
+      }
+
+      var callback = function callback(e) {
+        return cb.apply(this, [e].concat(e.detail || []));
+      };
+
+      return this.eacharg(events, function (node, event) {
+        node.addEventListener(event, callback);
+
+        node._e = node._e || {};
+        node._e[event] = node._e[event] || [];
+        node._e[event].push(callback);
+      });
     }
   }, {
     key: 'off',
@@ -651,8 +694,21 @@ var delegateEvents = function delegateEvents(context, events) {
   return Object.keys(events).forEach(function (key) {
     var method = events[key];
     var match = key.match(DELEGATE_EVENT_SPLITTER);
-    if (context.element) {
-      delegate(context.element, match[1], match[2], method.bind(context));
+    if (context.$element) {
+      delegate(context.$element, match[1], match[2], method.bind(context));
+    }
+  });
+};
+
+var bindElements = function bindElements(context, elements) {
+  if (!elements) {
+    return false;
+  }
+
+  return Object.keys(elements).forEach(function (key) {
+    var property = elements[key];
+    if (context.$element) {
+      context[property] = context.$element.find(key);
     }
   });
 };
@@ -671,10 +727,11 @@ var Component = function () {
 
     classCallCheck(this, Component);
 
-    this.element = element;
-    this.data = data;
+    this.$element = element;
+    this.$data = data;
 
     delegateEvents(this, this._events);
+    bindElements(this, this._els);
 
     this.beforeInit();
     this.init();
@@ -687,8 +744,8 @@ var Component = function () {
 
 
   createClass(Component, [{
-    key: 'on',
-    value: function on(label, callback) {
+    key: '$on',
+    value: function $on(label, callback) {
       emitter.addListener(label, callback);
     }
 
@@ -698,8 +755,8 @@ var Component = function () {
      */
 
   }, {
-    key: 'off',
-    value: function off(label, callback) {
+    key: '$off',
+    value: function $off(label, callback) {
       emitter.removeListener(label, callback);
     }
 
@@ -709,8 +766,8 @@ var Component = function () {
      */
 
   }, {
-    key: 'emit',
-    value: function emit(label) {
+    key: '$emit',
+    value: function $emit(label) {
       for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
@@ -799,19 +856,19 @@ function decorator(event) {
 }
 
 /**
- * Dom decorator for functions
+ * Element decorator for functions
  * @param {Object} params
  * @returns (Function} decorator
  */
 function decorator$1(selector) {
   return function _decorator(klass, property) {
     if (!event) {
-      throw new Error('Selector must be provided for Evt decorator');
+      throw new Error('Selector must be provided for El decorator');
     }
-    if (!klass._dom) {
-      klass._dom = [];
+    if (!klass._els) {
+      klass._els = [];
     }
-    klass._dom[selector] = klass[property];
+    klass._els[selector] = property;
   };
 }
 
@@ -820,7 +877,7 @@ bootstrap();
 exports.Component = component$1;
 exports.EventEmitter = EventEmitter;
 exports.Evt = decorator;
-exports.Dom = decorator$1;
+exports.El = decorator$1;
 exports.element = $;
 
 Object.defineProperty(exports, '__esModule', { value: true });

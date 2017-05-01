@@ -1,5 +1,6 @@
 import EventEmitter from '../util/eventemitter';
 import { delegateEvents } from '../util/delegateEvents';
+import { bindElements } from '../util/bindElements';
 
 const emitter = new EventEmitter();
 
@@ -8,10 +9,11 @@ const emitter = new EventEmitter();
  */
 class Component {
   constructor({ element, data } = {}) {
-    this.element = element;
-    this.data = data;
+    this.$element = element;
+    this.$data = data;
 
     delegateEvents(this, this._events);
+    bindElements(this, this._els);
 
     this.beforeInit();
     this.init();
@@ -21,7 +23,7 @@ class Component {
    * Facade for EventEmitter addListener
    * @link EventEmitter#addListener
    */
-  on(label, callback) {
+  $on(label, callback) {
     emitter.addListener(label, callback);
   }
 
@@ -29,7 +31,7 @@ class Component {
    * Facade for EventEmitter removeListener
    * @link EventEmitter#removeListener
    */
-  off(label, callback) {
+  $off(label, callback) {
     emitter.removeListener(label, callback);
   }
 
@@ -37,7 +39,7 @@ class Component {
    * Facade for EventEmitter emit
    * @link EventEmitter#emit
    */
-  emit(label, ...args) {
+  $emit(label, ...args) {
     emitter.emit(label, ...args);
   }
 

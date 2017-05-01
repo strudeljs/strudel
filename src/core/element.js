@@ -44,6 +44,8 @@ class Element {
     }, []);
   }
 
+
+
   str(node, i) {
     return function (arg) {
       if (typeof arg === 'function') {
@@ -52,6 +54,23 @@ class Element {
 
       return arg.toString();
     };
+  }
+
+  filter(selector) {
+    var callback = function (node) {
+      node.matches = node.matches || node.msMatchesSelector || node.webkitMatchesSelector;
+      return node.matches(selector || '*');
+    };
+
+    if (typeof selector === 'function') callback = selector;
+
+    if (selector instanceof Element) {
+      callback = function (node) {
+        return (selector._nodes).indexOf(node) !== -1;
+      };
+    }
+
+    return new Element(this._nodes.filter(callback));
   }
 
   first() {
@@ -189,12 +208,37 @@ class Element {
     });
   }
 
-  on(eventName, delegate, listener) {
-    this['0'].addEventListener(eventName, (e) => {
-      if (e.target && e.target.matches(delegate)) {
-        listener(e);
-      }
-    }, false);
+  on(events, cb, cb2) {
+    if (typeof cb === 'string') {
+      var sel = cb;
+      cb = function (e) {
+        var args = arguments;
+        new Element(e.currentTarget).find(sel).each(function (target) {
+          if (target === e.target || target.contains(e.target)) {
+            try {
+              Object.defineProperty(e, 'currentTarget', {
+                get: function () {
+                  return target;
+                }
+              });
+            } catch (err) {}
+            cb2.apply(target, args);
+          }
+        });
+      };
+    }
+
+    var callback = function (e) {
+      return cb.apply(this, [e].concat(e.detail || []));
+    };
+
+    return this.eacharg(events, function (node, event) {
+      node.addEventListener(event, callback);
+
+      node._e = node._e || {};
+      node._e[event] = node._e[event] || [];
+      node._e[event].push(callback);
+    });
   }
 
   off(eventName, listener) {

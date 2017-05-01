@@ -12,8 +12,8 @@ const delegateEvents = (context, events) => {
   return Object.keys(events).forEach((key) => {
     const method = events[key];
     const match = key.match(DELEGATE_EVENT_SPLITTER);
-    if (context.element) {
-      delegate(context.element, match[1], match[2], method.bind(context));
+    if (context.$element) {
+      delegate(context.$element, match[1], match[2], method.bind(context));
     }
   });
 };

@@ -1,29 +1,54 @@
+<head>
+  <style>
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.is-active {
+      display: block;
+    }
+  </style>
+</head>
 <body>
   <div class="tabs">
     <ul class="tabs-nav" role="tablist">
       <li role="presentation" class="active">
-        <a href="#home" id="home-tab" role="tab" data-toggle="tab">1</a>
+        <a href="#home" id="home-tab" role="tab" data-toggle="tab">Tab 1</a>
       </li>
       <li role="presentation" class="">
-        <a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile">2</a>
+        <a href="#profile" role="tab" id="profile-tab" data-toggle="tab">Tab 2</a>
       </li>
     </ul>
     <div class="tab-content" id="myTabContent">
-      <div class="tab-pane active" role="tabpanel" id="home" aria-labelledby="home-tab">
+      <div class="tab-pane" role="tabpanel" id="home" aria-labelledby="home-tab">
         <p>Content 1</p>
       </div>
-      <div class="tab-pane active" role="tabpanel" id="home" aria-labelledby="profile-tab">
+      <div class="tab-pane" role="tabpanel" id="profile" aria-labelledby="profile-tab">
         <p>Content 2</p>
       </div>
     </div>
   </div>
 
   <script src="../strudel.js"></script>
-
   <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
-  <script type="text/babel" data-plugins="transform-decorators-legacy">
+  <script type="text/babel" data-plugins="transform-decorators-legacy,transform-class-properties">
 
-    console.log(Strudel.element('.tabs'));
+    @Strudel.Component('.tabs')
+    class Tabs {
+    	@Strudel.El('.tab-pane')
+    	panes
+
+    	@Strudel.Evt('click .tabs-nav a')
+    	toggleTab(evt) {
+    		const target = evt.target.getAttribute('href').substring(1);
+    		this.panes.removeClass('is-active').filter(`#${target}`).addClass('is-active');
+    		evt.preventDefault();
+      }
+
+      init() {
+    		this.panes.filter(':first-child').addClass('is-active');
+      }
+    }
 
     document.dispatchEvent(new Event('contentloaded'));
   </script>
