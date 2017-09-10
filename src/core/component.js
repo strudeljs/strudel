@@ -5,7 +5,9 @@ import { bindElements } from '../util/bindElements';
 const emitter = new EventEmitter();
 
 /**
- * Base class for all components, implementing event emitter
+ * @classdesc Base class for all components, implementing event emitter
+ * @class
+ * @hideconstructor
  */
 class Component {
   constructor({ element, data } = {}) {
@@ -43,9 +45,28 @@ class Component {
     emitter.emit(label, ...args);
   }
 
+  /**
+   * Function called before component is initialized
+   * @interface
+   */
   beforeInit() {}
 
+  /**
+   * Function called when component is initialized
+   * @interface
+   */
   init() {}
+
+  /**
+   * Function called before component is destroyed
+   * @interface
+   */
+  finalize() {}
+
+  destroy() {
+    this.$element._instance = null;
+    this.finalize();
+  }
 }
 
 export default Component;

@@ -1,7 +1,8 @@
 import $ from './element';
 
 /**
- * Class linking components with DOM
+ * @classdesc Class linking components with DOM
+ * @class
  */
 class Linker {
   /**

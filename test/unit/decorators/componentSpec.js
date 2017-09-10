@@ -27,7 +27,7 @@ describe('Component Decorator', () => {
 
   it('has inherited properties', () => {
     const component = new TestComponent();
-    expect(component.emit).to.be.a('function');
+    expect(component.$emit).to.be.a('function');
   });
 
   it('is instance of Component', () => {
