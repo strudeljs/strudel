@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.1.3
+ * Strudel.js v0.3.0
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -411,7 +411,8 @@ var $ = (function (selector, element) {
 });
 
 /**
- * Class linking components with DOM
+ * @classdesc Class linking components with DOM
+ * @class
  */
 
 var Linker = function () {
@@ -716,7 +717,9 @@ var bindElements = function bindElements(context, elements) {
 var emitter = new EventEmitter();
 
 /**
- * Base class for all components, implementing event emitter
+ * @classdesc Base class for all components, implementing event emitter
+ * @class
+ * @hideconstructor
  */
 
 var Component = function () {
@@ -774,12 +777,39 @@ var Component = function () {
 
       emitter.emit.apply(emitter, [label].concat(args));
     }
+
+    /**
+     * Function called before component is initialized
+     * @interface
+     */
+
   }, {
     key: 'beforeInit',
     value: function beforeInit() {}
+
+    /**
+     * Function called when component is initialized
+     * @interface
+     */
+
   }, {
     key: 'init',
     value: function init() {}
+
+    /**
+     * Function called before component is destroyed
+     * @interface
+     */
+
+  }, {
+    key: 'finalize',
+    value: function finalize() {}
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      this.$element._instance = null;
+      this.finalize();
+    }
   }]);
   return Component;
 }();
