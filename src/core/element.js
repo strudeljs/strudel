@@ -44,8 +44,6 @@ class Element {
     }, []);
   }
 
-
-
   str(node, i) {
     return function (arg) {
       if (typeof arg === 'function') {

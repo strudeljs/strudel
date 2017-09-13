@@ -5,7 +5,7 @@
  */
 export default function decorator(selector) {
   return function _decorator(klass, property) {
-    if (!event) {
+    if (!selector) {
       throw new Error('Selector must be provided for El decorator');
     }
     if (!klass._els) {
