@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.3.0
+ * Strudel.js v0.3.3
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -892,7 +892,7 @@ function decorator(event) {
  */
 function decorator$1(selector) {
   return function _decorator(klass, property) {
-    if (!event) {
+    if (!selector) {
       throw new Error('Selector must be provided for El decorator');
     }
     if (!klass._els) {
