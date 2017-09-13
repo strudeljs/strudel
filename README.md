@@ -1,17 +1,17 @@
 <p align="center"><img width="100px" src="https://avatars0.githubusercontent.com/u/27229624?v=3&s=200"></p>
 <br>
 <p align="center">
-<a href="https://circleci.com/gh/strudeljs/strudel/tree/master"><img src="https://img.shields.io/circleci/token/2332b587f2c012314b7e865cd57730587cd75ba7/project/hayalet/strudel/master.svg" alt="Build Status"></a>
+<a href="https://circleci.com/gh/strudeljs/strudel/tree/master"><img src="https://circleci.com/gh/strudeljs/strudel.svg?style=shield&circle-token=:circle-token" alt="Build Status"></a>
 <a href="https://codecov.io/gh/strudeljs/strudel"><img src="https://codecov.io/gh/strudeljs/strudel/branch/master/graph/badge.svg" alt="Codecov" /></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/v/strudel.svg" alt="Version"></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/l/strudel.svg" alt="License"></a>
 </p>
 
-Strudel (@) is a JavaScript component framework using ES7 decorators.
+Strudel (@) is a JavaScript component framework using decorators.
 
 * **Decorators**: Boilerplate reduced to minimum
 * **Component-Based**: Modularise and easily extend your DOM functionality
-* **Lightweight**: No dependencies, ~2kb gzipped
+* **Lightweight**: No dependencies, ~3kb gzipped
 
 ## Note
 
@@ -25,11 +25,11 @@ Here is simplest component (JS) to get you started:
 @Component('.greeter')
 class Greeter {
   init() {
-    this.element.html('Hello world!');
+    this.$element.html('Hello world!');
   }
 }
 ```
-and HTML:
+and corresponding HTML:
 
 ```html
 <div class="greeter"></div>
