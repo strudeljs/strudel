@@ -158,6 +158,35 @@ class Element {
     }, []));
   }
 
+  /**
+   * Get the direct children of all of the nodes with an optional filter
+   * @param [string] selector - Filter what children to get
+   * @returns {Element}
+   */
+  children(selector) {
+    return this.map(function (node) {
+      return this.slice(node.children);
+    }).filter(selector);
+  }
+
+  /**
+   * Generates element from htmlString
+   * @private
+   */
+  generate(html) {
+    if (/^\s*<t(h|r|d)/.test(html)) {
+      return new Element(document.createElement('table')).html(html).children().nodes;
+    } else if (/^\s*</.test(html)) {
+      return new Element(document.createElement('div')).html(html).children().nodes;
+    } else {
+      return document.createTextNode(html);
+    }
+  }
+
+  /**
+   * Normalize the arguments to an array of strings
+   * @private
+   */
   args(args, node, i) {
     if (typeof args === 'function') {
       args = args(node, i);
