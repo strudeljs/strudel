@@ -10,7 +10,7 @@
   class Clicker {
     @Strudel.Evt('click .clicker__btn')
     click(e) {
-      alert('CLICKED');
+      this.$element.append("<div>Clicked</div>")
       e.preventDefault();
     }
   }

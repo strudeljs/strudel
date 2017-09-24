@@ -175,9 +175,9 @@ class Element {
    */
   generate(html) {
     if (/^\s*<t(h|r|d)/.test(html)) {
-      return new Element(document.createElement('table')).html(html).children().nodes;
+      return new Element(document.createElement('table')).html(html).children()._nodes;
     } else if (/^\s*</.test(html)) {
-      return new Element(document.createElement('div')).html(html).children().nodes;
+      return new Element(document.createElement('div')).html(html).children()._nodes;
     } else {
       return document.createTextNode(html);
     }
@@ -317,15 +317,39 @@ class Element {
   }
 
   /**
+   * Travel the matched elements one node up
+   * @param {selector} CSS Selector
+   * @returns {Element}
+   */
+  parent(selector) {
+    return this.map(function (node) {
+      return node.parentNode;
+    }).filter(selector);
+  }
+
+  /**
    * Insert content, specified by the parameter, to the end of each element in the set of matched elements
    * Additional data can be provided, which will be used for populating the html
-   * @param {Element} html -
+   * @param {string|Element} html - Html string or Element
    * @param [data]
    * @returns {Element}
    */
   append(html, data) {
     return this.adjacent(html, data, function (node, fragment) {
       node.appendChild(fragment);
+    });
+  }
+
+  /**
+   * Insert content, specified by the parameter, to the begining of each element in the set of matched elements
+   * Additional data can be provided, which will be used for populating the html
+   * @param {string|Element} html - Html string or Element
+   * @param [data]
+   * @returns {Element}
+   */
+  prepend(html, data) {
+    return this.adjacent(html, data, function (node, fragment) {
+      node.insertBefore(fragment, node.firstChild);
     });
   }
 

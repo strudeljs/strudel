@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.5.0
+ * Strudel.js v0.5.2
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -275,6 +275,43 @@ var Element = function () {
         return isTruthy && clean.indexOf(node) === -1 ? clean.concat(node) : clean;
       }, []));
     }
+
+    /**
+     * Get the direct children of all of the nodes with an optional filter
+     * @param [string] selector - Filter what children to get
+     * @returns {Element}
+     */
+
+  }, {
+    key: 'children',
+    value: function children(selector) {
+      return this.map(function (node) {
+        return this.slice(node.children);
+      }).filter(selector);
+    }
+
+    /**
+     * Generates element from htmlString
+     * @private
+     */
+
+  }, {
+    key: 'generate',
+    value: function generate(html) {
+      if (/^\s*<t(h|r|d)/.test(html)) {
+        return new Element(document.createElement('table')).html(html).children()._nodes;
+      } else if (/^\s*</.test(html)) {
+        return new Element(document.createElement('div')).html(html).children()._nodes;
+      } else {
+        return document.createTextNode(html);
+      }
+    }
+
+    /**
+     * Normalize the arguments to an array of strings
+     * @private
+     */
+
   }, {
     key: 'args',
     value: function args(_args, node, i) {
@@ -429,9 +466,23 @@ var Element = function () {
     }
 
     /**
+     * Travel the matched elements one node up
+     * @param {selector} CSS Selector
+     * @returns {Element}
+     */
+
+  }, {
+    key: 'parent',
+    value: function parent(selector) {
+      return this.map(function (node) {
+        return node.parentNode;
+      }).filter(selector);
+    }
+
+    /**
      * Insert content, specified by the parameter, to the end of each element in the set of matched elements
      * Additional data can be provided, which will be used for populating the html
-     * @param {Element} html -
+     * @param {string|Element} html - Html string or Element
      * @param [data]
      * @returns {Element}
      */
@@ -441,6 +492,22 @@ var Element = function () {
     value: function append(html, data) {
       return this.adjacent(html, data, function (node, fragment) {
         node.appendChild(fragment);
+      });
+    }
+
+    /**
+     * Insert content, specified by the parameter, to the begining of each element in the set of matched elements
+     * Additional data can be provided, which will be used for populating the html
+     * @param {string|Element} html - Html string or Element
+     * @param [data]
+     * @returns {Element}
+     */
+
+  }, {
+    key: 'prepend',
+    value: function prepend(html, data) {
+      return this.adjacent(html, data, function (node, fragment) {
+        node.insertBefore(fragment, node.firstChild);
       });
     }
 
@@ -955,10 +1022,11 @@ var Component = function () {
     this.$element = element;
     this.$data = data;
 
+    this.beforeInit();
+
     delegateEvents(this, this._events);
     bindElements(this, this._els);
 
-    this.beforeInit();
     this.init();
   }
 
