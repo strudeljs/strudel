@@ -1,6 +1,6 @@
 /**
- * Element decorator for functions
- * @param {Object} params
+ * Element decorator - Creates {@link Element} for matching selector and assigns to decorated property.
+ * @param {string} CSS selector
  * @returns (Function} decorator
  */
 export default function decorator(selector) {

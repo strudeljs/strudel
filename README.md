@@ -1,4 +1,4 @@
-<p align="center"><img width="100px" src="https://avatars0.githubusercontent.com/u/27229624?v=3&s=200"></p>
+<p align="center"><img width="100px" src="http://strudeljs.org/images/strudel-twoline.svg"></p>
 <br>
 <p align="center">
 <a href="https://circleci.com/gh/strudeljs/strudel/tree/master"><img src="https://circleci.com/gh/strudeljs/strudel.svg?style=shield&circle-token=:circle-token" alt="Build Status"></a>

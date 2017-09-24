@@ -1,6 +1,6 @@
 import EventEmitter from '../util/eventemitter';
 import { delegateEvents } from '../util/delegateEvents';
-import { bindElements } from '../util/bindElements';
+import bindElements from '../util/bindElements';
 
 const emitter = new EventEmitter();
 

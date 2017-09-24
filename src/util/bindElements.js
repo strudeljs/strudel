@@ -1,3 +1,9 @@
+/**
+ * Utility for binding elements to class properties
+ * @param {Component} context Component to bind elements for
+ * @param {object} elements Map of elements / properties of class
+ * @returns {*}
+ */
 const bindElements = (context, elements) => {
   if (!elements) {
     return false;
@@ -11,4 +17,4 @@ const bindElements = (context, elements) => {
   });
 };
 
-export { bindElements };
+export default bindElements;

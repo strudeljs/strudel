@@ -1,7 +1,7 @@
 {
   "name": "strudel",
-  "version": "0.3.3",
-  "description": "Library for providing interactivity to pages",
+  "version": "0.5.0",
+  "description": "Lightweight component framework",
   "author": "Mateusz Łuczak <mateusz.luczak@outlook.com>",
   "license": "MIT",
   "directories": {
@@ -9,12 +9,12 @@
   },
   "scripts": {
     "build": "node ./build/build.js",
-    "examples": "gulp",
+    "examples": "gulp examples",
     "test": "NODE_ENV=test npm run lint && npm run test:unit && npm run test:e2e && npm run test:cover",
     "test:unit": "NODE_ENV=test mocha --opts ./test/unit/mocha.opts ./test/unit/**/*.js",
     "test:e2e": "nightwatch --config ./test/e2e/config.js --env chrome",
     "test:cover": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm run test:unit",
-    "lint": "eslint src test",
+    "lint": "eslint src",
     "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov"
   },
   "nyc": {

@@ -1,6 +1,6 @@
 /**
- * Component decorator for functions
- * @param {Object} params
+ * Event decorator - binds method to event based on the event string
+ * @param {string} event
  * @returns (Function} decorator
  */
 export default function decorator(event) {

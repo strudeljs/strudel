@@ -24,7 +24,9 @@ class EventEmitter {
    * @param {Function} callback
    */
   addListener(label, callback) {
-    this._listeners.has(label) || this._listeners.set(label, []);
+    if (!this._listeners.has(label)) {
+      this._listeners.set(label, []);
+    }
     this._listeners.get(label).push(callback);
   }
 
@@ -35,11 +37,11 @@ class EventEmitter {
    * @returns {boolean}
    */
   removeListener(label, callback) {
-    let listeners = this._listeners.get(label);
+    const listeners = this._listeners.get(label);
 
     if (listeners && listeners.length) {
-      let index = listeners.reduce((i, listener, index) => {
-        return (isFunction(listener) && listener === callback) ? i = index : i;
+      const index = listeners.reduce((i, listener, ind) => {
+        return (isFunction(listener) && listener === callback) ? i = ind : i;
       }, -1);
 
       if (index > -1) {
@@ -58,7 +60,7 @@ class EventEmitter {
    * @returns {boolean}
    */
   emit(label, ...args) {
-    let listeners = this._listeners.get(label);
+    const listeners = this._listeners.get(label);
 
     if (listeners && listeners.length) {
       listeners.forEach((listener) => {

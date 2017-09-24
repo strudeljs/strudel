@@ -25,24 +25,24 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container) {
-    for (let selector of this.registry.getSelectors()) {
+    Array.from(this.registry.getSelectors()).forEach((selector) => {
       [].forEach.call(container.querySelectorAll(selector), (element) => {
         if (!element._instance) {
           const el = $(element);
           element._instance = this.createComponent(el, this.registry.getComponent(selector));
         }
       });
-    }
+    });
   }
 
   /**
    * Creates instance of {Component} for provided DOM element
    * @param {DOMElement} element
    * @param {Function} constructor
-     */
-  createComponent(element, klass) {
+   */
+  createComponent(element, Klass) {
     const data = element.data();
-    return new klass({ element, data });
+    return new Klass({ element, data });
   }
 }
 

@@ -9,6 +9,16 @@
     "node": true
   },
   "rules": {
+    "max-len": [
+      1,
+      120
+    ],
+    "arrow-body-style": [
+      2,
+      "always"
+    ],
+    "no-return-assign": 0,
+    "no-param-reassign": 0,
     "class-methods-use-this": 0,
     "no-underscore-dangle": 0,
     "comma-dangle": [

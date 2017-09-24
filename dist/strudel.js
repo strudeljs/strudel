@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.3.3
+ * Strudel.js v0.5.0
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -91,6 +91,24 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
+/* eslint-disable */
+
+/**
+ * Wrapper for query selector
+ * @param {String} selector - CSS selector
+ * @param {Node} context - Node to select from
+ * @returns {NodeList}
+ */
+var byCss = function byCss(selector, context) {
+  return (context || document).querySelectorAll(selector);
+};
+
+/**
+ * Wrapper for byCss
+ * @param {String} selector
+ * @param {Node} context
+ * @returns {NodeList}
+ */
 var select = function select(selector, context) {
   if (context) {
     return byCss(selector, context);
@@ -99,11 +117,18 @@ var select = function select(selector, context) {
   return byCss(selector);
 };
 
-var byCss = function byCss(selector, context) {
-  return (context || document).querySelectorAll(selector);
-};
+/**
+ * @classdesc Element class used for DOM manipulation
+ * @class
+ */
 
 var Element = function () {
+  /**
+   * @constructor
+   * @param {string} selector - CSS selector
+   * @param {Node} context - Node to wrap into Element
+   * @returns {Element}
+   */
   function Element(selector, context) {
     classCallCheck(this, Element);
 
@@ -122,17 +147,23 @@ var Element = function () {
     this._nodes = this.slice(selector);
   }
 
+  /**
+   * Extracts structured data from DOM
+   * @param {Function} callback - A callback to be called on each node. Returned value is added to the set
+   * @returns {*}
+   */
+
+
   createClass(Element, [{
     key: 'array',
     value: function array(callback) {
-      callback = callback;
       var self = this;
       return this._nodes.reduce(function (list, node, i) {
-        var val;
+        var val = void 0;
         if (callback) {
           val = callback.call(self, node, i);
           if (!val) val = false;
-          if (typeof val === 'string') val = u(val);
+          if (typeof val === 'string') val = new Element(val);
           if (val instanceof Element) val = val._nodes;
         } else {
           val = node.innerHTML;
@@ -140,6 +171,12 @@ var Element = function () {
         return list.concat(val !== false ? val : []);
       }, []);
     }
+
+    /**
+     * Create a string from different things
+     * @private
+     */
+
   }, {
     key: 'str',
     value: function str(node, i) {
@@ -151,6 +188,25 @@ var Element = function () {
         return arg.toString();
       };
     }
+
+    /**
+     * Check the current matched set of elements against a selector and return true if at least one of these elements matches the given arguments.
+     * @param {selector} selector - A string containing a selector expression to match elements against.
+     * @returns {boolean}
+     */
+
+  }, {
+    key: 'is',
+    value: function is(selector) {
+      return this.filter(selector).length > 0;
+    }
+
+    /**
+     * Reduce the set of matched elements to those that match the selector or pass the function's test.
+     * @param {selector} selector A string containing a selector expression to match elements against.
+     * @returns {Element}
+     */
+
   }, {
     key: 'filter',
     value: function filter(selector) {
@@ -169,11 +225,35 @@ var Element = function () {
 
       return new Element(this._nodes.filter(callback));
     }
+
+    /**
+     * Reduce the set of matched elements to the one at the specified index.
+     * @param {Number} index - An integer indicating the 0-based position of the element.
+     * @returns {Element|boolean}
+     */
+
+  }, {
+    key: 'eq',
+    value: function eq(index) {
+      return new Element(this._nodes[index]) || false;
+    }
+
+    /**
+     * Reduce the set of matched elements to the first in the set.
+     * @returns {HTMLElement}
+     */
+
   }, {
     key: 'first',
     value: function first() {
       return this._nodes[0] || false;
     }
+
+    /**
+     * Converts Arraylike to array
+     * @private
+     */
+
   }, {
     key: 'slice',
     value: function slice(pseudo) {
@@ -181,6 +261,12 @@ var Element = function () {
 
       return pseudo.length ? [].slice.call(pseudo._nodes || pseudo) : [pseudo];
     }
+
+    /**
+     * Removes duplicated nodes
+     * @private
+     */
+
   }, {
     key: 'unique',
     value: function unique() {
@@ -204,12 +290,25 @@ var Element = function () {
         return e.length;
       });
     }
+
+    /**
+     * Loops through the nodes and executes callback for each
+     * @param {Function} callback - The function that will be called
+     * @returns {Element}
+     */
+
   }, {
     key: 'each',
     value: function each(callback) {
       this._nodes.forEach(callback.bind(this));
       return this;
     }
+
+    /**
+     * Loop through the combination of every node and every argument passed
+     * @private
+     */
+
   }, {
     key: 'eacharg',
     value: function eacharg(args, callback) {
@@ -219,16 +318,35 @@ var Element = function () {
         }, this);
       });
     }
+
+    /**
+     * Checks if node exists on a page
+     * @private
+     */
+
   }, {
     key: 'isInPage',
     value: function isInPage(node) {
       return node === document.body ? false : document.body.contains(node);
     }
+
+    /**
+     * Changes the content of the current instance by running a callback for each Element
+     * @param {Function} callback - A callback that returns an element that are going to be kept
+     * @returns {Element}
+     */
+
   }, {
     key: 'map',
     value: function map(callback) {
       return callback ? new Element(this.array(callback)).unique() : this;
     }
+
+    /**
+     * Add texts in specific position
+     * @private
+     */
+
   }, {
     key: 'adjacent',
     value: function adjacent(html, data, callback) {
@@ -250,14 +368,22 @@ var Element = function () {
             return this.generate(part);
           }
 
-          return u(part);
+          return new Element(part);
         }).each(function (n) {
-          this.isInPage(n) ? fragment.appendChild(u(n).clone().first()) : fragment.appendChild(n);
+          this.isInPage(n) ? fragment.appendChild(new Element(n).clone().first()) : fragment.appendChild(n);
         });
 
         callback.call(this, node, fragment);
       });
     }
+
+    /**
+     * Gets the HTML contents of the first element in a set.
+     * When parameter is provided set the HTML contents of each element in the set.
+     * @param {htmlString} [text] - A string of HTML to set as the content of each matched element
+     * @returns {htmlString|Element}
+     */
+
   }, {
     key: 'html',
     value: function html(text) {
@@ -269,6 +395,14 @@ var Element = function () {
         node.innerHTML = text;
       });
     }
+
+    /**
+     * Gets the text contents of the first element in a set.
+     * When parameter is provided set the text contents of each element in the set.
+     * @param {string} [text] - A string to set as the text content of each matched element.
+     * @returns {string|Element}
+     */
+
   }, {
     key: 'text',
     value: function text(_text) {
@@ -280,6 +414,12 @@ var Element = function () {
         node.textContent = _text;
       });
     }
+
+    /**
+     * Remove the set of matched elements from the DOM.
+     * @returns {Element}
+     */
+
   }, {
     key: 'remove',
     value: function remove() {
@@ -287,6 +427,15 @@ var Element = function () {
         node.parentNode.removeChild(node);
       });
     }
+
+    /**
+     * Insert content, specified by the parameter, to the end of each element in the set of matched elements
+     * Additional data can be provided, which will be used for populating the html
+     * @param {Element} html -
+     * @param [data]
+     * @returns {Element}
+     */
+
   }, {
     key: 'append',
     value: function append(html, data) {
@@ -294,6 +443,13 @@ var Element = function () {
         node.appendChild(fragment);
       });
     }
+
+    /**
+     * Get the descendants of each element in the current set of matched elements, filtered by a selector.
+     * @param {selector} selector - A string containing a selector expression to match elements against.
+     * @returns {Element}
+     */
+
   }, {
     key: 'find',
     value: function find(selector) {
@@ -301,20 +457,57 @@ var Element = function () {
         return new Element(selector || '*', node);
       });
     }
+
+    /**
+     * Adds the specified class(es) to each element in the set of matched elements.
+     * @param {...string} className - Class(es) to be added
+     * @returns {Element}
+     */
+
   }, {
     key: 'addClass',
-    value: function addClass() {
+    value: function addClass(className) {
       return this.eacharg(arguments, function (el, name) {
         el.classList.add(name);
       });
     }
+
+    /**
+     * Toggles the specified class(es) to each element in the set of matched elements.
+     * @param {...string} className - Class(es) to be toggled
+     * @returns {Element}
+     */
+
+  }, {
+    key: 'toggleClass',
+    value: function toggleClass(className) {
+      return this.eacharg(arguments, function (el, name) {
+        el.classList.toggle(name);
+      });
+    }
+
+    /**
+     * Removes the specified class(es) from each element in the set of matched elements.
+     * @param {...string} className - Class(es) to be removed
+     * @returns {Element}
+     */
+
   }, {
     key: 'removeClass',
-    value: function removeClass() {
+    value: function removeClass(className) {
       return this.eacharg(arguments, function (el, name) {
         el.classList.remove(name);
       });
     }
+
+    /**
+     * Attach event handlers
+     * @param {string} events - Events to attach handlers for - can be space separated or comma separated list, or array of strings
+     * @param {string|Function} cb - Callback or CSS selector
+     * @param [Function] cb2 - Callback when second parameter is a selector
+     * @returns {Element}
+     */
+
   }, {
     key: 'on',
     value: function on(events, cb, cb2) {
@@ -349,18 +542,32 @@ var Element = function () {
         node._e[event].push(callback);
       });
     }
+
+    /**
+     * Remove an event handler
+     * @param {string} eventName
+     * @param {Function} listener
+     */
+
   }, {
     key: 'off',
     value: function off(eventName, listener) {
       this['0'].removeEventListener(eventName, listener, false);
     }
+
+    /**
+     * Execute all handlers attached to the event type
+     * @param {string} events - Event types to be executed
+     * @returns {*}
+     */
+
   }, {
     key: 'trigger',
     value: function trigger(events) {
       var data = this.slice(arguments).slice(1);
 
       return this.eacharg(events, function (node, event) {
-        var ev;
+        var ev = void 0;
         var opts = { bubbles: true, cancelable: true, detail: data };
 
         try {
@@ -373,6 +580,14 @@ var Element = function () {
         node.dispatchEvent(ev);
       });
     }
+
+    /**
+     * Get the value of an attribute for the each element in the set of matched elements or set one or more attributes for every matched element.
+     * @param [string|object] name - Name of the attribute to be retrieved/set. Can be object of attributes/values.
+     * @param [string] value - Value of the attribute to be set.
+     * @returns {string|Element}
+     */
+
   }, {
     key: 'attr',
     value: function attr(name, value, data) {
@@ -394,6 +609,14 @@ var Element = function () {
 
       return this.length ? this.first().getAttribute(data + name) : '';
     }
+
+    /**
+     * Get the value of an daata attribute for the each element in the set of matched elements or set one or more attributes for every matched element.
+     * @param [string|object] name - Name of the data attribute to be retrieved/set. Can be object of attributes/values.
+     * @param [string] value - Value of the data attribute to be set.
+     * @returns {object|Element}
+     */
+
   }, {
     key: 'data',
     value: function data(name, value) {
@@ -447,52 +670,27 @@ var Linker = function () {
     value: function link(container) {
       var _this = this;
 
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        var _loop = function _loop() {
-          var selector = _step.value;
-
-          [].forEach.call(container.querySelectorAll(selector), function (element) {
-            if (!element._instance) {
-              var el = $(element);
-              element._instance = _this.createComponent(el, _this.registry.getComponent(selector));
-            }
-          });
-        };
-
-        for (var _iterator = this.registry.getSelectors()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          _loop();
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
+      Array.from(this.registry.getSelectors()).forEach(function (selector) {
+        [].forEach.call(container.querySelectorAll(selector), function (element) {
+          if (!element._instance) {
+            var el = $(element);
+            element._instance = _this.createComponent(el, _this.registry.getComponent(selector));
           }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
+        });
+      });
     }
 
     /**
      * Creates instance of {Component} for provided DOM element
      * @param {DOMElement} element
      * @param {Function} constructor
-       */
+     */
 
   }, {
     key: 'createComponent',
-    value: function createComponent(element, klass) {
+    value: function createComponent(element, Klass) {
       var data = element.data();
-      return new klass({ element: element, data: data });
+      return new Klass({ element: element, data: data });
     }
   }]);
   return Linker;
@@ -582,11 +780,10 @@ var registry = new Registry();
 var linker = new Linker(registry);
 
 var bootstrap = function bootstrap() {
-  document.addEventListener('DOMContentLoaded', function () {
-    return linker.linkAll();
-  });
-  document.addEventListener('contentloaded', function () {
-    return linker.linkAll();
+  ['DOMContentLoaded', 'contentloaded'].forEach(function (evt) {
+    document.addEventListener(evt, function () {
+      linker.linkAll();
+    });
   });
 };
 
@@ -623,7 +820,9 @@ var EventEmitter = function () {
   createClass(EventEmitter, [{
     key: 'addListener',
     value: function addListener(label, callback) {
-      this._listeners.has(label) || this._listeners.set(label, []);
+      if (!this._listeners.has(label)) {
+        this._listeners.set(label, []);
+      }
       this._listeners.get(label).push(callback);
     }
 
@@ -640,8 +839,8 @@ var EventEmitter = function () {
       var listeners = this._listeners.get(label);
 
       if (listeners && listeners.length) {
-        var index = listeners.reduce(function (i, listener, index) {
-          return isFunction(listener) && listener === callback ? i = index : i;
+        var index = listeners.reduce(function (i, listener, ind) {
+          return isFunction(listener) && listener === callback ? i = ind : i;
         }, -1);
 
         if (index > -1) {
@@ -683,10 +882,27 @@ var EventEmitter = function () {
 
 var DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
 
+/**
+ * Wrapper for Element on method
+ * @param {Element} element - element that will receive listener
+ * @param {string} eventName - name of the event eg. click
+ * @param {string} selector - CSS selector for delegation
+ * @param {Function} listener - function listener
+ */
 var delegate = function delegate(element, eventName, selector, listener) {
-  element.on(eventName, selector, listener);
+  if (selector) {
+    element.on(eventName, selector, listener);
+  } else {
+    element.on(eventName, listener);
+  }
 };
 
+/**
+ * Utility for binding events to class methods
+ * @param {Component} context - context Component to bind elements for
+ * @param {object} events - map of event strings / methods
+ * @returns {*}
+ */
 var delegateEvents = function delegateEvents(context, events) {
   if (!events) {
     return false;
@@ -701,6 +917,12 @@ var delegateEvents = function delegateEvents(context, events) {
   });
 };
 
+/**
+ * Utility for binding elements to class properties
+ * @param {Component} context Component to bind elements for
+ * @param {object} elements Map of elements / properties of class
+ * @returns {*}
+ */
 var bindElements = function bindElements(context, elements) {
   if (!elements) {
     return false;
@@ -832,34 +1054,39 @@ var mixin = function mixin(target, source) {
 
 var registry$2 = new Registry();
 
+/**
+ * Component decorator - Registers decorated class in {@link Registry} as a component
+ * @param {string} CSS selector
+ */
 var component = function component(target, selector) {
   if (!selector) {
     throw new Error('Selector must be provided for Component decorator');
   }
 
-  var component = function (_Component) {
-    inherits(component, _Component);
+  var klass = function (_Component) {
+    inherits(klass, _Component);
 
-    function component() {
+    function klass() {
       var _ref;
 
-      classCallCheck(this, component);
+      classCallCheck(this, klass);
 
       for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
-      return possibleConstructorReturn(this, (_ref = component.__proto__ || Object.getPrototypeOf(component)).call.apply(_ref, [this].concat(args)));
+      /* eslint no-useless-constructor: 0 */
+      return possibleConstructorReturn(this, (_ref = klass.__proto__ || Object.getPrototypeOf(klass)).call.apply(_ref, [this].concat(args)));
     }
 
-    return component;
+    return klass;
   }(Component);
 
-  mixin(component, target);
-  Object.defineProperty(component.prototype, '_selector', { value: selector });
-  registry$2.registerComponent(selector, component);
+  mixin(klass, target);
+  Object.defineProperty(klass.prototype, '_selector', { value: selector });
+  registry$2.registerComponent(selector, klass);
 
-  return component;
+  return klass;
 };
 
 var component$1 = (function (selector) {
@@ -869,8 +1096,8 @@ var component$1 = (function (selector) {
 });
 
 /**
- * Component decorator for functions
- * @param {Object} params
+ * Event decorator - binds method to event based on the event string
+ * @param {string} event
  * @returns (Function} decorator
  */
 function decorator(event) {
@@ -886,8 +1113,8 @@ function decorator(event) {
 }
 
 /**
- * Element decorator for functions
- * @param {Object} params
+ * Element decorator - Creates {@link Element} for matching selector and assigns to decorated property.
+ * @param {string} CSS selector
  * @returns (Function} decorator
  */
 function decorator$1(selector) {
