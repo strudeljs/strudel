@@ -14,10 +14,11 @@ class Component {
     this.$element = element;
     this.$data = data;
 
+    this.beforeInit();
+
     delegateEvents(this, this._events);
     bindElements(this, this._els);
 
-    this.beforeInit();
     this.init();
   }
 
