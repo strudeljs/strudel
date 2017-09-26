@@ -439,11 +439,24 @@ class Element {
 
   /**
    * Remove an event handler
-   * @param {string} eventName
-   * @param {Function} listener
+   * @param {string} events
    */
-  off(eventName, listener) {
-    this['0'].removeEventListener(eventName, listener, false);
+  off(events) {
+    if (events === undefined) {
+      this.each(function (node) {
+        for (var evt in node._e) {
+          node._e[evt].forEach(function (cb) {
+            node.removeEventListener(evt, cb);
+          })
+        }
+      });
+    }
+
+    return this.eacharg(events, function (node, event) {
+      new Element(node._e ? node._e[event] : []).each(function (cb) {
+        node.removeEventListener(event, cb);
+      });
+    });
   }
 
   /**

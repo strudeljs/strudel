@@ -8,26 +8,26 @@ const registry = new Registry();
  * Component decorator - Registers decorated class in {@link Registry} as a component
  * @param {string} CSS selector
  */
-const component = (target, selector) => {
+const register = (target, selector) => {
   if (!selector) {
     throw new Error('Selector must be provided for Component decorator');
   }
 
-  const klass = class extends Component {
+  const component = class extends Component {
     constructor(...args) { /* eslint no-useless-constructor: 0 */
       super(...args);
     }
   };
 
-  mixin(klass, target);
-  Object.defineProperty(klass.prototype, '_selector', { value: selector });
-  registry.registerComponent(selector, klass);
+  mixin(component, target);
+  Object.defineProperty(component.prototype, '_selector', { value: selector });
+  registry.registerComponent(selector, component);
 
-  return klass;
+  return component;
 };
 
 export default (selector) => {
   return (target) => {
-    return component(target, selector);
+    return register(target, selector);
   };
 };

@@ -27,9 +27,9 @@ class Linker {
   link(container) {
     Array.from(this.registry.getSelectors()).forEach((selector) => {
       [].forEach.call(container.querySelectorAll(selector), (element) => {
-        if (!element._instance) {
+        if (!element.scope) {
           const el = $(element);
-          element._instance = this.createComponent(el, this.registry.getComponent(selector));
+          element.scope = this.createComponent(el, this.registry.getComponent(selector));
         }
       });
     });

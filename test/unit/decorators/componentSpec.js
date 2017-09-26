@@ -4,6 +4,8 @@ import Registry from '../../../src/core/registry';
 
 @Component('test')
 class TestComponent {
+  property = 1;
+
   method() {
     return 'test';
   }
@@ -36,6 +38,11 @@ describe('Component Decorator', () => {
   });
 
   it('has own properties', () => {
+    const component = new TestComponent();
+    expect(component.property).to.be.equal(1);
+  })
+
+  it('has own methods', () => {
     const component = new TestComponent();
     expect(component.method).to.be.a('function');
   });

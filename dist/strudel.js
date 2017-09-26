@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.5.2
+ * Strudel.js v0.5.4
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -612,14 +612,27 @@ var Element = function () {
 
     /**
      * Remove an event handler
-     * @param {string} eventName
-     * @param {Function} listener
+     * @param {string} events
      */
 
   }, {
     key: 'off',
-    value: function off(eventName, listener) {
-      this['0'].removeEventListener(eventName, listener, false);
+    value: function off(events) {
+      if (events === undefined) {
+        this.each(function (node) {
+          for (var evt in node._e) {
+            node._e[evt].forEach(function (cb) {
+              node.removeEventListener(evt, cb);
+            });
+          }
+        });
+      }
+
+      return this.eacharg(events, function (node, event) {
+        new Element(node._e ? node._e[event] : []).each(function (cb) {
+          node.removeEventListener(event, cb);
+        });
+      });
     }
 
     /**
@@ -739,9 +752,9 @@ var Linker = function () {
 
       Array.from(this.registry.getSelectors()).forEach(function (selector) {
         [].forEach.call(container.querySelectorAll(selector), function (element) {
-          if (!element._instance) {
+          if (!element.scope) {
             var el = $(element);
-            element._instance = _this.createComponent(el, _this.registry.getComponent(selector));
+            element.scope = _this.createComponent(el, _this.registry.getComponent(selector));
           }
         });
       });
@@ -1019,10 +1032,10 @@ var Component = function () {
 
     classCallCheck(this, Component);
 
+    this.beforeInit();
+
     this.$element = element;
     this.$data = data;
-
-    this.beforeInit();
 
     delegateEvents(this, this._events);
     bindElements(this, this._els);
@@ -1092,13 +1105,30 @@ var Component = function () {
      */
 
   }, {
-    key: 'finalize',
-    value: function finalize() {}
+    key: 'beforeDestroy',
+    value: function beforeDestroy() {}
+
+    /**
+     * Function called after component is destroyed
+     * @interface
+     */
+
   }, {
     key: 'destroy',
-    value: function destroy() {
-      this.$element._instance = null;
-      this.finalize();
+    value: function destroy() {}
+
+    /**
+     * Teardown the component and clear events
+     */
+
+  }, {
+    key: '$teardown',
+    value: function $teardown() {
+      this.beforeDestroy();
+      this.$element.off();
+      delete this.$element.first().scope;
+      delete this.$element;
+      this.destroy();
     }
   }]);
   return Component;
@@ -1112,6 +1142,11 @@ var Component = function () {
 var mixin = function mixin(target, source) {
   var targetProto = target.prototype;
   var sourceProto = source.prototype;
+  var inst = new source(); // eslint-disable-line new-cap
+
+  Object.getOwnPropertyNames(inst).forEach(function (name) {
+    Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(inst, name));
+  });
 
   Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
     if (name !== 'constructor') {
@@ -1126,40 +1161,40 @@ var registry$2 = new Registry();
  * Component decorator - Registers decorated class in {@link Registry} as a component
  * @param {string} CSS selector
  */
-var component = function component(target, selector) {
+var register = function register(target, selector) {
   if (!selector) {
     throw new Error('Selector must be provided for Component decorator');
   }
 
-  var klass = function (_Component) {
-    inherits(klass, _Component);
+  var component = function (_Component) {
+    inherits(component, _Component);
 
-    function klass() {
+    function component() {
       var _ref;
 
-      classCallCheck(this, klass);
+      classCallCheck(this, component);
 
       for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
       /* eslint no-useless-constructor: 0 */
-      return possibleConstructorReturn(this, (_ref = klass.__proto__ || Object.getPrototypeOf(klass)).call.apply(_ref, [this].concat(args)));
+      return possibleConstructorReturn(this, (_ref = component.__proto__ || Object.getPrototypeOf(component)).call.apply(_ref, [this].concat(args)));
     }
 
-    return klass;
+    return component;
   }(Component);
 
-  mixin(klass, target);
-  Object.defineProperty(klass.prototype, '_selector', { value: selector });
-  registry$2.registerComponent(selector, klass);
+  mixin(component, target);
+  Object.defineProperty(component.prototype, '_selector', { value: selector });
+  registry$2.registerComponent(selector, component);
 
-  return klass;
+  return component;
 };
 
-var component$1 = (function (selector) {
+var component = (function (selector) {
   return function (target) {
-    return component(target, selector);
+    return register(target, selector);
   };
 });
 
@@ -1199,7 +1234,7 @@ function decorator$1(selector) {
 
 bootstrap();
 
-exports.Component = component$1;
+exports.Component = component;
 exports.EventEmitter = EventEmitter;
 exports.Evt = decorator;
 exports.El = decorator$1;

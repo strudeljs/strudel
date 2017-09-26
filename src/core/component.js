@@ -11,10 +11,10 @@ const emitter = new EventEmitter();
  */
 class Component {
   constructor({ element, data } = {}) {
+    this.beforeInit();
+
     this.$element = element;
     this.$data = data;
-
-    this.beforeInit();
 
     delegateEvents(this, this._events);
     bindElements(this, this._els);
@@ -62,11 +62,23 @@ class Component {
    * Function called before component is destroyed
    * @interface
    */
-  finalize() {}
+  beforeDestroy() {}
 
-  destroy() {
-    this.$element._instance = null;
-    this.finalize();
+  /**
+   * Function called after component is destroyed
+   * @interface
+   */
+  destroy() {}
+
+  /**
+   * Teardown the component and clear events
+   */
+  $teardown() {
+    this.beforeDestroy();
+    this.$element.off();
+    delete this.$element.first().scope;
+    delete this.$element;
+    this.destroy();
   }
 }
 
