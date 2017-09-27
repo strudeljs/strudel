@@ -5,21 +5,22 @@
 <a href="https://codecov.io/gh/strudeljs/strudel"><img src="https://codecov.io/gh/strudeljs/strudel/branch/master/graph/badge.svg" alt="Codecov" /></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/v/strudel.svg" alt="Version"></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/l/strudel.svg" alt="License"></a>
+<a href="https://gitter.im/strudel-js"><img src="https://img.shields.io/gitter/room/nwjs/nw.js.svg" alt="Gitter"></a>
 </p>
 
-Strudel (@) is a JavaScript component framework using decorators.
+Strudel (`@`) is a lightweight ECMAScript 2015 component framework that main features are:
 
 * **Decorators**: Boilerplate reduced to minimum
 * **Component-Based**: Modularise and easily extend your DOM functionality
-* **Lightweight**: No dependencies, ~3kb gzipped
+* **Small footprint**: No dependencies, ~3kb gzipped
 
-## Note
+## Browser Support
 
-This library cannot be used without **Babel** and plugin enabling **Decorators** (`babel-decorators-legacy`)
+Strudel.js supports all the browsers that are ES5 and DOM4 compliant (IE10 and below not supported).
 
-## Examples
+## Example
 
-Here is simplest component (JS) to get you started:
+Here is simplest component to get you started:
 
 ```js
 @Component('.greeter')
@@ -29,23 +30,16 @@ class Greeter {
   }
 }
 ```
-and corresponding HTML:
 
-```html
-<div class="greeter"></div>
-```
+## Documentation
 
-This example will render "Hello world" on a page
-
-## Build
-
-Once you have repository cloned, building a copy of Strudel is really easy
-
-```
-npm install
-npm run build
-```
+To check more examples and docs visit [http://strudeljs.org](strudeljs.org).
 
 ## Contributing
 
 Coming soon
+
+## License
+
+[https://opensource.org/licenses/MIT](MIT)
+Copyright (c) 2017-present, Mateusz Łuczak
