@@ -15,7 +15,7 @@ class EventEmitter {
    * @constructor
    */
   constructor() {
-    this._listeners = new Map();
+    this._listeners = {};
   }
 
   /**
@@ -24,10 +24,10 @@ class EventEmitter {
    * @param {Function} callback
    */
   addListener(label, callback) {
-    if (!this._listeners.has(label)) {
-      this._listeners.set(label, []);
+    if (!this._listeners[label]) {
+      this._listeners[label] = [];
     }
-    this._listeners.get(label).push(callback);
+    this._listeners[label].push(callback);
   }
 
   /**
@@ -37,7 +37,7 @@ class EventEmitter {
    * @returns {boolean}
    */
   removeListener(label, callback) {
-    const listeners = this._listeners.get(label);
+    const listeners = this._listeners[label];
 
     if (listeners && listeners.length) {
       const index = listeners.reduce((i, listener, ind) => {
@@ -46,7 +46,7 @@ class EventEmitter {
 
       if (index > -1) {
         listeners.splice(index, 1);
-        this._listeners.set(label, listeners);
+        this._listeners[label] = listeners;
         return true;
       }
     }
@@ -60,7 +60,7 @@ class EventEmitter {
    * @returns {boolean}
    */
   emit(label, ...args) {
-    const listeners = this._listeners.get(label);
+    const listeners = this._listeners[label];
 
     if (listeners && listeners.length) {
       listeners.forEach((listener) => {

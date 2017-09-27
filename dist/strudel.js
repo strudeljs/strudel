@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.5.4
+ * Strudel.js v0.5.5
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -750,7 +750,7 @@ var Linker = function () {
     value: function link(container) {
       var _this = this;
 
-      Array.from(this.registry.getSelectors()).forEach(function (selector) {
+      this.registry.getSelectors().forEach(function (selector) {
         [].forEach.call(container.querySelectorAll(selector), function (element) {
           if (!element.scope) {
             var el = $(element);
@@ -780,7 +780,7 @@ var Linker = function () {
  * Registry
  * @type {Map}
  */
-var registry$1 = new Map();
+var registry$1 = {};
 
 /**
  * Singleton instance
@@ -809,14 +809,14 @@ var Registry = function () {
 
   /**
    * Returns keys from registry
-   * @returns {Iterator.<string>}
+   * @returns {Array.<string>}
      */
 
 
   createClass(Registry, [{
     key: "getSelectors",
     value: function getSelectors() {
-      return registry$1.keys();
+      return Object.keys(registry$1);
     }
 
     /**
@@ -826,7 +826,11 @@ var Registry = function () {
   }, {
     key: "clear",
     value: function clear() {
-      registry$1.clear();
+      for (var selector in registry$1) {
+        if (registry$1.hasOwnProperty(selector)) {
+          delete registry$1[selector];
+        }
+      }
     }
 
     /**
@@ -838,7 +842,7 @@ var Registry = function () {
   }, {
     key: "getComponent",
     value: function getComponent(selector) {
-      return registry$1.get(selector);
+      return registry$1[selector];
     }
 
     /**
@@ -850,7 +854,7 @@ var Registry = function () {
   }, {
     key: "registerComponent",
     value: function registerComponent(selector, klass) {
-      registry$1.set(selector, klass);
+      registry$1[selector] = klass;
     }
   }]);
   return Registry;
@@ -887,7 +891,7 @@ var EventEmitter = function () {
   function EventEmitter() {
     classCallCheck(this, EventEmitter);
 
-    this._listeners = new Map();
+    this._listeners = {};
   }
 
   /**
@@ -900,10 +904,10 @@ var EventEmitter = function () {
   createClass(EventEmitter, [{
     key: 'addListener',
     value: function addListener(label, callback) {
-      if (!this._listeners.has(label)) {
-        this._listeners.set(label, []);
+      if (!this._listeners[label]) {
+        this._listeners[label] = [];
       }
-      this._listeners.get(label).push(callback);
+      this._listeners[label].push(callback);
     }
 
     /**
@@ -916,7 +920,7 @@ var EventEmitter = function () {
   }, {
     key: 'removeListener',
     value: function removeListener(label, callback) {
-      var listeners = this._listeners.get(label);
+      var listeners = this._listeners[label];
 
       if (listeners && listeners.length) {
         var index = listeners.reduce(function (i, listener, ind) {
@@ -925,7 +929,7 @@ var EventEmitter = function () {
 
         if (index > -1) {
           listeners.splice(index, 1);
-          this._listeners.set(label, listeners);
+          this._listeners[label] = listeners;
           return true;
         }
       }
@@ -946,7 +950,7 @@ var EventEmitter = function () {
         args[_key - 1] = arguments[_key];
       }
 
-      var listeners = this._listeners.get(label);
+      var listeners = this._listeners[label];
 
       if (listeners && listeners.length) {
         listeners.forEach(function (listener) {

@@ -1,6 +1,6 @@
 {
   "name": "strudel",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Lightweight component framework",
   "author": "Mateusz Łuczak <mateusz.luczak@outlook.com>",
   "license": "MIT",
@@ -14,6 +14,7 @@
     "test:unit": "NODE_ENV=test mocha --opts ./test/unit/mocha.opts ./test/unit/**/*.js",
     "test:e2e": "nightwatch --config ./test/e2e/config.js --env chrome",
     "test:cover": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm run test:unit",
+    "test:sauce": "nightwatch --config ./test/e2e/sauce.js --env chrome,firefox,safari,ie11,edge,android,iphone",
     "lint": "eslint src",
     "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov"
   },
@@ -64,6 +65,7 @@
     "nyc": "^10.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
+    "saucelabs": "^1.4.0",
     "selenium-server": "^3.3.1",
     "uglify-js": "^2.8.22"
   }

@@ -25,7 +25,7 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container) {
-    Array.from(this.registry.getSelectors()).forEach((selector) => {
+    this.registry.getSelectors().forEach((selector) => {
       [].forEach.call(container.querySelectorAll(selector), (element) => {
         if (!element.scope) {
           const el = $(element);

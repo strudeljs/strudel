@@ -2,7 +2,7 @@
  * Registry
  * @type {Map}
  */
-const registry = new Map();
+const registry = {};
 
 /**
  * Singleton instance
@@ -28,17 +28,21 @@ class Registry {
 
   /**
    * Returns keys from registry
-   * @returns {Iterator.<string>}
+   * @returns {Array.<string>}
      */
   getSelectors() {
-    return registry.keys();
+    return Object.keys(registry);
   }
 
   /**
    * Clears registry
    */
   clear() {
-    registry.clear();
+    for (var selector in registry){
+      if (registry.hasOwnProperty(selector)){
+        delete registry[selector];
+      }
+    }
   }
 
   /**
@@ -47,7 +51,7 @@ class Registry {
    * @returns {Function} constructor
      */
   getComponent(selector) {
-    return registry.get(selector);
+    return registry[selector];
   }
 
   /**
@@ -56,7 +60,7 @@ class Registry {
    * @param {Function} constructor
      */
   registerComponent(selector, klass) {
-    registry.set(selector, klass);
+    registry[selector] = klass;
   }
 }
 

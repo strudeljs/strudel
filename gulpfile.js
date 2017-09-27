@@ -9,7 +9,7 @@ const examples = () => {
 
   connect.server({
     root: ['examples', 'dist'],
-    port: 8888,
+    port: 9001,
     livereload: false,
     open: false,
     middleware: (connect, opt) => [cors()],
