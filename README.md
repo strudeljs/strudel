@@ -18,7 +18,7 @@ Strudel (`@`) is a lightweight ECMAScript 2015 component framework that main fea
 
 Strudel.js supports all the browsers that are ES5 and DOM4 compliant (IE10 and below not supported).
 
-## Example
+## Quickstart
 
 Here is simplest component to get you started:
 
@@ -31,9 +31,11 @@ class Greeter {
 }
 ```
 
+It's recommended to start a project using dedicated [CLI](https://github.com/strudeljs/strudel-cli)
+
 ## Documentation
 
-To check more examples and docs visit [http://strudeljs.org](strudeljs.org).
+To check more examples and docs visit [strudeljs.org](http://strudeljs.org).
 
 ## Contributing
 
@@ -41,5 +43,6 @@ Coming soon
 
 ## License
 
-[https://opensource.org/licenses/MIT](MIT)
+[MIT](https://opensource.org/licenses/MIT)
+
 Copyright (c) 2017-present, Mateusz Łuczak
