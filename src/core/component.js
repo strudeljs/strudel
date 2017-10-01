@@ -1,4 +1,4 @@
-import EventEmitter from '../util/eventemitter';
+import EventEmitter from '../util/eventEmitter';
 import { delegateEvents } from '../util/delegateEvents';
 import bindElements from '../util/bindElements';
 

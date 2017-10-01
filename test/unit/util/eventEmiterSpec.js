@@ -1,4 +1,4 @@
-import EventEmitter from '../../../src/util/eventemitter';
+import EventEmitter from '../../../src/util/eventEmitter';
 
 describe('EventEmitter', () => {
   it('instantiates', () => {
