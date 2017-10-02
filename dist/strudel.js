@@ -778,7 +778,7 @@ var Linker = function () {
 
 /**
  * Registry
- * @type {Map}
+ * @type {Object}
  */
 var registry$1 = {};
 
@@ -826,11 +826,9 @@ var Registry = function () {
   }, {
     key: "clear",
     value: function clear() {
-      for (var selector in registry$1) {
-        if (registry$1.hasOwnProperty(selector)) {
-          delete registry$1[selector];
-        }
-      }
+      this.getSelectors().forEach(function (selector) {
+        delete registry$1[selector];
+      });
     }
 
     /**
@@ -1149,7 +1147,9 @@ var mixin = function mixin(target, source) {
   var inst = new source(); // eslint-disable-line new-cap
 
   Object.getOwnPropertyNames(inst).forEach(function (name) {
-    Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(inst, name));
+    var desc = Object.getOwnPropertyDescriptor(inst, name);
+    desc.writable = true;
+    Object.defineProperty(targetProto, name, desc);
   });
 
   Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
