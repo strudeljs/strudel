@@ -38,6 +38,15 @@ module.exports = {
       }
     },
 
+    edge: {
+      desiredCapabilities: {
+        browserName: 'MicrosoftEdge',
+        platform: 'Windows 10',
+        javascriptEnabled: true,
+        acceptSslCerts: true
+      }
+    },
+
     firefox: {
       desiredCapabilities: {
         browserName: 'firefox',
@@ -65,10 +74,12 @@ module.exports = {
     },
 
     android: {
-      browserName: 'android',
-      version: '6.0',
-      javascriptEnabled: true,
-      acceptSslCerts: true
+      desiredCapabilities: {
+        browserName: 'android',
+        version: '6.0',
+        javascriptEnabled: true,
+        acceptSslCerts: true
+      }
     }
   }
 };
