@@ -8,7 +8,15 @@ dependencies:
     - sudo dpkg -i google-chrome.deb
     - sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
     - rm google-chrome.deb
+  post:
+    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
+    - tar -xzf sc-latest-linux.tar.gz
 
 test:
   override:
-    - bash ./build/ci.sh
+    - ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY -i CIRCLE_BUILD_NUM -f ~/sc_ready:
+        background: true
+        pwd: sc-*-linux
+    - while [ ! -e ~/sc_ready ]; do sleep 1; done
+  post:
+    - killall --wait sc
