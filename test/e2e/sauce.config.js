@@ -15,7 +15,11 @@ module.exports = {
       selenium_host: 'ondemand.saucelabs.com',
       silent: true,
       username: process.env.SAUCE_USER,
-      access_key: process.env.SAUCE_ACCESS_KEY
+      access_key: process.env.SAUCE_ACCESS_KEY,
+      desiredCapabilities: {
+        build: `build-${process.env.CIRCLE_BUILD_NUM}`,
+        'tunnel-identifier': process.env.CIRCLE_BUILD_NUM
+      }
     },
 
     chrome: {
