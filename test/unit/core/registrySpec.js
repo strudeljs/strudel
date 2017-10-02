@@ -27,4 +27,12 @@ describe('Registry', () => {
     registry.registerComponent('test', Component);
     expect(registry.getComponent('test')).to.be.a('function');
   });
+
+  it('clears components', () => {
+    expect([...registry.getSelectors()].length).to.be.equal(0);
+    registry.registerComponent('test', Component);
+    expect([...registry.getSelectors()].length).to.be.equal(1);
+    registry.clear();
+    expect([...registry.getSelectors()].length).to.be.equal(0);
+  });
 });
