@@ -15,11 +15,10 @@ module.exports = {
       selenium_host: 'ondemand.saucelabs.com',
       silent: true,
       username: process.env.SAUCE_USER,
-      access_key: process.env.SAUCE_ACCESS_KEY
-      // desiredCapabilities: {
-      //   build: `build-${process.env.CIRCLE_BUILD_NUM}`,
-      //   'tunnel-identifier': process.env.CIRCLE_BUILD_NUM
-      // }
+      access_key: process.env.SAUCE_ACCESS_KEY,
+      desiredCapabilities: {
+        build: `build-${process.env.CIRCLE_BUILD_NUM}`
+      }
     },
 
     chrome: {
@@ -50,9 +49,26 @@ module.exports = {
     safari: {
       desiredCapabilities: {
         browserName: 'safari',
+        platform: 'OS X 10.10',
         javascriptEnabled: true,
         acceptSslCerts: true
       }
+    },
+
+    iphone: {
+      desiredCapabilities: {
+        browserName: 'iphone',
+        version: '10.3',
+        javascriptEnabled: true,
+        acceptSslCerts: true
+      }
+    },
+
+    android: {
+      browserName: 'android',
+      version: '6.0',
+      javascriptEnabled: true,
+      acceptSslCerts: true
     }
   }
 };
