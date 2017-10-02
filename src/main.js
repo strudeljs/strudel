@@ -1,9 +1,5 @@
 import bootstrap from './core/bootstrap';
 
-const Strudel = {};
-
-Strudel.version = '0.2.0';
-
 bootstrap();
 
 export { default as Component } from './decorators/component';
