@@ -14,7 +14,7 @@ dependencies:
 
 test:
   override:
-    - ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY -i CIRCLE_BUILD_NUM -f ~/sc_ready:
+    - ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY -i $CIRCLE_BUILD_NUM -f ~/sc_ready:
         background: true
         pwd: sc-*-linux
     - while [ ! -e ~/sc_ready ]; do sleep 1; done
