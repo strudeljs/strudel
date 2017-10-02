@@ -1,7 +1,7 @@
 module.exports = {
   interactive(browser) {
     browser
-      .url('http://127.0.0.1:9876/examples/interactive')
+      .url('http://localhost:9876/examples/interactive')
       .waitForElementVisible('body', 1000)
       .assert.elementNotPresent('.message')
       .click('.clicker__btn')
