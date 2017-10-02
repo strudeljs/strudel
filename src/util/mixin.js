@@ -9,7 +9,9 @@ const mixin = (target, source) => {
   const inst = new source(); // eslint-disable-line new-cap
 
   Object.getOwnPropertyNames(inst).forEach((name) => {
-    Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(inst, name));
+    const desc = Object.getOwnPropertyDescriptor(inst, name);
+    desc.writable = true;
+    Object.defineProperty(targetProto, name, desc);
   });
 
   Object.getOwnPropertyNames(sourceProto).forEach((name) => {

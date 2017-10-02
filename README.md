@@ -8,7 +8,7 @@
 <a href="https://gitter.im/strudel-js"><img src="https://img.shields.io/gitter/room/nwjs/nw.js.svg" alt="Gitter"></a>
 </p>
 
-Strudel (`@`) is a lightweight ECMAScript 2015 component framework that main features are:
+Strudel.js (`@`) is a lightweight ECMAScript 2015 component framework that main features are:
 
 * **Decorators**: Boilerplate reduced to minimum
 * **Component-Based**: Modularise and easily extend your DOM functionality
@@ -17,6 +17,8 @@ Strudel (`@`) is a lightweight ECMAScript 2015 component framework that main fea
 ## Browser Support
 
 Strudel.js supports all the browsers that are ES5 and DOM4 compliant (IE10 and below not supported).
+
+<a href="https://saucelabs.com/beta/builds/1a3443d3a9484a33a80695fd8b1e8015"><img src="https://saucelabs.com/browser-matrix/hayalet.svg" alt="Browser Matrix"></a>
 
 ## Quickstart
 
