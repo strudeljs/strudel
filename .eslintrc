@@ -30,7 +30,7 @@
       "always"
     ],
     "import/no-extraneous-dependencies": [
-      "error", {"devDependencies": ["build/*", "test/*"]}
+      "error", {"devDependencies": ["build/*", "test/**/*"]}
     ]
   }
 }

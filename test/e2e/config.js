@@ -1,7 +1,6 @@
 /* eslint quote-props: 0 */
 
 const selenium = require('selenium-server');
-const chromedriver = require('chromedriver');
 
 module.exports = {
   'src_folders': ['test/e2e/specs'],
@@ -15,7 +14,7 @@ module.exports = {
     'host': '127.0.0.1',
     'port': 4444,
     'cli_args': {
-      'webdriver.chrome.driver': chromedriver.path
+      'webdriver.chrome.driver': ''
     }
   },
 
