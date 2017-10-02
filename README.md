@@ -18,7 +18,9 @@ Strudel.js (`@`) is a lightweight ECMAScript 2015 component framework that main 
 
 Strudel.js supports all the browsers that are ES5 and DOM4 compliant (IE10 and below not supported).
 
+<p align="center">
 <a href="https://saucelabs.com/beta/builds/1a3443d3a9484a33a80695fd8b1e8015"><img src="https://saucelabs.com/browser-matrix/hayalet.svg" alt="Browser Matrix"></a>
+</p>
 
 ## Quickstart
 
