@@ -14,6 +14,7 @@ class TestComponent {
 describe('Component Decorator', () => {
   it('registers', () => {
     const registry = new Registry();
+    registry.registerComponent('test', TestComponent);
     expect(registry.getComponent('test')).to.be.a('function');
     registry.clear();
   });
