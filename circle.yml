@@ -14,10 +14,4 @@ dependencies:
 
 test:
   override:
-    - ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY -i $CIRCLE_BUILD_NUM -f ~/sc_ready:
-        background: true
-        pwd: sc-4.4.9-linux
-    - while [ ! -e ~/sc_ready ]; do sleep 1; done
     - bash ./build/ci.sh
-  post:
-    - killall --wait sc
