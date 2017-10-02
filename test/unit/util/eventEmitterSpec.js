@@ -17,15 +17,17 @@ describe('EventEmitter', () => {
     const emitter = new EventEmitter();
     const callback = () => {};
     emitter.addListener('event', callback);
-    expect(emitter._listeners['event'].length).to.be.equal(1);
+    expect(emitter._listeners.event.length).to.be.equal(1);
     emitter.removeListener('event', callback);
-    expect(emitter._listeners['event'].length).to.be.equal(0);
+    expect(emitter._listeners.event.length).to.be.equal(0);
   });
 
   it('emit event', () => {
     const emitter = new EventEmitter();
     let count = 0;
-    emitter.addListener('event', (data) => (count = data.count));
+    emitter.addListener('event', (data) => {
+      count = data.count;
+    });
     emitter.emit('event', {
       count: 1
     });
