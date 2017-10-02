@@ -8,6 +8,7 @@
     "example": "examples"
   },
   "scripts": {
+    "postinstall": "node build/install-hooks.js",
     "build": "node ./build/build.js",
     "examples": "gulp examples",
     "test": "NODE_ENV=test npm run lint && npm run test:unit && npm run test:e2e && npm run test:cover",
@@ -67,6 +68,7 @@
     "rollup-plugin-babel": "^2.7.1",
     "saucelabs": "^1.4.0",
     "selenium-server": "^3.3.1",
+    "shelljs": "^0.7.8",
     "uglify-js": "^2.8.22"
   }
 }
