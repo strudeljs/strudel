@@ -7,7 +7,7 @@ const server = httpServer.createServer({
   root: path.resolve(__dirname, '../../')
 })
 
-server.listen(9001)
+server.listen(9876)
 
 let args = process.argv.slice(2)
 if (args.indexOf('--config') === -1) {
