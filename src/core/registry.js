@@ -38,11 +38,9 @@ class Registry {
    * Clears registry
    */
   clear() {
-    for (var selector in registry){
-      if (registry.hasOwnProperty(selector)){
-        delete registry[selector];
-      }
-    }
+    this.getSelectors().forEach((selector) => {
+      delete registry[selector];
+    });
   }
 
   /**
