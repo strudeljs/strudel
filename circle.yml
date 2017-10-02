@@ -9,7 +9,7 @@ dependencies:
     - sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
     - rm google-chrome.deb
   post:
-    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
+    - wget https://saucelabs.com/downloads/sc-4.4.9-linux.tar.gz
     - tar -xzf sc-latest-linux.tar.gz
 
 test:
