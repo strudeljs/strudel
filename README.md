@@ -39,7 +39,7 @@ To check more examples and docs visit [strudeljs.org](http://strudeljs.org).
 
 ## Contributing
 
-Coming soon
+Please make sure to read the [Contributing Guide](https://github.com/strudeljs/strudel/blob/master/CONTRIBUTING.md) before making a pull request.
 
 ## License
 

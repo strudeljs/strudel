@@ -1,6 +1,6 @@
 /**
  * Registry
- * @type {Map}
+ * @type {Object}
  */
 const registry = {};
 
