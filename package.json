@@ -15,7 +15,7 @@
     "test:unit": "NODE_ENV=test mocha --opts ./test/unit/mocha.opts ./test/unit/**/*.js",
     "test:e2e": "node test/e2e/runner.js",
     "test:cover": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm run test:unit",
-    "test:sauce": "nightwatch --config ./test/e2e/sauce.config.js --env chrome,firefox,ie11",
+    "test:sauce": "node test/e2e/runner.js --config ./test/e2e/sauce.config.js --env chrome,firefox,ie11",
     "lint": "eslint src",
     "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov"
   },
