@@ -26,6 +26,7 @@ After cloning the repo, please run:
 
 ``` bash
 $ npm install
+$ npm run setup
 ```
 
 

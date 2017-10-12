@@ -1,6 +1,6 @@
 {
   "name": "strudel",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Lightweight component framework",
   "author": "Mateusz Łuczak <mateusz.luczak@outlook.com>",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "example": "examples"
   },
   "scripts": {
-    "postinstall": "node build/install-hooks.js",
+    "setup": "node build/install-hooks.js",
     "build": "node ./build/build.js",
     "examples": "gulp examples",
     "test": "NODE_ENV=test npm run lint && npm run test:unit && npm run test:e2e && npm run test:cover",
