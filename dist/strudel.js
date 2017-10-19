@@ -480,6 +480,24 @@ var Element = function () {
     }
 
     /**
+     * Find the first ancestor that matches the selector for each node
+     * @param {selector} CSS Selector
+     * @returns {Element}
+     */
+
+  }, {
+    key: 'closest',
+    value: function closest(selector) {
+      return this.map(function (node) {
+        do {
+          if (new Element(node).is(selector)) {
+            return node;
+          }
+        } while ((node = node.parentNode) && node !== document);
+      });
+    }
+
+    /**
      * Insert content, specified by the parameter, to the end of each element in the set of matched elements
      * Additional data can be provided, which will be used for populating the html
      * @param {string|Element} html - Html string or Element
