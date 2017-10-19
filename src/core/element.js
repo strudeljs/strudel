@@ -51,6 +51,10 @@ class Element {
     this._nodes = this.slice(selector);
   }
 
+  get length() {
+    return this._nodes.length;
+  }
+
   /**
    * Extracts structured data from DOM
    * @param {Function} callback - A callback to be called on each node. Returned value is added to the set

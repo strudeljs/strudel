@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.5.5
+ * Strudel.js v0.5.7
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -147,15 +147,15 @@ var Element = function () {
     this._nodes = this.slice(selector);
   }
 
-  /**
-   * Extracts structured data from DOM
-   * @param {Function} callback - A callback to be called on each node. Returned value is added to the set
-   * @returns {*}
-   */
-
-
   createClass(Element, [{
     key: 'array',
+
+
+    /**
+     * Extracts structured data from DOM
+     * @param {Function} callback - A callback to be called on each node. Returned value is added to the set
+     * @returns {*}
+     */
     value: function array(callback) {
       var self = this;
       return this._nodes.reduce(function (list, node, i) {
@@ -704,6 +704,11 @@ var Element = function () {
         return this.first().dataset;
       }
       return this.attr(name, value, true);
+    }
+  }, {
+    key: 'length',
+    get: function get$$1() {
+      return this._nodes.length;
     }
   }]);
   return Element;
