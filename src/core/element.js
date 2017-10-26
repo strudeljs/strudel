@@ -1,5 +1,23 @@
 /* eslint-disable */
 
+const selectors = {};
+
+selectors[/^\.[\w\-]+$/] = function (param) {
+  return document.getElementsByClassName(param.substring(1));
+};
+
+selectors[/^\w+$/] = function (param) {
+  return document.getElementsByTagName(param);
+};
+
+selectors[/^\#[\w\-]+$/] = function (param) {
+  return document.getElementById(param.substring(1));
+};
+
+selectors[/^</] = function (param) {
+  return new Element().generate(param);
+};
+
 /**
  * Wrapper for query selector
  * @param {String} selector - CSS selector
@@ -17,8 +35,17 @@ const byCss = (selector, context) => {
  * @returns {NodeList}
  */
 const select = (selector, context) => {
+  selector = selector.replace(/^\s*/, '').replace(/\s*$/, '');
+
   if (context) {
     return byCss(selector, context);
+  }
+
+  for (var key in selectors) {
+    context = key.split('/');
+    if ((new RegExp(context[1], context[2])).test(selector)) {
+      return selectors[key](selector);
+    }
   }
 
   return byCss(selector);
