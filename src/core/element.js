@@ -555,6 +555,30 @@ class Element {
   }
 
   /**
+   * Get the prop for the each element in the set of matched elements or set one or more attributes for every matched element.
+   * @param [string|object] name - Name of the property to be retrieved/set. Can be object of attributes/values.
+   * @param [string] value - Value of the property to be set.
+   * @returns {string|Element}
+   */
+  prop(name, value) {
+    if (value !== undefined) {
+      let nm = name;
+      name = {};
+      name[nm] = value;
+    }
+
+    if (typeof name === 'object') {
+      return this.each(function (node) {
+        for (let key in name) {
+          node.key = name[key];
+        }
+      });
+    }
+
+    return this.length ? this.first().name : '';
+  }
+
+  /**
    * Get the value of an daata attribute for the each element in the set of matched elements or set one or more attributes for every matched element.
    * @param [string|object] name - Name of the data attribute to be retrieved/set. Can be object of attributes/values.
    * @param [string] value - Value of the data attribute to be set.
