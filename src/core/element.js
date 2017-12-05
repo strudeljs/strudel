@@ -570,12 +570,12 @@ class Element {
     if (typeof name === 'object') {
       return this.each(function (node) {
         for (let key in name) {
-          node.key = name[key];
+          node[key] = name[key];
         }
       });
     }
 
-    return this.length ? this.first().name : '';
+    return this.length ? this.first()[name] : '';
   }
 
   /**

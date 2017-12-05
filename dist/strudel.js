@@ -754,12 +754,12 @@ var Element = function () {
       if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
         return this.each(function (node) {
           for (var key in name) {
-            node.key = name[key];
+            node[key] = name[key];
           }
         });
       }
 
-      return this.length ? this.first().name : '';
+      return this.length ? this.first()[name] : '';
     }
 
     /**
