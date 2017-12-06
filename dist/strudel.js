@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.6.0
+ * Strudel.js v0.6.1
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1146,7 +1146,6 @@ var Component = function () {
 
     element.addClass(INIT_CLASS);
 
-    this.isStrudelClass = true;
     this.beforeInit();
 
     this.$element = element;
@@ -1284,6 +1283,10 @@ var register = function register(target, selector) {
     throw new Error('Selector must be provided for Component decorator');
   }
 
+  if (!target.prototype) {
+    throw new Error('Decorator works only for classes');
+  }
+
   var component = function (_Component) {
     inherits(component, _Component);
 
@@ -1305,6 +1308,7 @@ var register = function register(target, selector) {
 
   mixin(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
+  Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
   registry$2.registerComponent(selector, component);
 
   return component;

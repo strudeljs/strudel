@@ -13,6 +13,10 @@ const register = (target, selector) => {
     throw new Error('Selector must be provided for Component decorator');
   }
 
+  if (!target.prototype) {
+    throw new Error('Decorator works only for classes');
+  }
+
   const component = class extends Component {
     constructor(...args) { /* eslint no-useless-constructor: 0 */
       super(...args);
@@ -21,6 +25,7 @@ const register = (target, selector) => {
 
   mixin(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
+  Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
   registry.registerComponent(selector, component);
 
   return component;

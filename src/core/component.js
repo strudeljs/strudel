@@ -15,7 +15,6 @@ class Component {
   constructor({ element, data } = {}) {
     element.addClass(INIT_CLASS);
 
-    this.isStrudelClass = true;
     this.beforeInit();
 
     this.$element = element;
