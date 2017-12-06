@@ -1,7 +1,7 @@
 import Component from '../../../src/decorators/component';
 import ComponentType from '../../../src/core/component';
 import Registry from '../../../src/core/registry';
-import { element } from '../__mocks';
+import element from '../__mocks';
 
 describe('Component Decorator', () => {
   let TestComponent;

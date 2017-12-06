@@ -1,5 +1,5 @@
 import Component from '../../../src/core/component';
-import { element } from '../__mocks';
+import element from '../__mocks';
 
 describe('Component', () => {
   it('instantiates', () => {

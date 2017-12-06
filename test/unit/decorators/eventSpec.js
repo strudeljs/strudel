@@ -1,6 +1,6 @@
 import Component from '../../../src/decorators/component';
 import Evt from '../../../src/decorators/event';
-import { element } from '../__mocks';
+import element from '../__mocks';
 
 @Component('test')
 class TestComponent {

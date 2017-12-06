@@ -9,4 +9,4 @@ const element = {
   }
 };
 
-export default { element };
+export default element;
