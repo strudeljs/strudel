@@ -13,8 +13,6 @@ const INIT_CLASS = 'strudel-init';
  */
 class Component {
   constructor({ element, data } = {}) {
-    element.addClass(INIT_CLASS);
-
     this.beforeInit();
 
     this.$element = element;
@@ -24,6 +22,8 @@ class Component {
     bindElements(this, this._els);
 
     this.init();
+
+    this.$element.addClass(INIT_CLASS);
   }
 
   /**

@@ -2,7 +2,7 @@ import { bootstrap, registry } from './core/bootstrap';
 
 bootstrap();
 
-window.Strudel = {};
+window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
 
 export { default as Component } from './decorators/component';

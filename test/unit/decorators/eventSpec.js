@@ -1,5 +1,6 @@
 import Component from '../../../src/decorators/component';
 import Evt from '../../../src/decorators/event';
+import { element } from '../__mocks';
 
 @Component('test')
 class TestComponent {
@@ -16,7 +17,7 @@ class TestComponent {
 
 describe('Event Decorator', () => {
   it('attaches event', () => {
-    const component = new TestComponent();
+    const component = new TestComponent({ element });
     expect(Object.keys(component._events)).to.deep.equal(['click .element1', 'click .element2']);
   });
 

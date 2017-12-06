@@ -958,7 +958,7 @@ var linker = new Linker(registry);
 var bootstrap = function bootstrap() {
   ['DOMContentLoaded', 'contentloaded'].forEach(function (name) {
     document.addEventListener(name, function (evt) {
-      if (evt.detail) {
+      if (evt.detail.length > 0) {
         var element = evt.detail[0];
         element = element instanceof HTMLElement ? element : element.first();
         linker.link(element);
@@ -1144,8 +1144,6 @@ var Component = function () {
 
     classCallCheck(this, Component);
 
-    element.addClass(INIT_CLASS);
-
     this.beforeInit();
 
     this.$element = element;
@@ -1155,6 +1153,8 @@ var Component = function () {
     bindElements(this, this._els);
 
     this.init();
+
+    this.$element.addClass(INIT_CLASS);
   }
 
   /**
@@ -1356,7 +1356,7 @@ function decorator$1(selector) {
 
 bootstrap();
 
-window.Strudel = {};
+window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
 
 exports.Component = component;
