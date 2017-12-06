@@ -1,6 +1,9 @@
-import bootstrap from './core/bootstrap';
+import { bootstrap, registry } from './core/bootstrap';
 
 bootstrap();
+
+window.Strudel = {};
+window.Strudel.registry = registry;
 
 export { default as Component } from './decorators/component';
 export { default as EventEmitter } from './util/eventEmitter';

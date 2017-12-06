@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.5.7
+ * Strudel.js v0.6.0
  * (c) 2016-2017 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -818,6 +818,23 @@ var Linker = function () {
     }
 
     /**
+     * Finds all components within selector and destroy them
+     * @param {DOMElement} container
+     */
+
+  }, {
+    key: 'unlink',
+    value: function unlink(container) {
+      this.registry.getSelectors().forEach(function (selector) {
+        [].forEach.call(container.querySelectorAll(selector), function (element) {
+          if (element.scope) {
+            element.scope.$teardown();
+          }
+        });
+      });
+    }
+
+    /**
      * Iterates over selectors in registry, find occurrences in container and initialize components
      * @param {DOMElement} container
      */
@@ -939,10 +956,24 @@ var registry = new Registry();
 var linker = new Linker(registry);
 
 var bootstrap = function bootstrap() {
-  ['DOMContentLoaded', 'contentloaded'].forEach(function (evt) {
-    document.addEventListener(evt, function () {
-      linker.linkAll();
+  ['DOMContentLoaded', 'contentloaded'].forEach(function (name) {
+    document.addEventListener(name, function (evt) {
+      if (evt.detail) {
+        var element = evt.detail[0];
+        element = element instanceof HTMLElement ? element : element.first();
+        linker.link(element);
+      } else {
+        linker.linkAll();
+      }
     });
+  });
+
+  document.addEventListener('contentunload', function (evt) {
+    if (evt.detail) {
+      var element = evt.detail[0];
+      element = element instanceof HTMLElement ? element : element.first();
+      linker.unlink(element);
+    }
   });
 };
 
@@ -1097,6 +1128,8 @@ var bindElements = function bindElements(context, elements) {
 
 var emitter = new EventEmitter();
 
+var INIT_CLASS = 'strudel-init';
+
 /**
  * @classdesc Base class for all components, implementing event emitter
  * @class
@@ -1111,6 +1144,9 @@ var Component = function () {
 
     classCallCheck(this, Component);
 
+    element.addClass(INIT_CLASS);
+
+    this.isStrudelClass = true;
     this.beforeInit();
 
     this.$element = element;
@@ -1205,6 +1241,7 @@ var Component = function () {
     value: function $teardown() {
       this.beforeDestroy();
       this.$element.off();
+      this.$element.removeClass(INIT_CLASS);
       delete this.$element.first().scope;
       delete this.$element;
       this.destroy();
@@ -1314,6 +1351,9 @@ function decorator$1(selector) {
 }
 
 bootstrap();
+
+window.Strudel = {};
+window.Strudel.registry = registry;
 
 exports.Component = component;
 exports.EventEmitter = EventEmitter;

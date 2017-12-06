@@ -21,6 +21,20 @@ class Linker {
   }
 
   /**
+   * Finds all components within selector and destroy them
+   * @param {DOMElement} container
+   */
+  unlink(container) {
+    this.registry.getSelectors().forEach((selector) => {
+      [].forEach.call(container.querySelectorAll(selector), (element) => {
+        if (element.scope) {
+          element.scope.$teardown();
+        }
+      });
+    });
+  }
+
+  /**
    * Iterates over selectors in registry, find occurrences in container and initialize components
    * @param {DOMElement} container
    */

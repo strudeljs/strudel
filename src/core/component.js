@@ -4,6 +4,8 @@ import bindElements from '../util/bindElements';
 
 const emitter = new EventEmitter();
 
+const INIT_CLASS = 'strudel-init';
+
 /**
  * @classdesc Base class for all components, implementing event emitter
  * @class
@@ -11,6 +13,9 @@ const emitter = new EventEmitter();
  */
 class Component {
   constructor({ element, data } = {}) {
+    element.addClass(INIT_CLASS);
+
+    this.isStrudelClass = true;
     this.beforeInit();
 
     this.$element = element;
@@ -76,6 +81,7 @@ class Component {
   $teardown() {
     this.beforeDestroy();
     this.$element.off();
+    this.$element.removeClass(INIT_CLASS);
     delete this.$element.first().scope;
     delete this.$element;
     this.destroy();
