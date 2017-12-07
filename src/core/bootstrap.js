@@ -7,7 +7,7 @@ const linker = new Linker(registry);
 const bootstrap = () => {
   ['DOMContentLoaded', 'contentloaded'].forEach((name) => {
     document.addEventListener(name, (evt) => {
-      if (evt.detail.length > 0) {
+      if (evt.detail && evt.detail.length > 0) {
         let element = evt.detail[0];
         element = (element instanceof HTMLElement) ? element : element.first();
         linker.link(element);
