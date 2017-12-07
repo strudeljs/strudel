@@ -958,7 +958,7 @@ var linker = new Linker(registry);
 var bootstrap = function bootstrap() {
   ['DOMContentLoaded', 'contentloaded'].forEach(function (name) {
     document.addEventListener(name, function (evt) {
-      if (evt.detail.length > 0) {
+      if (evt.detail && evt.detail.length > 0) {
         var element = evt.detail[0];
         element = element instanceof HTMLElement ? element : element.first();
         linker.link(element);
