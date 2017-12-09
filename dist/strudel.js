@@ -954,10 +954,11 @@ var Registry = function () {
 
 var registry = new Registry();
 var linker = new Linker(registry);
+var channel = $(document);
 
 var bootstrap = function bootstrap() {
   ['DOMContentLoaded', 'contentloaded'].forEach(function (name) {
-    document.addEventListener(name, function (evt) {
+    channel.on(name, function (evt) {
       if (evt.detail && evt.detail.length > 0) {
         var element = evt.detail[0];
         element = element instanceof HTMLElement ? element : element.first();
@@ -965,10 +966,11 @@ var bootstrap = function bootstrap() {
       } else {
         linker.linkAll();
       }
+      channel.trigger('strudelloaded');
     });
   });
 
-  document.addEventListener('contentunload', function (evt) {
+  channel.on('contentunload', function (evt) {
     if (evt.detail) {
       var element = evt.detail[0];
       element = element instanceof HTMLElement ? element : element.first();

@@ -1,6 +1,6 @@
 import Linker from './linker';
 import Registry from './registry';
-import { Element as $ } from './element';
+import $ from './element';
 
 const registry = new Registry();
 const linker = new Linker(registry);
