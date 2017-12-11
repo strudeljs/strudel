@@ -167,7 +167,7 @@ var Element = function () {
       selector = select(selector, context);
     }
 
-    if (selector && selector.nodeName) {
+    if (selector && selector.nodeName || selector && selector === window) {
       selector = [selector];
     }
 
