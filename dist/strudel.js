@@ -167,7 +167,7 @@ var Element = function () {
       selector = select(selector, context);
     }
 
-    if (selector && selector.nodeName) {
+    if (selector && selector.nodeName || selector && selector === window) {
       selector = [selector];
     }
 
@@ -954,21 +954,23 @@ var Registry = function () {
 
 var registry = new Registry();
 var linker = new Linker(registry);
+var channel = $(document);
 
 var bootstrap = function bootstrap() {
   ['DOMContentLoaded', 'contentloaded'].forEach(function (name) {
-    document.addEventListener(name, function (evt) {
-      if (evt.detail.length > 0) {
+    channel.on(name, function (evt) {
+      if (evt.detail && evt.detail.length > 0) {
         var element = evt.detail[0];
         element = element instanceof HTMLElement ? element : element.first();
         linker.link(element);
       } else {
         linker.linkAll();
       }
+      channel.trigger('strudelloaded');
     });
   });
 
-  document.addEventListener('contentunload', function (evt) {
+  channel.on('contentunload', function (evt) {
     if (evt.detail) {
       var element = evt.detail[0];
       element = element instanceof HTMLElement ? element : element.first();

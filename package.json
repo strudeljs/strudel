@@ -17,7 +17,8 @@
     "test:cover": "NODE_ENV=test nyc --reporter=lcov --reporter=text npm run test:unit",
     "test:sauce": "node test/e2e/runner.js --config ./test/e2e/sauce.config.js --test tabs --env chrome,firefox,ie11,edge,safari,android,iphone",
     "lint": "eslint src",
-    "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov"
+    "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov",
+    "release": "bash build/release.sh"
   },
   "nyc": {
     "require": [
@@ -50,6 +51,8 @@
     "babel-preset-env": "^1.3.2",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.22.0",
+    "babel-register": "^6.26.0",
+    "babel-runtime": "^6.26.0",
     "chai": "^3.5.0",
     "chromedriver": "^2.32.3",
     "codecov": "^2.1.0",
