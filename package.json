@@ -28,6 +28,7 @@
     "instrument": false
   },
   "main": "dist/strudel.js",
+  "module": "dist/strudel.es.js",
   "files": [
     "dist/strudel.js",
     "dist/strudel.min.js",

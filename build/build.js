@@ -37,6 +37,12 @@ const builds = [
         exclude: 'node_modules/**'
       })
     ]
+  },
+  {
+    entry: './src/main.js',
+    format: 'es',
+    dest: './dist/strudel.es.js',
+    banner
   }
 ];
 
