@@ -8,7 +8,7 @@ const version = require('../package.json').version;
 
 const banner =
   '/*!\n' +
-  ' * Strudel.js v' + version + '\n' +
+  ' * Strudel.js v' + (process.env.VERSION || version) + '\n' +
   ' * (c) 2016-' + new Date().getFullYear() + ' Mateusz Łuczak\n' +
   ' * Released under the MIT License.\n' +
   ' */';
