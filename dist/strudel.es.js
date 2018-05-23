@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.6.5
+ * Strudel.js v0.6.6
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -460,7 +460,9 @@ class Element {
       let sel = cb;
       cb = function (e) {
         let args = arguments;
-        new Element(e.currentTarget).find(sel).each(function (target) {
+        let el = new Element(e.currentTarget);
+        let set = el.is(sel) ? el : el.find(sel);
+        set.each(function (target) {
           if (target === e.target || target.contains(e.target)) {
             try {
               Object.defineProperty(e, 'currentTarget', {
