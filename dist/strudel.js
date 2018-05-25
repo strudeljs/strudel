@@ -144,6 +144,40 @@ var select = function select(selector, context) {
   return byCss(selector);
 };
 
+// Store all of the operations to perform when cloning elements
+var mirror = {
+  /**
+   * Copy all JavaScript events of source node to destination node.
+   */
+  events: function events(src, dest) {
+    if (!src._e) return;
+
+    for (var type in src._e) {
+      src._e[type].forEach(function (event) {
+        new Element(dest).on(type, event);
+      });
+    }
+  },
+
+  /**
+   * Copy select input value to its clone.
+   */
+  select: function select(src, dest) {
+    if (new Element(src).is('select')) {
+      dest.value = src.value;
+    }
+  },
+
+  /**
+   * Copy textarea input value to its clone
+   */
+  textarea: function textarea(src, dest) {
+    if (new Element(src).is('textarea')) {
+      dest.value = src.value;
+    }
+  }
+};
+
 /**
  * @classdesc Element class used for DOM manipulation
  * @class
@@ -438,6 +472,41 @@ var Element = function () {
         });
 
         callback.call(this, node, fragment);
+      });
+    }
+
+    /**
+     * Return an array of DOM nodes of a source node and its children.
+     * @param  {[Object]} context DOM node.
+     * @param  {[String]} tag DOM node tagName.
+     * @returns {Element}
+     */
+
+  }, {
+    key: 'getAll',
+    value: function getAll(context) {
+      return new Element([context].concat(new Element('*', context)._nodes));
+    }
+
+    /**
+     * Deep clone a DOM node and its descendants.
+     * @returns {Element}
+     */
+
+  }, {
+    key: 'clone',
+    value: function clone() {
+      return this.map(function (node) {
+        var clone = node.cloneNode(true);
+        var dest = this.getAll(clone);
+
+        this.getAll(node).each(function (src, i) {
+          for (var key in mirror) {
+            mirror[key](src, dest._nodes[i]);
+          }
+        });
+
+        return clone;
       });
     }
 
