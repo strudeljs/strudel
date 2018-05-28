@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.6.6
+ * Strudel.js v0.6.7
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
