@@ -235,7 +235,7 @@ var Element = function () {
 
     /**
      * Create a string from different things
-     * @private
+     private* @
      */
 
   }, {
@@ -477,9 +477,7 @@ var Element = function () {
 
     /**
      * Return an array of DOM nodes of a source node and its children.
-     * @param  {[Object]} context DOM node.
-     * @param  {[String]} tag DOM node tagName.
-     * @returns {Element}
+     * @private
      */
 
   }, {
@@ -1027,7 +1025,7 @@ var registry = new Registry();
 var linker = new Linker(registry);
 var channel = $(document);
 
-var bootstrap = function bootstrap() {
+var init = function init() {
   ['DOMContentLoaded', 'contentloaded'].forEach(function (name) {
     channel.on(name, function (evt) {
       if (evt.detail && evt.detail.length > 0) {
@@ -1143,6 +1141,8 @@ var EventEmitter = function () {
   return EventEmitter;
 }();
 
+var emitter = new EventEmitter();
+
 var DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
 
 /**
@@ -1199,9 +1199,12 @@ var bindElements = function bindElements(context, elements) {
   });
 };
 
-var emitter = new EventEmitter();
-
-var INIT_CLASS = 'strudel-init';
+var config = {
+  /**
+   * Class added on components when initialised
+   */
+  initializedClassName: 'strudel-init'
+};
 
 /**
  * @classdesc Base class for all components, implementing event emitter
@@ -1227,7 +1230,7 @@ var Component = function () {
 
     this.init();
 
-    this.$element.addClass(INIT_CLASS);
+    this.$element.addClass(config.initializedClassName);
   }
 
   /**
@@ -1313,7 +1316,7 @@ var Component = function () {
     value: function $teardown() {
       this.beforeDestroy();
       this.$element.off();
-      this.$element.removeClass(INIT_CLASS);
+      this.$element.removeClass(config.initializedClassName);
       delete this.$element.first().scope;
       delete this.$element;
       this.destroy();
@@ -1427,10 +1430,11 @@ function decorator$1(selector) {
   };
 }
 
-bootstrap();
+init();
 
 window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
+window.Strudel.version = '0.6.7';
 
 exports.Component = component;
 exports.EventEmitter = EventEmitter;
