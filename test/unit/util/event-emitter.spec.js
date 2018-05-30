@@ -1,6 +1,6 @@
 import EventEmitter from '../../../src/util/eventEmitter';
 
-describe('EventEmitter', () => {
+describe('Util EventEmitter', () => {
   it('instantiates', () => {
     const emitter = new EventEmitter();
     expect(emitter).to.be.an.instanceof(EventEmitter);

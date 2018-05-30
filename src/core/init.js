@@ -1,13 +1,13 @@
 import Linker from './linker';
 import Registry from './registry';
-import $ from './element';
+import $ from '../dom/element';
 
 const registry = new Registry();
 const linker = new Linker(registry);
 const channel = $(document);
 
 const init = () => {
-  ['DOMContentLoaded', 'contentloaded'].forEach((name) => {
+  ['DOMContentLoaded', 'content:loaded'].forEach((name) => {
     channel.on(name, (evt) => {
       if (evt.detail && evt.detail.length > 0) {
         let element = evt.detail[0];
@@ -16,11 +16,11 @@ const init = () => {
       } else {
         linker.linkAll();
       }
-      channel.trigger('strudelloaded');
+      channel.trigger('strudel:loaded');
     });
   });
 
-  channel.on('contentunload', (evt) => {
+  channel.on('content:unload', (evt) => {
     if (evt.detail) {
       let element = evt.detail[0];
       element = (element instanceof HTMLElement) ? element : element.first();

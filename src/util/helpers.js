@@ -1,12 +1,21 @@
 /**
+ * Check if passed parameter is a function
+ * @param obj
+ * @returns {boolean}
+ */
+export const isFunction = (obj) => {
+  return typeof obj === 'function' || false;
+};
+
+/**
  * Small util for mixing prototypes
  * @param {Function} target
  * @param {Function} source
  */
-const mixin = (target, source) => {
+export const mixPrototypes = (target, source) => {
   const targetProto = target.prototype;
   const sourceProto = source.prototype;
-  const inst = new source(); // eslint-disable-line new-cap
+  const inst = (typeof source === 'object') ? source : new source(); // eslint-disable-line new-cap
 
   Object.getOwnPropertyNames(inst).forEach((name) => {
     const desc = Object.getOwnPropertyDescriptor(inst, name);
@@ -20,5 +29,3 @@ const mixin = (target, source) => {
     }
   });
 };
-
-export default mixin;

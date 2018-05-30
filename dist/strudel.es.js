@@ -793,7 +793,7 @@ const linker = new Linker(registry);
 const channel = $(document);
 
 const init = () => {
-  ['DOMContentLoaded', 'contentloaded'].forEach((name) => {
+  ['DOMContentLoaded', 'content:loaded'].forEach((name) => {
     channel.on(name, (evt) => {
       if (evt.detail && evt.detail.length > 0) {
         let element = evt.detail[0];
@@ -802,11 +802,11 @@ const init = () => {
       } else {
         linker.linkAll();
       }
-      channel.trigger('strudelloaded');
+      channel.trigger('strudel:loaded');
     });
   });
 
-  channel.on('contentunload', (evt) => {
+  channel.on('content:unload', (evt) => {
     if (evt.detail) {
       let element = evt.detail[0];
       element = (element instanceof HTMLElement) ? element : element.first();
@@ -822,6 +822,29 @@ const init = () => {
  */
 const isFunction = (obj) => {
   return typeof obj === 'function' || false;
+};
+
+/**
+ * Small util for mixing prototypes
+ * @param {Function} target
+ * @param {Function} source
+ */
+const mixPrototypes = (target, source) => {
+  const targetProto = target.prototype;
+  const sourceProto = source.prototype;
+  const inst = (typeof source === 'object') ? source : new source(); // eslint-disable-line new-cap
+
+  Object.getOwnPropertyNames(inst).forEach((name) => {
+    const desc = Object.getOwnPropertyDescriptor(inst, name);
+    desc.writable = true;
+    Object.defineProperty(targetProto, name, desc);
+  });
+
+  Object.getOwnPropertyNames(sourceProto).forEach((name) => {
+    if (name !== 'constructor') {
+      Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
+    }
+  });
 };
 
 /**
@@ -947,6 +970,14 @@ const bindElements = (context, elements) => {
   });
 };
 
+const mix = (target, source) => {
+  for (var prop in source) {
+    if (source.hasOwnProperty(prop)) {
+      target[prop] = source[prop];
+    }
+  }
+};
+
 var config = {
   /**
    * Class added on components when initialised
@@ -968,6 +999,16 @@ class Component {
 
     delegateEvents(this, this._events);
     bindElements(this, this._els);
+
+    if (this.mixins && this.mixins.length) {
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.init)) {
+          mixin.init.call(this);
+          delete mixin.init;
+        }
+        mix(this, mixin);
+      });
+    }
 
     this.init();
 
@@ -1035,29 +1076,6 @@ class Component {
   }
 }
 
-/**
- * Small util for mixing prototypes
- * @param {Function} target
- * @param {Function} source
- */
-const mixin = (target, source) => {
-  const targetProto = target.prototype;
-  const sourceProto = source.prototype;
-  const inst = new source(); // eslint-disable-line new-cap
-
-  Object.getOwnPropertyNames(inst).forEach((name) => {
-    const desc = Object.getOwnPropertyDescriptor(inst, name);
-    desc.writable = true;
-    Object.defineProperty(targetProto, name, desc);
-  });
-
-  Object.getOwnPropertyNames(sourceProto).forEach((name) => {
-    if (name !== 'constructor') {
-      Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
-    }
-  });
-};
-
 const registry$2 = new Registry();
 
 /**
@@ -1079,7 +1097,7 @@ const register = (target, selector) => {
     }
   };
 
-  mixin(component, target);
+  mixPrototypes(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
   registry$2.registerComponent(selector, component);
@@ -1133,4 +1151,4 @@ window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
 window.Strudel.version = '0.6.7';
 
-export { component as Component, EventEmitter, decorator as Evt, decorator$1 as El, $ as element };
+export { EventEmitter, component as Component, decorator as Evt, decorator$1 as El, $ as element };

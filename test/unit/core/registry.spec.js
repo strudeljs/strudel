@@ -1,9 +1,9 @@
 import Registry from '../../../src/core/registry';
-import Component from '../../../src/core/component';
+import Component from '../../../src/component/instance';
 
 const registry = new Registry();
 
-describe('Registry', () => {
+describe('Core Registry', () => {
   beforeEach(() => {
     registry.clear();
   });

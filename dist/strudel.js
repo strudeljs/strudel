@@ -1026,7 +1026,7 @@ var linker = new Linker(registry);
 var channel = $(document);
 
 var init = function init() {
-  ['DOMContentLoaded', 'contentloaded'].forEach(function (name) {
+  ['DOMContentLoaded', 'content:loaded'].forEach(function (name) {
     channel.on(name, function (evt) {
       if (evt.detail && evt.detail.length > 0) {
         var element = evt.detail[0];
@@ -1035,11 +1035,11 @@ var init = function init() {
       } else {
         linker.linkAll();
       }
-      channel.trigger('strudelloaded');
+      channel.trigger('strudel:loaded');
     });
   });
 
-  channel.on('contentunload', function (evt) {
+  channel.on('content:unload', function (evt) {
     if (evt.detail) {
       var element = evt.detail[0];
       element = element instanceof HTMLElement ? element : element.first();
@@ -1055,6 +1055,29 @@ var init = function init() {
  */
 var isFunction = function isFunction(obj) {
   return typeof obj === 'function' || false;
+};
+
+/**
+ * Small util for mixing prototypes
+ * @param {Function} target
+ * @param {Function} source
+ */
+var mixPrototypes = function mixPrototypes(target, source) {
+  var targetProto = target.prototype;
+  var sourceProto = source.prototype;
+  var inst = (typeof source === 'undefined' ? 'undefined' : _typeof(source)) === 'object' ? source : new source(); // eslint-disable-line new-cap
+
+  Object.getOwnPropertyNames(inst).forEach(function (name) {
+    var desc = Object.getOwnPropertyDescriptor(inst, name);
+    desc.writable = true;
+    Object.defineProperty(targetProto, name, desc);
+  });
+
+  Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
+    if (name !== 'constructor') {
+      Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
+    }
+  });
 };
 
 /**
@@ -1199,6 +1222,14 @@ var bindElements = function bindElements(context, elements) {
   });
 };
 
+var mix = function mix(target, source) {
+  for (var prop in source) {
+    if (source.hasOwnProperty(prop)) {
+      target[prop] = source[prop];
+    }
+  }
+};
+
 var config = {
   /**
    * Class added on components when initialised
@@ -1214,6 +1245,8 @@ var config = {
 
 var Component = function () {
   function Component() {
+    var _this = this;
+
     var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
         element = _ref.element,
         data = _ref.data;
@@ -1227,6 +1260,16 @@ var Component = function () {
 
     delegateEvents(this, this._events);
     bindElements(this, this._els);
+
+    if (this.mixins && this.mixins.length) {
+      this.mixins.forEach(function (mixin) {
+        if (isFunction(mixin.init)) {
+          mixin.init.call(_this);
+          delete mixin.init;
+        }
+        mix(_this, mixin);
+      });
+    }
 
     this.init();
 
@@ -1325,29 +1368,6 @@ var Component = function () {
   return Component;
 }();
 
-/**
- * Small util for mixing prototypes
- * @param {Function} target
- * @param {Function} source
- */
-var mixin = function mixin(target, source) {
-  var targetProto = target.prototype;
-  var sourceProto = source.prototype;
-  var inst = new source(); // eslint-disable-line new-cap
-
-  Object.getOwnPropertyNames(inst).forEach(function (name) {
-    var desc = Object.getOwnPropertyDescriptor(inst, name);
-    desc.writable = true;
-    Object.defineProperty(targetProto, name, desc);
-  });
-
-  Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
-    if (name !== 'constructor') {
-      Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
-    }
-  });
-};
-
 var registry$2 = new Registry();
 
 /**
@@ -1382,7 +1402,7 @@ var register = function register(target, selector) {
     return component;
   }(Component);
 
-  mixin(component, target);
+  mixPrototypes(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
   registry$2.registerComponent(selector, component);
@@ -1436,8 +1456,8 @@ window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
 window.Strudel.version = '0.6.7';
 
-exports.Component = component;
 exports.EventEmitter = EventEmitter;
+exports.Component = component;
 exports.Evt = decorator;
 exports.El = decorator$1;
 exports.element = $;

@@ -15,7 +15,7 @@ class TestComponent {
   }
 }
 
-describe('Event Decorator', () => {
+describe('Decorator Event', () => {
   it('attaches event', () => {
     const component = new TestComponent({ element });
     expect(Object.keys(component._events)).to.deep.equal(['click .element1', 'click .element2']);

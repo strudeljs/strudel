@@ -1,8 +1,9 @@
 import { emitter } from '../util/eventEmitter';
-import { delegateEvents } from '../util/delegateEvents';
-import bindElements from '../util/bindElements';
+import { delegateEvents } from '../dom/delegateEvents';
+import bindElements from '../dom/bindElements';
+import { isFunction } from '../util/helpers';
+import mix from './mixin';
 import config from '../config';
-
 
 /**
  * @classdesc Base class for all components, implementing event emitter
@@ -18,6 +19,15 @@ class Component {
 
     delegateEvents(this, this._events);
     bindElements(this, this._els);
+
+    if (this.mixins && this.mixins.length) {
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.init)) {
+          mixin.init.call(this);
+        }
+        mix(this, mixin);
+      });
+    }
 
     this.init();
 

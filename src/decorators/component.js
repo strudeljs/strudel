@@ -1,6 +1,6 @@
 import Registry from '../core/registry';
-import Component from '../core/component';
-import mixin from '../util/mixin';
+import Component from '../component/instance';
+import { mixPrototypes } from '../util/helpers';
 
 const registry = new Registry();
 
@@ -23,7 +23,7 @@ const register = (target, selector) => {
     }
   };
 
-  mixin(component, target);
+  mixPrototypes(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
   registry.registerComponent(selector, component);
