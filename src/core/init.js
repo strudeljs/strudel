@@ -6,7 +6,7 @@ const registry = new Registry();
 const linker = new Linker(registry);
 const channel = $(document);
 
-const bootstrap = () => {
+const init = () => {
   ['DOMContentLoaded', 'contentloaded'].forEach((name) => {
     channel.on(name, (evt) => {
       if (evt.detail && evt.detail.length > 0) {
@@ -29,5 +29,5 @@ const bootstrap = () => {
   });
 };
 
-export { bootstrap, registry };
+export { init, registry };
 

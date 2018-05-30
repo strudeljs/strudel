@@ -1,10 +1,11 @@
 const rollup = require('rollup');
 const babel = require('rollup-plugin-babel');
+const replace = require('rollup-plugin-replace');
 const path = require('path');
 const fs = require('fs');
 const zlib = require('zlib');
 const uglify = require('uglify-js');
-const version = require('../package.json').version;
+const version = process.env.VERSION || require('../package.json').version;
 
 const banner =
   '/*!\n' +
@@ -16,33 +17,44 @@ const banner =
 const builds = [
   {
     moduleName: 'Strudel',
-    entry: './src/main.js',
+    entry: './src/index.js',
     format: 'umd',
     dest: './dist/strudel.js',
     banner,
     plugins: [
       babel({
         exclude: 'node_modules/**'
+      }),
+      replace({
+        __VERSION__: version
       })
     ]
   },
   {
     moduleName: 'Strudel',
-    entry: './src/main.js',
+    entry: './src/index.js',
     format: 'umd',
     dest: './dist/strudel.min.js',
     banner,
     plugins: [
       babel({
         exclude: 'node_modules/**'
+      }),
+      replace({
+        __VERSION__: version
       })
     ]
   },
   {
-    entry: './src/main.js',
+    entry: './src/index.js',
     format: 'es',
     dest: './dist/strudel.es.js',
-    banner
+    banner,
+    plugins: [
+      replace({
+        __VERSION__: version
+      })
+    ]
   }
 ];
 

@@ -144,7 +144,7 @@ class Element {
 
   /**
    * Create a string from different things
-   * @private
+   private* @
    */
   str(node, i) {
     return function (arg) {
@@ -346,9 +346,7 @@ class Element {
 
   /**
    * Return an array of DOM nodes of a source node and its children.
-   * @param  {[Object]} context DOM node.
-   * @param  {[String]} tag DOM node tagName.
-   * @returns {Element}
+   * @private
    */
   getAll(context) {
     return new Element([context].concat(new Element('*', context)._nodes));
@@ -794,7 +792,7 @@ const registry = new Registry();
 const linker = new Linker(registry);
 const channel = $(document);
 
-const bootstrap = () => {
+const init = () => {
   ['DOMContentLoaded', 'contentloaded'].forEach((name) => {
     channel.on(name, (evt) => {
       if (evt.detail && evt.detail.length > 0) {
@@ -891,6 +889,8 @@ class EventEmitter {
   }
 }
 
+const emitter = new EventEmitter();
+
 const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
 
 /**
@@ -947,9 +947,12 @@ const bindElements = (context, elements) => {
   });
 };
 
-const emitter = new EventEmitter();
-
-const INIT_CLASS = 'strudel-init';
+var config = {
+  /**
+   * Class added on components when initialised
+   */
+  initializedClassName: 'strudel-init'
+};
 
 /**
  * @classdesc Base class for all components, implementing event emitter
@@ -968,7 +971,7 @@ class Component {
 
     this.init();
 
-    this.$element.addClass(INIT_CLASS);
+    this.$element.addClass(config.initializedClassName);
   }
 
   /**
@@ -1025,7 +1028,7 @@ class Component {
   $teardown() {
     this.beforeDestroy();
     this.$element.off();
-    this.$element.removeClass(INIT_CLASS);
+    this.$element.removeClass(config.initializedClassName);
     delete this.$element.first().scope;
     delete this.$element;
     this.destroy();
@@ -1124,9 +1127,10 @@ function decorator$1(selector) {
   };
 }
 
-bootstrap();
+init();
 
 window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
+window.Strudel.version = '0.6.7';
 
 export { component as Component, EventEmitter, decorator as Evt, decorator$1 as El, $ as element };
