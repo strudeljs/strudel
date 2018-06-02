@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.6.7
+ * Strudel.js v0.7.0
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -208,6 +208,11 @@ var Element = function () {
     this._nodes = this.slice(selector);
   }
 
+  /**
+   * Returns size of nodes
+   */
+
+
   createClass(Element, [{
     key: 'array',
 
@@ -235,7 +240,7 @@ var Element = function () {
 
     /**
      * Create a string from different things
-     private* @
+     * @private
      */
 
   }, {
@@ -297,6 +302,18 @@ var Element = function () {
     key: 'eq',
     value: function eq(index) {
       return new Element(this._nodes[index]) || false;
+    }
+
+    /**
+     * Reduce the set of matched elements to the HTMLElement at the specified index.
+     * @param {Number} index - An integer indicating the 0-based position of the element.
+     * @returns {HTMLElement}
+     */
+
+  }, {
+    key: 'get',
+    value: function get$$1(index) {
+      return index && index <= this._nodes.length ? this._nodes[index] : this._nodes;
     }
 
     /**
@@ -796,7 +813,11 @@ var Element = function () {
       if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
         return this.each(function (node) {
           for (var key in name) {
-            node.setAttribute(data + key, name[key]);
+            if (name[key] !== null) {
+              node.setAttribute(data + key, name[key]);
+            } else {
+              node.removeAttribute(data + key);
+            }
           }
         });
       }
@@ -1081,33 +1102,34 @@ var mixPrototypes = function mixPrototypes(target, source) {
 };
 
 /**
- * Simple Event Emitter implementation
+ * Event listeners
+ * @type {{}}
+ */
+var events = {};
+
+/**
+ * @classdesc Simple Event Emitter implementation - global
+ * @class
  */
 
 var EventEmitter = function () {
-  /**
-   * @constructor
-   */
   function EventEmitter() {
     classCallCheck(this, EventEmitter);
-
-    this._listeners = {};
   }
 
-  /**
-   * Add event listener to the map
-   * @param {string} label
-   * @param {Function} callback
-   */
-
-
   createClass(EventEmitter, [{
-    key: 'addListener',
-    value: function addListener(label, callback) {
-      if (!this._listeners[label]) {
-        this._listeners[label] = [];
+    key: '$on',
+
+    /**
+     * Add event listener to the map
+     * @param {string} label
+     * @param {Function} callback
+     */
+    value: function $on(label, callback) {
+      if (!events[label]) {
+        events[label] = [];
       }
-      this._listeners[label].push(callback);
+      events[label].push(callback);
     }
 
     /**
@@ -1118,9 +1140,9 @@ var EventEmitter = function () {
      */
 
   }, {
-    key: 'removeListener',
-    value: function removeListener(label, callback) {
-      var listeners = this._listeners[label];
+    key: '$off',
+    value: function $off(label, callback) {
+      var listeners = events[label];
 
       if (listeners && listeners.length) {
         var index = listeners.reduce(function (i, listener, ind) {
@@ -1129,7 +1151,7 @@ var EventEmitter = function () {
 
         if (index > -1) {
           listeners.splice(index, 1);
-          this._listeners[label] = listeners;
+          events[label] = listeners;
           return true;
         }
       }
@@ -1137,20 +1159,20 @@ var EventEmitter = function () {
     }
 
     /**
-     * Notifies liteners attached to event
+     * Notifies listeners attached to event
      * @param {string} label
      * @param args
      * @returns {boolean}
      */
 
   }, {
-    key: 'emit',
-    value: function emit(label) {
+    key: '$emit',
+    value: function $emit(label) {
       for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
 
-      var listeners = this._listeners[label];
+      var listeners = events[label];
 
       if (listeners && listeners.length) {
         listeners.forEach(function (listener) {
@@ -1163,8 +1185,6 @@ var EventEmitter = function () {
   }]);
   return EventEmitter;
 }();
-
-var emitter = new EventEmitter();
 
 var DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
 
@@ -1223,11 +1243,11 @@ var bindElements = function bindElements(context, elements) {
 };
 
 var mix = function mix(target, source) {
-  for (var prop in source) {
-    if (source.hasOwnProperty(prop)) {
+  Object.keys(source).forEach(function (prop) {
+    if (!target[prop]) {
       target[prop] = source[prop];
     }
-  }
+  });
 };
 
 var config = {
@@ -1243,83 +1263,48 @@ var config = {
  * @hideconstructor
  */
 
-var Component = function () {
-  function Component() {
-    var _this = this;
+var Component = function (_EventEmitter) {
+  inherits(Component, _EventEmitter);
 
+  function Component() {
     var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
         element = _ref.element,
         data = _ref.data;
 
     classCallCheck(this, Component);
 
-    this.beforeInit();
+    var _this = possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
 
-    this.$element = element;
-    this.$data = data;
+    _this.beforeInit();
 
-    delegateEvents(this, this._events);
-    bindElements(this, this._els);
+    _this.$element = element;
+    _this.$data = data;
 
-    if (this.mixins && this.mixins.length) {
-      this.mixins.forEach(function (mixin) {
+    delegateEvents(_this, _this._events);
+    bindElements(_this, _this._els);
+
+    if (_this.mixins && _this.mixins.length) {
+      _this.mixins.forEach(function (mixin) {
         if (isFunction(mixin.init)) {
           mixin.init.call(_this);
-          delete mixin.init;
         }
         mix(_this, mixin);
       });
     }
 
-    this.init();
+    _this.init();
 
-    this.$element.addClass(config.initializedClassName);
+    _this.$element.addClass(config.initializedClassName);
+    return _this;
   }
 
   /**
-   * Facade for EventEmitter addListener
-   * @link EventEmitter#addListener
+   * Function called before component is initialized
+   * @interface
    */
 
 
   createClass(Component, [{
-    key: '$on',
-    value: function $on(label, callback) {
-      emitter.addListener(label, callback);
-    }
-
-    /**
-     * Facade for EventEmitter removeListener
-     * @link EventEmitter#removeListener
-     */
-
-  }, {
-    key: '$off',
-    value: function $off(label, callback) {
-      emitter.removeListener(label, callback);
-    }
-
-    /**
-     * Facade for EventEmitter emit
-     * @link EventEmitter#emit
-     */
-
-  }, {
-    key: '$emit',
-    value: function $emit(label) {
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      emitter.emit.apply(emitter, [label].concat(args));
-    }
-
-    /**
-     * Function called before component is initialized
-     * @interface
-     */
-
-  }, {
     key: 'beforeInit',
     value: function beforeInit() {}
 
@@ -1366,7 +1351,7 @@ var Component = function () {
     }
   }]);
   return Component;
-}();
+}(EventEmitter);
 
 var registry$2 = new Registry();
 
@@ -1450,17 +1435,18 @@ function decorator$1(selector) {
   };
 }
 
-init();
-
 window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
-window.Strudel.version = '0.6.7';
+window.Strudel.version = '0.7.0';
+
+init();
 
 exports.EventEmitter = EventEmitter;
 exports.Component = component;
 exports.Evt = decorator;
 exports.El = decorator$1;
 exports.element = $;
+exports.$ = $;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

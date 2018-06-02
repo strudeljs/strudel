@@ -1,4 +1,4 @@
-import { emitter } from '../util/eventEmitter';
+import EventEmitter from '../util/eventEmitter';
 import { delegateEvents } from '../dom/delegateEvents';
 import bindElements from '../dom/bindElements';
 import { isFunction } from '../util/helpers';
@@ -10,8 +10,10 @@ import config from '../config';
  * @class
  * @hideconstructor
  */
-class Component {
+class Component extends EventEmitter {
   constructor({ element, data } = {}) {
+    super();
+
     this.beforeInit();
 
     this.$element = element;
@@ -32,30 +34,6 @@ class Component {
     this.init();
 
     this.$element.addClass(config.initializedClassName);
-  }
-
-  /**
-   * Facade for EventEmitter addListener
-   * @link EventEmitter#addListener
-   */
-  $on(label, callback) {
-    emitter.addListener(label, callback);
-  }
-
-  /**
-   * Facade for EventEmitter removeListener
-   * @link EventEmitter#removeListener
-   */
-  $off(label, callback) {
-    emitter.removeListener(label, callback);
-  }
-
-  /**
-   * Facade for EventEmitter emit
-   * @link EventEmitter#emit
-   */
-  $emit(label, ...args) {
-    emitter.emit(label, ...args);
   }
 
   /**

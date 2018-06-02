@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.6.7
+ * Strudel.js v0.7.0
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -117,6 +117,9 @@ class Element {
     this._nodes = this.slice(selector);
   }
 
+  /**
+   * Returns size of nodes
+   */
   get length() {
     return this._nodes.length;
   }
@@ -144,7 +147,7 @@ class Element {
 
   /**
    * Create a string from different things
-   private* @
+   * @private
    */
   str(node, i) {
     return function (arg) {
@@ -194,6 +197,15 @@ class Element {
    */
   eq(index) {
     return new Element(this._nodes[index]) || false;
+  }
+
+  /**
+   * Reduce the set of matched elements to the HTMLElement at the specified index.
+   * @param {Number} index - An integer indicating the 0-based position of the element.
+   * @returns {HTMLElement}
+   */
+  get(index) {
+    return (index && index <= this._nodes.length) ? this._nodes[index] : this._nodes;
   }
 
   /**
@@ -614,7 +626,11 @@ class Element {
     if (typeof name === 'object') {
       return this.each(function (node) {
         for (let key in name) {
-          node.setAttribute(data + key, name[key]);
+          if (name[key] !== null) {
+            node.setAttribute(data + key, name[key]);
+          } else {
+            node.removeAttribute(data + key);
+          }
         }
       });
     }
@@ -848,26 +864,26 @@ const mixPrototypes = (target, source) => {
 };
 
 /**
- * Simple Event Emitter implementation
+ * Event listeners
+ * @type {{}}
+ */
+const events = {};
+
+/**
+ * @classdesc Simple Event Emitter implementation - global
+ * @class
  */
 class EventEmitter {
-  /**
-   * @constructor
-   */
-  constructor() {
-    this._listeners = {};
-  }
-
   /**
    * Add event listener to the map
    * @param {string} label
    * @param {Function} callback
    */
-  addListener(label, callback) {
-    if (!this._listeners[label]) {
-      this._listeners[label] = [];
+  $on(label, callback) {
+    if (!events[label]) {
+      events[label] = [];
     }
-    this._listeners[label].push(callback);
+    events[label].push(callback);
   }
 
   /**
@@ -876,8 +892,8 @@ class EventEmitter {
    * @param {Function} callback
    * @returns {boolean}
    */
-  removeListener(label, callback) {
-    const listeners = this._listeners[label];
+  $off(label, callback) {
+    const listeners = events[label];
 
     if (listeners && listeners.length) {
       const index = listeners.reduce((i, listener, ind) => {
@@ -886,7 +902,7 @@ class EventEmitter {
 
       if (index > -1) {
         listeners.splice(index, 1);
-        this._listeners[label] = listeners;
+        events[label] = listeners;
         return true;
       }
     }
@@ -894,13 +910,13 @@ class EventEmitter {
   }
 
   /**
-   * Notifies liteners attached to event
+   * Notifies listeners attached to event
    * @param {string} label
    * @param args
    * @returns {boolean}
    */
-  emit(label, ...args) {
-    const listeners = this._listeners[label];
+  $emit(label, ...args) {
+    const listeners = events[label];
 
     if (listeners && listeners.length) {
       listeners.forEach((listener) => {
@@ -911,8 +927,6 @@ class EventEmitter {
     return false;
   }
 }
-
-const emitter = new EventEmitter();
 
 const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
 
@@ -971,11 +985,11 @@ const bindElements = (context, elements) => {
 };
 
 const mix = (target, source) => {
-  for (var prop in source) {
-    if (source.hasOwnProperty(prop)) {
+  Object.keys(source).forEach((prop) => {
+    if (!target[prop]) {
       target[prop] = source[prop];
     }
-  }
+  });
 };
 
 var config = {
@@ -990,8 +1004,10 @@ var config = {
  * @class
  * @hideconstructor
  */
-class Component {
+class Component extends EventEmitter {
   constructor({ element, data } = {}) {
+    super();
+
     this.beforeInit();
 
     this.$element = element;
@@ -1004,7 +1020,6 @@ class Component {
       this.mixins.forEach((mixin) => {
         if (isFunction(mixin.init)) {
           mixin.init.call(this);
-          delete mixin.init;
         }
         mix(this, mixin);
       });
@@ -1013,30 +1028,6 @@ class Component {
     this.init();
 
     this.$element.addClass(config.initializedClassName);
-  }
-
-  /**
-   * Facade for EventEmitter addListener
-   * @link EventEmitter#addListener
-   */
-  $on(label, callback) {
-    emitter.addListener(label, callback);
-  }
-
-  /**
-   * Facade for EventEmitter removeListener
-   * @link EventEmitter#removeListener
-   */
-  $off(label, callback) {
-    emitter.removeListener(label, callback);
-  }
-
-  /**
-   * Facade for EventEmitter emit
-   * @link EventEmitter#emit
-   */
-  $emit(label, ...args) {
-    emitter.emit(label, ...args);
   }
 
   /**
@@ -1145,10 +1136,10 @@ function decorator$1(selector) {
   };
 }
 
-init();
-
 window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
-window.Strudel.version = '0.6.7';
+window.Strudel.version = '0.7.0';
 
-export { EventEmitter, component as Component, decorator as Evt, decorator$1 as El, $ as element };
+init();
+
+export { EventEmitter, component as Component, decorator as Evt, decorator$1 as El, $ as element, $ };
