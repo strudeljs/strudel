@@ -1,9 +1,9 @@
 import Component from '../../../src/decorators/component';
-import ComponentType from '../../../src/core/component';
+import ComponentType from '../../../src/component/instance';
 import Registry from '../../../src/core/registry';
 import element from '../__mocks';
 
-describe('Component Decorator', () => {
+describe('Decorator Component', () => {
   let TestComponent;
 
   beforeEach(() => {

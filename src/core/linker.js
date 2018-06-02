@@ -1,4 +1,4 @@
-import $ from './element';
+import $ from '../dom/element';
 
 /**
  * @classdesc Class linking components with DOM

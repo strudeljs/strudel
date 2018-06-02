@@ -1,11 +1,4 @@
-/**
- * Check if passed parameter is a function
- * @param obj
- * @returns {boolean}
- */
-const isFunction = (obj) => {
-  return typeof obj === 'function' || false;
-};
+import { isFunction } from './helpers';
 
 /**
  * Simple Event Emitter implementation

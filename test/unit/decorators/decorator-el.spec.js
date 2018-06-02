@@ -8,7 +8,7 @@ class TestComponent {
   test
 }
 
-describe('El Decorator', () => {
+describe('Decorator Element', () => {
   it('binds element', () => {
     const component = new TestComponent({ element });
     expect(component._els.test).to.be.equal('test');
