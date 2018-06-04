@@ -1,5 +1,5 @@
 <body>
-<div class="example"></div>
+<div class="catdog"></div>
 
 <script src="../../dist/strudel.js"></script>
 <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
@@ -10,24 +10,30 @@
     },
 
   	meow() {
-  	  console.log('MEOW');
+  	  return 'MEOW!';
     }
   };
 
   var dog = {
+    init() {
+      this.breed = 'Corgi';
+    },
+
     bark() {
-      console.log('BARK');
+      return 'BARK?';
     }
   };
 
-  @Strudel.Component('.example')
-  class Example {
-    mixins = [cat, dog];
+  @Strudel.Component('.catdog')
+  class CatDog {
+    mixins = [dog, cat];
 
     init() {
-    	console.log(this.breed);
-    	this.bark();
-    	this.meow();
+    	this.$element.html(`
+    	  I am ${this.breed}.
+    	  ${this.meow()}
+    	  ${this.bark()}
+      `);
     }
   }
 

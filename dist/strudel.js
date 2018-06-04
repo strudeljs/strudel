@@ -1406,15 +1406,26 @@ var component = (function (selector) {
  * @param {string} event
  * @returns (Function} decorator
  */
-function decorator(event) {
+function decorator(event, preventDefault) {
   return function _decorator(klass, method) {
     if (!event) {
       throw new Error('Event descriptor must be provided for Evt decorator');
     }
+
     if (!klass._events) {
       klass._events = [];
     }
-    klass._events[event] = klass[method];
+
+    var cb = !preventDefault ? klass[method] : function () {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      klass[method].apply(this, args);
+      args[0].preventDefault();
+    };
+
+    klass._events[event] = cb;
   };
 }
 
