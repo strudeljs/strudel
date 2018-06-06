@@ -1,9 +1,10 @@
-import { bootstrap, registry } from './core/bootstrap';
+import { init, registry } from './core/init';
 
-bootstrap();
+init();
 
 window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
+window.Strudel.version = '__VERSION__';
 
 export { default as Component } from './decorators/component';
 export { default as EventEmitter } from './util/eventEmitter';

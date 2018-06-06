@@ -139,7 +139,7 @@ class Element {
 
   /**
    * Create a string from different things
-   * @private
+   private* @
    */
   str(node, i) {
     return function (arg) {
@@ -341,9 +341,7 @@ class Element {
 
   /**
    * Return an array of DOM nodes of a source node and its children.
-   * @param  {[Object]} context DOM node.
-   * @param  {[String]} tag DOM node tagName.
-   * @returns {Element}
+   * @private
    */
   getAll(context) {
     return new Element([context].concat(new Element('*', context)._nodes));

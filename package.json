@@ -73,6 +73,7 @@
     "nyc": "^10.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-replace": "^2.0.0",
     "saucelabs": "^1.4.0",
     "selenium-server": "^3.3.1",
     "shelljs": "^0.7.8",

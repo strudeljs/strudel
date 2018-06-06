@@ -1,10 +1,8 @@
-import EventEmitter from '../util/eventEmitter';
+import { emitter } from '../util/eventEmitter';
 import { delegateEvents } from '../util/delegateEvents';
 import bindElements from '../util/bindElements';
+import config from '../config';
 
-const emitter = new EventEmitter();
-
-const INIT_CLASS = 'strudel-init';
 
 /**
  * @classdesc Base class for all components, implementing event emitter
@@ -23,7 +21,7 @@ class Component {
 
     this.init();
 
-    this.$element.addClass(INIT_CLASS);
+    this.$element.addClass(config.initializedClassName);
   }
 
   /**
@@ -80,7 +78,7 @@ class Component {
   $teardown() {
     this.beforeDestroy();
     this.$element.off();
-    this.$element.removeClass(INIT_CLASS);
+    this.$element.removeClass(config.initializedClassName);
     delete this.$element.first().scope;
     delete this.$element;
     this.destroy();
