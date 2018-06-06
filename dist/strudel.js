@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.6.7
+ * Strudel.js v0.6.9
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1434,7 +1434,7 @@ init();
 
 window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
-window.Strudel.version = '0.6.7';
+window.Strudel.version = '0.6.9';
 
 exports.Component = component;
 exports.EventEmitter = EventEmitter;

@@ -1,6 +1,6 @@
 {
   "name": "strudel",
-  "version": "0.6.7",
+  "version": "0.6.9",
   "description": "Lightweight component framework",
   "author": "Mateusz Łuczak <mateusz.luczak@outlook.com>",
   "license": "MIT",
@@ -32,6 +32,7 @@
   "files": [
     "dist/strudel.js",
     "dist/strudel.min.js",
+    "dist/strudel.es.js",
     "src"
   ],
   "repository": {
