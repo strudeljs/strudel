@@ -34,7 +34,7 @@ const bindContentEvents = () => {
 
 const init = () => {
   if (/comp|inter|loaded/.test(document.readyState)) {
-    bootstrap();
+    setTimeout(bootstrap, 0);
   } else {
     channel.on('DOMContentLoaded', bootstrap);
   }
