@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.6.9
+ * Strudel.js v0.6.10
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -792,27 +792,40 @@ const registry = new Registry();
 const linker = new Linker(registry);
 const channel = $(document);
 
-const init = () => {
-  ['DOMContentLoaded', 'contentloaded'].forEach((name) => {
-    channel.on(name, (evt) => {
-      if (evt.detail && evt.detail.length > 0) {
-        let element = evt.detail[0];
-        element = (element instanceof HTMLElement) ? element : element.first();
-        linker.link(element);
-      } else {
-        linker.linkAll();
-      }
-      channel.trigger('strudelloaded');
-    });
+const getElement = (detail) => {
+  const element = detail[0];
+  return (element instanceof HTMLElement) ? element : element.first();
+};
+
+const bootstrap = (root) => {
+  if (root && root.length > 0) {
+    linker.link(getElement(root));
+  } else {
+    linker.linkAll();
+  }
+  channel.trigger('strudelloaded');
+};
+
+const bindContentEvents = () => {
+  channel.on('contentloaded', (evt) => {
+    bootstrap(evt.detail);
   });
 
   channel.on('contentunload', (evt) => {
     if (evt.detail) {
-      let element = evt.detail[0];
-      element = (element instanceof HTMLElement) ? element : element.first();
-      linker.unlink(element);
+      linker.unlink(getElement(evt.detail));
     }
   });
+};
+
+const init = () => {
+  if (/comp|inter|loaded/.test(document.readyState)) {
+    bootstrap();
+  } else {
+    channel.on('DOMContentLoaded', bootstrap);
+  }
+
+  bindContentEvents();
 };
 
 /**
@@ -1131,6 +1144,6 @@ init();
 
 window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
-window.Strudel.version = '0.6.9';
+window.Strudel.version = '0.6.10';
 
 export { component as Component, EventEmitter, decorator as Evt, decorator$1 as El, $ as element };
