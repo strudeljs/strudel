@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.6.10
+ * Strudel.js v0.6.11
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1053,7 +1053,7 @@ var bindContentEvents = function bindContentEvents() {
 
 var init = function init() {
   if (/comp|inter|loaded/.test(document.readyState)) {
-    bootstrap();
+    setTimeout(bootstrap, 0);
   } else {
     channel.on('DOMContentLoaded', bootstrap);
   }
@@ -1447,7 +1447,7 @@ init();
 
 window.Strudel = window.Strudel || {};
 window.Strudel.registry = registry;
-window.Strudel.version = '0.6.10';
+window.Strudel.version = '0.6.11';
 
 exports.Component = component;
 exports.EventEmitter = EventEmitter;
