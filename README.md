@@ -41,7 +41,23 @@ It's recommended to start a project using dedicated [CLI](https://github.com/str
 
 To check more examples and docs visit [strudeljs.org](http://strudeljs.org).
 
-## Contributing
+## Ecosystem
+
+| Project | Status | Description |
+|---------|--------|-------------|
+| [strudel-cli]             | [![strudel-cli-status]][strudel-cli-package] | Project scaffolding |
+| [strudel-devtools]        | [![strudel-devtools-status]][strudel-devtools-package] | Browser DevTools extension |
+
+[strudel-cli]: https://github.com/strudeljs/strudel-cli
+[strudel-devtools]:  https://github.com/strudeljs/strudel-devtools
+
+[strudel-cli-status]: https://img.shields.io/npm/v/strudel-cli.svg
+[strudel-devtools-status]: https://img.shields.io/chrome-web-store/v/
+
+[strudel-cli-package]: https://npmjs.com/package/strudel-cli
+[strudel-devtools-package]: https://chrome.google.com/webstore/detail/
+
+## Contribution
 
 Please make sure to read the [Contributing Guide](https://github.com/strudeljs/strudel/blob/master/CONTRIBUTING.md) before making a pull request.
 
