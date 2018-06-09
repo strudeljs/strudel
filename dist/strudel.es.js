@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.7.0
+ * Strudel.js v0.6.10
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -117,9 +117,6 @@ class Element {
     this._nodes = this.slice(selector);
   }
 
-  /**
-   * Returns size of nodes
-   */
   get length() {
     return this._nodes.length;
   }
@@ -147,7 +144,7 @@ class Element {
 
   /**
    * Create a string from different things
-   * @private
+   private* @
    */
   str(node, i) {
     return function (arg) {
@@ -197,15 +194,6 @@ class Element {
    */
   eq(index) {
     return new Element(this._nodes[index]) || false;
-  }
-
-  /**
-   * Reduce the set of matched elements to the HTMLElement at the specified index.
-   * @param {Number} index - An integer indicating the 0-based position of the element.
-   * @returns {HTMLElement}
-   */
-  get(index) {
-    return (index && index <= this._nodes.length) ? this._nodes[index] : this._nodes;
   }
 
   /**
@@ -626,11 +614,7 @@ class Element {
     if (typeof name === 'object') {
       return this.each(function (node) {
         for (let key in name) {
-          if (name[key] !== null) {
-            node.setAttribute(data + key, name[key]);
-          } else {
-            node.removeAttribute(data + key);
-          }
+          node.setAttribute(data + key, name[key]);
         }
       });
     }
@@ -808,27 +792,40 @@ const registry = new Registry();
 const linker = new Linker(registry);
 const channel = $(document);
 
-const init = () => {
-  ['DOMContentLoaded', 'content:loaded'].forEach((name) => {
-    channel.on(name, (evt) => {
-      if (evt.detail && evt.detail.length > 0) {
-        let element = evt.detail[0];
-        element = (element instanceof HTMLElement) ? element : element.first();
-        linker.link(element);
-      } else {
-        linker.linkAll();
-      }
-      channel.trigger('strudel:loaded');
-    });
+const getElement = (detail) => {
+  const element = detail[0];
+  return (element instanceof HTMLElement) ? element : element.first();
+};
+
+const bootstrap = (root) => {
+  if (root && root.length > 0) {
+    linker.link(getElement(root));
+  } else {
+    linker.linkAll();
+  }
+  channel.trigger('strudelloaded');
+};
+
+const bindContentEvents = () => {
+  channel.on('contentloaded', (evt) => {
+    bootstrap(evt.detail);
   });
 
-  channel.on('content:unload', (evt) => {
+  channel.on('contentunload', (evt) => {
     if (evt.detail) {
-      let element = evt.detail[0];
-      element = (element instanceof HTMLElement) ? element : element.first();
-      linker.unlink(element);
+      linker.unlink(getElement(evt.detail));
     }
   });
+};
+
+const init = () => {
+  if (/comp|inter|loaded/.test(document.readyState)) {
+    bootstrap();
+  } else {
+    channel.on('DOMContentLoaded', bootstrap);
+  }
+
+  bindContentEvents();
 };
 
 /**
@@ -841,49 +838,26 @@ const isFunction = (obj) => {
 };
 
 /**
- * Small util for mixing prototypes
- * @param {Function} target
- * @param {Function} source
- */
-const mixPrototypes = (target, source) => {
-  const targetProto = target.prototype;
-  const sourceProto = source.prototype;
-  const inst = (typeof source === 'object') ? source : new source(); // eslint-disable-line new-cap
-
-  Object.getOwnPropertyNames(inst).forEach((name) => {
-    const desc = Object.getOwnPropertyDescriptor(inst, name);
-    desc.writable = true;
-    Object.defineProperty(targetProto, name, desc);
-  });
-
-  Object.getOwnPropertyNames(sourceProto).forEach((name) => {
-    if (name !== 'constructor') {
-      Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
-    }
-  });
-};
-
-/**
- * Event listeners
- * @type {{}}
- */
-const events = {};
-
-/**
- * @classdesc Simple Event Emitter implementation - global
- * @class
+ * Simple Event Emitter implementation
  */
 class EventEmitter {
+  /**
+   * @constructor
+   */
+  constructor() {
+    this._listeners = {};
+  }
+
   /**
    * Add event listener to the map
    * @param {string} label
    * @param {Function} callback
    */
-  $on(label, callback) {
-    if (!events[label]) {
-      events[label] = [];
+  addListener(label, callback) {
+    if (!this._listeners[label]) {
+      this._listeners[label] = [];
     }
-    events[label].push(callback);
+    this._listeners[label].push(callback);
   }
 
   /**
@@ -892,8 +866,8 @@ class EventEmitter {
    * @param {Function} callback
    * @returns {boolean}
    */
-  $off(label, callback) {
-    const listeners = events[label];
+  removeListener(label, callback) {
+    const listeners = this._listeners[label];
 
     if (listeners && listeners.length) {
       const index = listeners.reduce((i, listener, ind) => {
@@ -902,7 +876,7 @@ class EventEmitter {
 
       if (index > -1) {
         listeners.splice(index, 1);
-        events[label] = listeners;
+        this._listeners[label] = listeners;
         return true;
       }
     }
@@ -910,13 +884,13 @@ class EventEmitter {
   }
 
   /**
-   * Notifies listeners attached to event
+   * Notifies liteners attached to event
    * @param {string} label
    * @param args
    * @returns {boolean}
    */
-  $emit(label, ...args) {
-    const listeners = events[label];
+  emit(label, ...args) {
+    const listeners = this._listeners[label];
 
     if (listeners && listeners.length) {
       listeners.forEach((listener) => {
@@ -927,6 +901,8 @@ class EventEmitter {
     return false;
   }
 }
+
+const emitter = new EventEmitter();
 
 const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
 
@@ -984,14 +960,6 @@ const bindElements = (context, elements) => {
   });
 };
 
-const mix = (target, source) => {
-  Object.keys(source).forEach((prop) => {
-    if (!target[prop]) {
-      target[prop] = source[prop];
-    }
-  });
-};
-
 var config = {
   /**
    * Class added on components when initialised
@@ -1004,10 +972,8 @@ var config = {
  * @class
  * @hideconstructor
  */
-class Component extends EventEmitter {
+class Component {
   constructor({ element, data } = {}) {
-    super();
-
     this.beforeInit();
 
     this.$element = element;
@@ -1016,18 +982,33 @@ class Component extends EventEmitter {
     delegateEvents(this, this._events);
     bindElements(this, this._els);
 
-    if (this.mixins && this.mixins.length) {
-      this.mixins.forEach((mixin) => {
-        if (isFunction(mixin.init)) {
-          mixin.init.call(this);
-        }
-        mix(this, mixin);
-      });
-    }
-
     this.init();
 
     this.$element.addClass(config.initializedClassName);
+  }
+
+  /**
+   * Facade for EventEmitter addListener
+   * @link EventEmitter#addListener
+   */
+  $on(label, callback) {
+    emitter.addListener(label, callback);
+  }
+
+  /**
+   * Facade for EventEmitter removeListener
+   * @link EventEmitter#removeListener
+   */
+  $off(label, callback) {
+    emitter.removeListener(label, callback);
+  }
+
+  /**
+   * Facade for EventEmitter emit
+   * @link EventEmitter#emit
+   */
+  $emit(label, ...args) {
+    emitter.emit(label, ...args);
   }
 
   /**
@@ -1067,6 +1048,29 @@ class Component extends EventEmitter {
   }
 }
 
+/**
+ * Small util for mixing prototypes
+ * @param {Function} target
+ * @param {Function} source
+ */
+const mixin = (target, source) => {
+  const targetProto = target.prototype;
+  const sourceProto = source.prototype;
+  const inst = new source(); // eslint-disable-line new-cap
+
+  Object.getOwnPropertyNames(inst).forEach((name) => {
+    const desc = Object.getOwnPropertyDescriptor(inst, name);
+    desc.writable = true;
+    Object.defineProperty(targetProto, name, desc);
+  });
+
+  Object.getOwnPropertyNames(sourceProto).forEach((name) => {
+    if (name !== 'constructor') {
+      Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
+    }
+  });
+};
+
 const registry$2 = new Registry();
 
 /**
@@ -1088,7 +1092,7 @@ const register = (target, selector) => {
     }
   };
 
-  mixPrototypes(component, target);
+  mixin(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
   registry$2.registerComponent(selector, component);
@@ -1107,22 +1111,15 @@ var component = (selector) => {
  * @param {string} event
  * @returns (Function} decorator
  */
-function decorator(event, preventDefault) {
+function decorator(event) {
   return function _decorator(klass, method) {
     if (!event) {
       throw new Error('Event descriptor must be provided for Evt decorator');
     }
-
     if (!klass._events) {
       klass._events = [];
     }
-
-    const cb = !preventDefault ? klass[method] : function (...args) {
-      klass[method].apply(this, args);
-      args[0].preventDefault();
-    };
-
-    klass._events[event] = cb;
+    klass._events[event] = klass[method];
   };
 }
 
@@ -1143,10 +1140,10 @@ function decorator$1(selector) {
   };
 }
 
-window.Strudel = window.Strudel || {};
-window.Strudel.registry = registry;
-window.Strudel.version = '0.7.0';
-
 init();
 
-export { EventEmitter, component as Component, decorator as Evt, decorator$1 as El, $ as element, $ };
+window.Strudel = window.Strudel || {};
+window.Strudel.registry = registry;
+window.Strudel.version = '0.6.10';
+
+export { component as Component, EventEmitter, decorator as Evt, decorator$1 as El, $ as element };
