@@ -671,6 +671,6 @@ class Element {
   }
 }
 
-export default (selector, element) => {
+export default function $(selector, element) {
   return new Element(selector, element);
 };

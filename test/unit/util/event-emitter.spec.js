@@ -1,8 +1,8 @@
-import EventEmitter, { getEvents, removeAllListeners } from '../../../src/util/eventEmitter';
+import EventEmitter from '../../../src/util/eventEmitter';
 
 describe('Util EventEmitter', () => {
   beforeEach(() => {
-    removeAllListeners();
+    EventEmitter.removeAllListeners();
   });
 
   it('instantiates', () => {
@@ -12,18 +12,18 @@ describe('Util EventEmitter', () => {
 
   it('add event listener', () => {
     const emitter = new EventEmitter();
-    expect(Object.keys(getEvents()).length).to.be.equal(0);
+    expect(Object.keys(EventEmitter.getEvents()).length).to.be.equal(0);
     emitter.$on('event', () => {});
-    expect(Object.keys(getEvents()).length).to.be.equal(1);
+    expect(Object.keys(EventEmitter.getEvents()).length).to.be.equal(1);
   });
 
   it('remove event listener', () => {
     const emitter = new EventEmitter();
     const callback = () => {};
     emitter.$on('event', callback);
-    expect(getEvents().event.length).to.be.equal(1);
+    expect(EventEmitter.getEvents().event.length).to.be.equal(1);
     emitter.$off('event', callback);
-    expect(getEvents().event.length).to.be.equal(0);
+    expect(EventEmitter.getEvents().event.length).to.be.equal(0);
   });
 
   it('emit event', () => {

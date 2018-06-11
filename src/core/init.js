@@ -1,22 +1,21 @@
 import Linker from './linker';
-import Registry from './registry';
+import registry from './registry';
 import $ from '../dom/element';
 
-const registry = new Registry();
 const linker = new Linker(registry);
 const channel = $(document);
 
 const getElement = (detail) => {
-  const element = detail[0];
-  return (element instanceof HTMLElement) ? element : element.first();
+  if (detail && detail.length > 0) {
+    const element = detail[0];
+    return (element instanceof HTMLElement) ? element : element.first();
+  }
+
+  return false;
 };
 
 const bootstrap = (root) => {
-  if (root && root.length > 0) {
-    linker.link(getElement(root));
-  } else {
-    linker.linkAll();
-  }
+  linker.link(getElement(root));
   channel.trigger('strudel:loaded');
 };
 
@@ -26,15 +25,13 @@ const bindContentEvents = () => {
   });
 
   channel.on('content:unload', (evt) => {
-    if (evt.detail) {
-      linker.unlink(getElement(evt.detail));
-    }
+    linker.unlink(getElement(evt.detail));
   });
 };
 
 const init = () => {
   if (/comp|inter|loaded/.test(document.readyState)) {
-    bootstrap();
+    setTimeout(bootstrap, 0);
   } else {
     channel.on('DOMContentLoaded', bootstrap);
   }
@@ -42,5 +39,5 @@ const init = () => {
   bindContentEvents();
 };
 
-export { init, registry };
+export default init;
 

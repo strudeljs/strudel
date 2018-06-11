@@ -1,6 +1,6 @@
 import Component from '../../../src/decorators/component';
 import ComponentType from '../../../src/component/instance';
-import Registry from '../../../src/core/registry';
+import registry from '../../../src/core/registry';
 import element from '../__mocks';
 
 describe('Decorator Component', () => {
@@ -19,9 +19,8 @@ describe('Decorator Component', () => {
   });
 
   it('registers', () => {
-    const registry = new Registry();
     expect(registry.getComponent('test')).to.be.a('function');
-    registry.clear();
+    registry._registry = {};
   });
 
   it('fails without selector', () => {

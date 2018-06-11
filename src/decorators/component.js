@@ -1,8 +1,6 @@
-import Registry from '../core/registry';
+import registry from '../core/registry';
 import Component from '../component/instance';
 import { mixPrototypes } from '../util/helpers';
-
-const registry = new Registry();
 
 /**
  * Component decorator - Registers decorated class in {@link Registry} as a component
@@ -31,8 +29,8 @@ const register = (target, selector) => {
   return component;
 };
 
-export default (selector) => {
-  return (target) => {
+export default function decorator(selector) {
+  return function _decorator(target) {
     return register(target, selector);
   };
-};
+}

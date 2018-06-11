@@ -10,7 +10,15 @@
   class Clicker {
     @Strudel.Evt('click .clicker__btn', true)
     click() {
-      this.$element.append("<div class='message'>Clicked</div>")
+      this.$element.append("<div class='alert' data-message='Hello'></div>")
+      this.$element.trigger('content:loaded');
+    }
+  }
+
+  @Strudel.Component('.alert')
+  class Alert {
+    init() {
+    	this.$element.html(this.$data.message);
     }
   }
 

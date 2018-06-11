@@ -7,27 +7,20 @@ import { isFunction } from './helpers';
 const events = {};
 
 /**
- * Get event listeners
- * @returns {{}}
- */
-const getEvents = () => {
-  return events;
-};
-
-/**
- * Remove all event listeners
- */
-const removeAllListeners = () => {
-  Object.keys(events).forEach((prop) => {
-    delete events[prop];
-  });
-};
-
-/**
  * @classdesc Simple Event Emitter implementation - global
  * @class
  */
 class EventEmitter {
+  static getEvents() {
+    return events;
+  }
+
+  static removeAllListeners() {
+    Object.keys(events).forEach((prop) => {
+      delete events[prop];
+    });
+  }
+
   /**
    * Add event listener to the map
    * @param {string} label
@@ -82,5 +75,4 @@ class EventEmitter {
   }
 }
 
-export { getEvents, removeAllListeners };
 export default EventEmitter;
