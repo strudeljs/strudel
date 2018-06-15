@@ -933,8 +933,8 @@ var Linker = function () {
           if (!el.component) {
             var element = $(el);
             var data = element.data();
-            var instance = _this.registry.getComponent(selector);
-            el.component = new instance({ element: element, data: data });
+            var Instance = _this.registry.getComponent(selector);
+            el.component = new Instance({ element: element, data: data });
           }
         });
       });
@@ -1005,6 +1005,8 @@ var getElement = function getElement(detail) {
     var element = detail[0];
     return element instanceof HTMLElement ? element : element.first();
   }
+
+  return false;
 };
 
 var bootstrap = function bootstrap(root) {

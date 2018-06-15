@@ -717,8 +717,8 @@ class Linker {
         if (!el.component) {
           const element = $(el);
           const data = element.data();
-          const instance = this.registry.getComponent(selector);
-          el.component = new instance({ element, data });
+          const Instance = this.registry.getComponent(selector);
+          el.component = new Instance({ element, data });
         }
       });
     });
@@ -773,6 +773,8 @@ const getElement = (detail) => {
     const element = detail[0];
     return (element instanceof HTMLElement) ? element : element.first();
   }
+
+  return false;
 };
 
 const bootstrap = (root) => {
@@ -858,7 +860,7 @@ class EventEmitter {
     Object.keys(events).forEach((prop) => {
       delete events[prop];
     });
-  };
+  }
 
   /**
    * Add event listener to the map
