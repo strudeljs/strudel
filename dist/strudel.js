@@ -1001,7 +1001,7 @@ var linker = new Linker(registry);
 var channel = $(document);
 
 var getElement = function getElement(detail) {
-  var element;
+  var element = void 0;
 
   if (detail && detail.length > 0) {
     element = detail[0] instanceof HTMLElement ? detail[0] : detail[0].first();

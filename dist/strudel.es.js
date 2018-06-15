@@ -769,7 +769,7 @@ const linker = new Linker(registry);
 const channel = $(document);
 
 const getElement = (detail) => {
-  var element;
+  let element;
 
   if (detail && detail.length > 0) {
     element = (detail[0] instanceof HTMLElement) ? detail[0] : detail[0].first();
