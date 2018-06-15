@@ -6,12 +6,13 @@ const linker = new Linker(registry);
 const channel = $(document);
 
 const getElement = (detail) => {
+  let element;
+
   if (detail && detail.length > 0) {
-    const element = detail[0];
-    return (element instanceof HTMLElement) ? element : element.first();
+    element = (detail[0] instanceof HTMLElement) ? detail[0] : detail[0].first();
   }
 
-  return false;
+  return element;
 };
 
 const bootstrap = (root) => {

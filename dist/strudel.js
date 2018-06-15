@@ -1001,12 +1001,13 @@ var linker = new Linker(registry);
 var channel = $(document);
 
 var getElement = function getElement(detail) {
+  var element;
+
   if (detail && detail.length > 0) {
-    var element = detail[0];
-    return element instanceof HTMLElement ? element : element.first();
+    element = detail[0] instanceof HTMLElement ? detail[0] : detail[0].first();
   }
 
-  return false;
+  return element;
 };
 
 var bootstrap = function bootstrap(root) {
