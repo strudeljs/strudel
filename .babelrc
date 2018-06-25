@@ -3,11 +3,8 @@
     [
       "env",
       {
-        "targets": {
-          "browsers": ["last 2 versions", "safari >= 7"]
-        },
-        "modules": false,
-      },
+        "modules": false
+      }
     ]
   ],
   "plugins": [
@@ -18,9 +15,7 @@
   "env": {
     "test": {
       "presets": [
-        [
-          "es2015"
-        ]
+        "es2015"
       ],
       "plugins": [
         "transform-decorators-legacy",
