@@ -42,4 +42,4 @@ $ npm test
 
 ## Credits
 
-Thank you to all the people who have already contributed to strudeljs!
+Thank you to all the people who have already contributed to strudel!

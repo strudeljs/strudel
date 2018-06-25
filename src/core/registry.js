@@ -1,55 +1,29 @@
 /**
- * Registry
- * @type {Object}
- */
-const registry = {};
-
-/**
- * Singleton instance
- * @type {Object}
- */
-let instance = null;
-
-/**
  * Simple registry for storing selector-constructor pairs
  */
 class Registry {
-
   /**
    * @constructor
    */
   constructor() {
-    if (!instance) {
-      instance = this;
-    }
-
-    return instance;
+    this._registry = {};
   }
 
   /**
-   * Returns keys from registry
-   * @returns {Array.<string>}
-     */
-  getSelectors() {
-    return Object.keys(registry);
-  }
-
-  /**
-   * Clears registry
+   * Retunrs all registry data
+   * @returns {{}|*}
    */
-  clear() {
-    this.getSelectors().forEach((selector) => {
-      delete registry[selector];
-    });
+  getData() {
+    return this._registry;
   }
 
   /**
    * Returns component constructor for selector from map
    * @param {string} selector
    * @returns {Function} constructor
-     */
+   */
   getComponent(selector) {
-    return registry[selector];
+    return this._registry[selector];
   }
 
   /**
@@ -58,8 +32,8 @@ class Registry {
    * @param {Function} constructor
      */
   registerComponent(selector, klass) {
-    registry[selector] = klass;
+    this._registry[selector] = klass;
   }
 }
 
-export default Registry;
+export default new Registry();

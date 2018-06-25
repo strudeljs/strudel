@@ -1,8 +1,6 @@
-import Registry from '../core/registry';
-import Component from '../core/component';
-import mixin from '../util/mixin';
-
-const registry = new Registry();
+import registry from '../core/registry';
+import Component from '../component/instance';
+import { mixPrototypes } from '../util/helpers';
 
 /**
  * Component decorator - Registers decorated class in {@link Registry} as a component
@@ -23,7 +21,7 @@ const register = (target, selector) => {
     }
   };
 
-  mixin(component, target);
+  mixPrototypes(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
   registry.registerComponent(selector, component);
@@ -31,8 +29,8 @@ const register = (target, selector) => {
   return component;
 };
 
-export default (selector) => {
-  return (target) => {
+export default function decorator(selector) {
+  return function _decorator(target) {
     return register(target, selector);
   };
-};
+}

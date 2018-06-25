@@ -112,6 +112,9 @@ class Element {
     this._nodes = this.slice(selector);
   }
 
+  /**
+   * Returns size of nodes
+   */
   get length() {
     return this._nodes.length;
   }
@@ -139,7 +142,7 @@ class Element {
 
   /**
    * Create a string from different things
-   private* @
+   * @private
    */
   str(node, i) {
     return function (arg) {
@@ -189,6 +192,15 @@ class Element {
    */
   eq(index) {
     return new Element(this._nodes[index]) || false;
+  }
+
+  /**
+   * Reduce the set of matched elements to the HTMLElement at the specified index.
+   * @param {Number} index - An integer indicating the 0-based position of the element.
+   * @returns {HTMLElement}
+   */
+  get(index) {
+    return (index && index <= this._nodes.length) ? this._nodes[index] : this._nodes;
   }
 
   /**
@@ -609,7 +621,11 @@ class Element {
     if (typeof name === 'object') {
       return this.each(function (node) {
         for (let key in name) {
-          node.setAttribute(data + key, name[key]);
+          if (name[key] !== null) {
+            node.setAttribute(data + key, name[key]);
+          } else {
+            node.removeAttribute(data + key);
+          }
         }
       });
     }
@@ -655,6 +671,6 @@ class Element {
   }
 }
 
-export default (selector, element) => {
+export default function $(selector, element) {
   return new Element(selector, element);
 };

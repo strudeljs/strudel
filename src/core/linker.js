@@ -1,4 +1,4 @@
-import $ from './element';
+import $ from '../dom/element';
 
 /**
  * @classdesc Class linking components with DOM
@@ -14,21 +14,14 @@ class Linker {
   }
 
   /**
-   *
-   */
-  linkAll() {
-    this.link(document);
-  }
-
-  /**
    * Finds all components within selector and destroy them
    * @param {DOMElement} container
    */
-  unlink(container) {
-    this.registry.getSelectors().forEach((selector) => {
-      [].forEach.call(container.querySelectorAll(selector), (element) => {
-        if (element.scope) {
-          element.scope.$teardown();
+  unlink(container = document) {
+    Object.keys(this.registry.getData()).forEach((selector) => {
+      [].forEach.call(container.querySelectorAll(selector), (el) => {
+        if (el.component) {
+          el.component.$teardown();
         }
       });
     });
@@ -38,25 +31,17 @@ class Linker {
    * Iterates over selectors in registry, find occurrences in container and initialize components
    * @param {DOMElement} container
    */
-  link(container) {
-    this.registry.getSelectors().forEach((selector) => {
-      [].forEach.call(container.querySelectorAll(selector), (element) => {
-        if (!element.scope) {
-          const el = $(element);
-          element.scope = this.createComponent(el, this.registry.getComponent(selector));
+  link(container = document) {
+    Object.keys(this.registry.getData()).forEach((selector) => {
+      [].forEach.call(container.querySelectorAll(selector), (el) => {
+        if (!el.component) {
+          const element = $(el);
+          const data = element.data();
+          const Instance = this.registry.getComponent(selector);
+          el.component = new Instance({ element, data });
         }
       });
     });
-  }
-
-  /**
-   * Creates instance of {Component} for provided DOM element
-   * @param {DOMElement} element
-   * @param {Function} constructor
-   */
-  createComponent(element, Klass) {
-    const data = element.data();
-    return new Klass({ element, data });
   }
 }
 

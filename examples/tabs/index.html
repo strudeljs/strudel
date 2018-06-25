@@ -1,14 +1,3 @@
-<head>
-  <style>
-    .tab-pane {
-      display: none;
-    }
-
-    .tab-pane.is-active {
-      display: block;
-    }
-  </style>
-</head>
 <body>
   <div class="tabs">
     <ul class="tabs-nav" role="tablist">
@@ -23,7 +12,7 @@
       <div class="tab-pane" role="tabpanel" id="home" aria-labelledby="home-tab">
         <p>Content 1</p>
       </div>
-      <div class="tab-pane" role="tabpanel" id="profile" aria-labelledby="profile-tab">
+      <div class="tab-pane" role="tabpanel" id="profile" aria-labelledby="profile-tab" hidden>
         <p>Content 2</p>
       </div>
     </div>
@@ -40,16 +29,13 @@
 
     	@Strudel.Evt('click .tabs-nav a')
     	toggleTab(evt) {
+    		console.log(evt);
     		const target = evt.target.getAttribute('href').substring(1);
-    		this.panes.removeClass('is-active').filter(`#${target}`).addClass('is-active');
+    		this.panes.attr('hidden', 'true').filter(`#${target}`).attr('hidden', null);
     		evt.preventDefault();
-      }
-
-      init() {
-    		this.panes.filter(':first-child').addClass('is-active');
       }
     }
 
-    Strudel.element(document).trigger('contentloaded');
+    Strudel.element(document).trigger('content:loaded');
   </script>
 </body>

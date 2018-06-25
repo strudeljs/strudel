@@ -1,7 +1,7 @@
-import Component from '../../../src/core/component';
+import Component from '../../../src/component/instance';
 import element from '../__mocks';
 
-describe('Component', () => {
+describe('Component Instance', () => {
   it('instantiates', () => {
     const component = new Component({ element });
     expect(component).to.be.an.instanceof(Component);
@@ -37,7 +37,7 @@ describe('Component', () => {
 
   it('has destroy hook', () => {
     const component = new Component({ element });
-    expect(component.init).to.be.a('function');
+    expect(component.destroy).to.be.a('function');
   });
 
   it('should teardown', () => {

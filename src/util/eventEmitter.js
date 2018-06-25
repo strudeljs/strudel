@@ -1,21 +1,24 @@
-/**
- * Check if passed parameter is a function
- * @param obj
- * @returns {boolean}
- */
-const isFunction = (obj) => {
-  return typeof obj === 'function' || false;
-};
+import { isFunction } from './helpers';
 
 /**
- * Simple Event Emitter implementation
+ * Event listeners
+ * @type {{}}
+ */
+const events = {};
+
+/**
+ * @classdesc Simple Event Emitter implementation - global
+ * @class
  */
 class EventEmitter {
-  /**
-   * @constructor
-   */
-  constructor() {
-    this._listeners = {};
+  static getEvents() {
+    return events;
+  }
+
+  static removeAllListeners() {
+    Object.keys(events).forEach((prop) => {
+      delete events[prop];
+    });
   }
 
   /**
@@ -23,11 +26,11 @@ class EventEmitter {
    * @param {string} label
    * @param {Function} callback
    */
-  addListener(label, callback) {
-    if (!this._listeners[label]) {
-      this._listeners[label] = [];
+  $on(label, callback) {
+    if (!events[label]) {
+      events[label] = [];
     }
-    this._listeners[label].push(callback);
+    events[label].push(callback);
   }
 
   /**
@@ -36,8 +39,8 @@ class EventEmitter {
    * @param {Function} callback
    * @returns {boolean}
    */
-  removeListener(label, callback) {
-    const listeners = this._listeners[label];
+  $off(label, callback) {
+    const listeners = events[label];
 
     if (listeners && listeners.length) {
       const index = listeners.reduce((i, listener, ind) => {
@@ -46,7 +49,7 @@ class EventEmitter {
 
       if (index > -1) {
         listeners.splice(index, 1);
-        this._listeners[label] = listeners;
+        events[label] = listeners;
         return true;
       }
     }
@@ -54,13 +57,13 @@ class EventEmitter {
   }
 
   /**
-   * Notifies liteners attached to event
+   * Notifies listeners attached to event
    * @param {string} label
    * @param args
    * @returns {boolean}
    */
-  emit(label, ...args) {
-    const listeners = this._listeners[label];
+  $emit(label, ...args) {
+    const listeners = events[label];
 
     if (listeners && listeners.length) {
       listeners.forEach((listener) => {
@@ -73,5 +76,3 @@ class EventEmitter {
 }
 
 export default EventEmitter;
-
-export const emitter = new EventEmitter();

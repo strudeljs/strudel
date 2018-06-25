@@ -8,13 +8,20 @@
 <script type="text/babel" data-plugins="transform-decorators-legacy">
   @Strudel.Component('.clicker')
   class Clicker {
-    @Strudel.Evt('click .clicker__btn')
-    click(e) {
-      this.$element.append("<div class='message'>Clicked</div>")
-      e.preventDefault();
+    @Strudel.Evt('click .clicker__btn', true)
+    click() {
+      this.$element.append("<div class='alert' data-message='Hello'></div>")
+      this.$element.trigger('content:loaded');
     }
   }
 
-  Strudel.element(document).trigger('contentloaded');
+  @Strudel.Component('.alert')
+  class Alert {
+    init() {
+    	this.$element.html(this.$data.message);
+    }
+  }
+
+  Strudel.element(document).trigger('content:loaded');
 </script>
 </body>

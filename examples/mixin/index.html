@@ -1,0 +1,42 @@
+<body>
+<div class="catdog"></div>
+
+<script src="../../dist/strudel.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
+<script type="text/babel" data-presets="es2015" data-plugins="transform-class-properties,transform-decorators-legacy">
+  var cat = {
+  	init() {
+  	  this.breed = 'Maine Coon';
+    },
+
+  	meow() {
+  	  return 'MEOW!';
+    }
+  };
+
+  var dog = {
+    init() {
+      this.breed = 'Corgi';
+    },
+
+    bark() {
+      return 'BARK?';
+    }
+  };
+
+  @Strudel.Component('.catdog')
+  class CatDog {
+    mixins = [dog, cat];
+
+    init() {
+    	this.$element.html(`
+    	  I am ${this.breed}.
+    	  ${this.meow()}
+    	  ${this.bark()}
+      `);
+    }
+  }
+
+  Strudel.element(document).trigger('content:loaded');
+</script>
+</body>

@@ -3,11 +3,11 @@ module.exports = {
     browser
       .url('http://localhost:9876/examples/interactive')
       .waitForElementVisible('body', 1000)
-      .assert.elementNotPresent('.message')
+      .assert.elementNotPresent('.alert')
       .click('.clicker__btn')
-      .assert.elementPresent('.message')
+      .assert.elementPresent('.alert')
       .click('.clicker__btn')
-      .assert.elementPresent('.message:nth-child(2)')
+      .assert.elementPresent('.alert:nth-child(2)')
       .end();
   }
 };
