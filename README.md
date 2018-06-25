@@ -1,11 +1,14 @@
 <p align="center"><img width="100px" src="http://strudeljs.org/images/strudel-twoline.svg"></p>
 <br>
 <p align="center">
+<a href="https://nodejs.org/api/documentation.html#documentation_stability_index"><img src="https://img.shields.io/badge/stability-experimental-orange.svg" alt="Stability"></a>
 <a href="https://circleci.com/gh/strudeljs/strudel/tree/dev"><img src="https://circleci.com/gh/strudeljs/strudel.svg?style=shield&circle-token=:circle-token" alt="Build Status"></a>
 <a href="https://codecov.io/gh/strudeljs/strudel"><img src="https://codecov.io/gh/strudeljs/strudel/branch/master/graph/badge.svg" alt="Codecov" /></a>
+<a href="https://npmcharts.com/compare/strudel?minimal=true"><img src="https://img.shields.io/npm/dm/strudel.svg" alt="Downloads"></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/v/strudel.svg" alt="Version"></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/l/strudel.svg" alt="License"></a>
 <a href="https://gitter.im/strudel-js"><img src="https://img.shields.io/gitter/room/nwjs/nw.js.svg" alt="Gitter"></a>
+  
 </p>
 
 Strudel.js (`@`) is a lightweight ECMAScript 2015 component framework that main features are:
@@ -41,7 +44,23 @@ It's recommended to start a project using dedicated [CLI](https://github.com/str
 
 To check more examples and docs visit [strudeljs.org](http://strudeljs.org).
 
-## Contributing
+## Ecosystem
+
+| Project | Status | Description |
+|---------|--------|-------------|
+| [strudel-cli]             | [![strudel-cli-status]][strudel-cli-package] | Project scaffolding |
+| [strudel-devtools]        | [![strudel-devtools-status]][strudel-devtools-package] | Browser DevTools extension |
+
+[strudel-cli]: https://github.com/strudeljs/strudel-cli
+[strudel-devtools]:  https://github.com/strudeljs/strudel-devtools
+
+[strudel-cli-status]: https://img.shields.io/npm/v/strudel-cli.svg
+[strudel-devtools-status]: https://img.shields.io/chrome-web-store/v/
+
+[strudel-cli-package]: https://npmjs.com/package/strudel-cli
+[strudel-devtools-package]: https://chrome.google.com/webstore/detail/
+
+## Contribution
 
 Please make sure to read the [Contributing Guide](https://github.com/strudeljs/strudel/blob/master/CONTRIBUTING.md) before making a pull request.
 
