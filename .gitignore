@@ -7,3 +7,5 @@ coverage
 .nyc_output
 test/e2e/reports
 test/e2e/screenshots
+dist/*.js
+RELEASE_NOTE*.md
