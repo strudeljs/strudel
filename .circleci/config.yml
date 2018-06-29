@@ -12,12 +12,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-strudel-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - v1-strudel-{{ .Branch }}-{{ checksum "package-lock.json" }}
             - v1-strudel-{{ .Branch }}-
             - v1-strudel-
       - run: npm install
       - save_cache:
-          key: v1-strudel-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: v1-strudel-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - node_modules/
       - persist_to_workspace:
