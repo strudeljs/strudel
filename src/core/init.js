@@ -57,7 +57,7 @@ const onAutoTeardownCallback = (mutation) => {
     .forEach((node) => {
       linker.unlink(node);
     });
-}
+};
 
 const init = () => {
   if (/comp|inter|loaded/.test(document.readyState)) {
