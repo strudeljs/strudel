@@ -34,7 +34,7 @@ const bindContentEvents = () => {
 const onMutationCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
-  Array.from(mutation.addedNodes)
+  Array.prototype.slice.call(mutation.addedNodes)
   .filter((node) => {
     return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
   })
