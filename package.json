@@ -18,8 +18,8 @@
     "test:sauce": "node test/e2e/runner.js --config ./test/e2e/sauce.config.js --test tabs --env chrome,firefox,ie11,edge,safari,android,iphone",
     "lint": "eslint src",
     "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov",
-    "release": "bash build/release.sh",
-    "release:notes": "node build/release-notes.js",
+    "release": "bash scripts/release.sh",
+    "release:notes": "node scripts/release-notes.js",
     "commit": "git-cz"
   },
   "nyc": {
