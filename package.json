@@ -7,10 +7,14 @@
   "directories": {
     "example": "examples"
   },
+  "watch": {
+    "build": "src/**/*.js"
+  },
   "scripts": {
-    "setup": "node build/install-hooks.js",
-    "build": "node ./build/build.js",
-    "examples": "gulp examples",
+    "setup": "node scripts/install-hooks.js",
+    "build": "node scripts/build.js",
+    "watch": "npm-watch",
+    "examples": "webpack-dev-server --config webpack.common.js",
     "test": "NODE_ENV=test npm run lint && npm run test:unit && npm run test:e2e && npm run test:cover",
     "test:unit": "NODE_ENV=test mocha --opts ./test/unit/mocha.opts ./test/unit/**/*.js",
     "test:e2e": "node test/e2e/runner.js",
@@ -18,8 +22,8 @@
     "test:sauce": "node test/e2e/runner.js --config ./test/e2e/sauce.config.js --test tabs --env chrome,firefox,ie11,edge,safari,android,iphone",
     "lint": "eslint src",
     "codecov": "NODE_ENV=test nyc report --reporter=lcov | codecov",
-    "release": "bash build/release.sh",
-    "release:notes": "node build/release-notes.js",
+    "release": "bash scripts/release.sh",
+    "release:notes": "node scripts/release-notes.js",
     "commit": "git-cz"
   },
   "nyc": {
@@ -60,20 +64,17 @@
     "codecov": "^2.1.0",
     "commitizen": "^2.10.1",
     "conventional-changelog": "^2.0.1",
-    "cors": "^2.8.1",
     "cross-spawn": "^5.1.0",
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "gulp": "^3.9.1",
-    "gulp-connect": "^5.0.0",
-    "gulp-open": "^2.0.0",
     "http-server": "^0.10.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.0.2",
     "nightwatch": "^0.9.14",
     "nightwatch-helpers": "^1.2.0",
+    "npm-watch": "^0.3.0",
     "nyc": "^10.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
@@ -81,7 +82,10 @@
     "saucelabs": "^1.4.0",
     "selenium-server": "^3.3.1",
     "shelljs": "^0.7.8",
-    "uglify-js": "^2.8.22"
+    "uglify-js": "^2.8.22",
+    "webpack": "^4.14.0",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
   },
   "config": {
     "commitizen": {

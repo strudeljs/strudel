@@ -16,4 +16,11 @@ describe('Core Registry', () => {
     registry.registerComponent('test', Component);
     expect(registry.getComponent('test')).to.be.a('function');
   });
+
+  it('returns registered selectors', () => {
+    registry.registerComponent('selector', Component);
+    registry.registerComponent('selector2', Component);
+    expect(registry.getRegisteredSelectors()).to.include('selector');
+    expect(registry.getRegisteredSelectors()).to.include('selector2');
+  });
 });
