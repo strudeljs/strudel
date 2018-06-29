@@ -15,7 +15,7 @@
   "env": {
     "test": {
       "presets": [
-        "env"
+        "es2015"
       ],
       "plugins": [
         "transform-decorators-legacy",
