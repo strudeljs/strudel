@@ -1,12 +1,8 @@
 import Linker from './linker';
 import registry from './registry';
 import $ from '../dom/element';
-<<<<<<< HEAD
 import { attachNewInitObserver, attachNewTeardownObserver } from './observer';
 import config from '../config';
-=======
-import attachNewMutationObserver from './observer';
->>>>>>> dev
 
 const linker = new Linker(registry);
 const channel = $(document);
@@ -71,8 +67,8 @@ const init = () => {
   }
 
   bindContentEvents();
+  attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
   attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
-  attachNewMutationObserver(channel._nodes[0], onMutationCallback);
 };
 
 export default init;
