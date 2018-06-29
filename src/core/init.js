@@ -1,6 +1,8 @@
 import Linker from './linker';
 import registry from './registry';
 import $ from '../dom/element';
+import { attachNewInitObserver, attachNewTeardownObserver } from './observer';
+import config from '../config';
 
 const linker = new Linker(registry);
 const channel = $(document);
@@ -24,10 +26,37 @@ const bindContentEvents = () => {
   channel.on('content:loaded', (evt) => {
     bootstrap(evt.detail);
   });
+};
 
-  channel.on('content:unload', (evt) => {
-    linker.unlink(getElement(evt.detail));
+
+const onAutoInitCallback = (mutation) => {
+  const registeredSelectors = registry.getRegisteredSelectors();
+
+  Array.prototype.slice.call(mutation.addedNodes)
+  .filter((node) => {
+    return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
+  })
+  .forEach((node) => {
+    if (registeredSelectors.find((el) => {
+      return $(node).is(el);
+    })) {
+      bootstrap([node]);
+    }
   });
+};
+
+const onAutoTeardownCallback = (mutation) => {
+  const initializedSelector = `.${config.initializedClassName}`;
+
+  Array.prototype.slice.call(mutation.removedNodes)
+    .filter((node) => {
+      return node.nodeName !== 'SCRIPT'
+        && node.nodeType === 1
+        && $(node).is(initializedSelector);
+    })
+    .forEach((node) => {
+      linker.unlink(node);
+    });
 };
 
 const init = () => {
@@ -38,6 +67,8 @@ const init = () => {
   }
 
   bindContentEvents();
+  attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
+  attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
 };
 
 export default init;

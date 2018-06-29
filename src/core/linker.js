@@ -1,4 +1,7 @@
 import $ from '../dom/element';
+import config from '../config';
+
+const initializedSelector = `.${config.initializedClassName}`;
 
 /**
  * @classdesc Class linking components with DOM
@@ -18,8 +21,12 @@ class Linker {
    * @param {DOMElement} container
    */
   unlink(container = document) {
-    Object.keys(this.registry.getData()).forEach((selector) => {
-      [].forEach.call(container.querySelectorAll(selector), (el) => {
+    this.registry.getRegisteredSelectors().forEach((selector) => {
+      const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
+      if (container !== document && $(container).is(initializedSelector)) {
+        elements.push(container);
+      }
+      [].forEach.call(elements, (el) => {
         if (el.component) {
           el.component.$teardown();
         }
