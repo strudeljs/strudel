@@ -10,7 +10,7 @@
   "scripts": {
     "setup": "node build/install-hooks.js",
     "build": "node ./build/build.js",
-    "examples": "gulp examples",
+    "examples": "webpack-dev-server --config webpack.common.js",
     "test": "NODE_ENV=test npm run lint && npm run test:unit && npm run test:e2e && npm run test:cover",
     "test:unit": "NODE_ENV=test mocha --opts ./test/unit/mocha.opts ./test/unit/**/*.js",
     "test:e2e": "node test/e2e/runner.js",
@@ -60,15 +60,11 @@
     "codecov": "^2.1.0",
     "commitizen": "^2.10.1",
     "conventional-changelog": "^2.0.1",
-    "cors": "^2.8.1",
     "cross-spawn": "^5.1.0",
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "gulp": "^3.9.1",
-    "gulp-connect": "^5.0.0",
-    "gulp-open": "^2.0.0",
     "http-server": "^0.10.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.0.2",
@@ -81,7 +77,10 @@
     "saucelabs": "^1.4.0",
     "selenium-server": "^3.3.1",
     "shelljs": "^0.7.8",
-    "uglify-js": "^2.8.22"
+    "uglify-js": "^2.8.22",
+    "webpack": "^4.14.0",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
   },
   "config": {
     "commitizen": {
