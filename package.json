@@ -65,7 +65,6 @@
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "http-server": "^0.10.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.0.2",
     "nightwatch": "^0.9.14",
