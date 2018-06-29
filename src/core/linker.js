@@ -33,7 +33,11 @@ class Linker {
    */
   link(container = document) {
     Object.keys(this.registry.getData()).forEach((selector) => {
-      [].forEach.call(container.querySelectorAll(selector), (el) => {
+      const elements = Array.from(container.querySelectorAll(selector));
+      if (container !== document && $(container).is(selector)) {
+        elements.push(container);
+      }
+      [].forEach.call(elements, (el) => {
         if (!el.component) {
           const element = $(el);
           const data = element.data();

@@ -7,9 +7,13 @@
   "directories": {
     "example": "examples"
   },
+  "watch": {
+    "build": "src/**/*.js"
+  },
   "scripts": {
     "setup": "node build/install-hooks.js",
     "build": "node ./build/build.js",
+    "watch": "npm-watch ",
     "examples": "gulp examples",
     "test": "NODE_ENV=test npm run lint && npm run test:unit && npm run test:e2e && npm run test:cover",
     "test:unit": "NODE_ENV=test mocha --opts ./test/unit/mocha.opts ./test/unit/**/*.js",
@@ -74,6 +78,7 @@
     "mocha": "^3.0.2",
     "nightwatch": "^0.9.14",
     "nightwatch-helpers": "^1.2.0",
+    "npm-watch": "^0.3.0",
     "nyc": "^10.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
