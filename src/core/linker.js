@@ -32,7 +32,7 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container = document) {
-    Object.keys(this.registry.getData()).forEach((selector) => {
+    this.registry.getRegisteredSelectors().forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
       if (container !== document && $(container).is(selector)) {
         elements.push(container);
