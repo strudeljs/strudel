@@ -8,5 +8,6 @@ if [[ -z $CI_PULL_REQUEST ]] || [[ $CIRCLE_BRANCH = master ]]; then
   npm run test:cover
   npm run codecov
 else
+  npm run build
   npm run test
 fi
