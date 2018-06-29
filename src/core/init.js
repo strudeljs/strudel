@@ -1,6 +1,7 @@
 import Linker from './linker';
 import registry from './registry';
 import $ from '../dom/element';
+import attachNewMutationObserver from './observer';
 
 const linker = new Linker(registry);
 const channel = $(document);
@@ -30,6 +31,22 @@ const bindContentEvents = () => {
   });
 };
 
+const onMutationCallback = (mutation) => {
+  const registeredSelectors = registry.getRegisteredSelectors();
+
+  Array.prototype.slice.call(mutation.addedNodes)
+  .filter((node) => {
+    return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
+  })
+  .forEach((node) => {
+    if (registeredSelectors.find((el) => {
+      return $(node).is(el);
+    })) {
+      bootstrap([node]);
+    }
+  });
+};
+
 const init = () => {
   if (/comp|inter|loaded/.test(document.readyState)) {
     setTimeout(bootstrap, 0);
@@ -38,6 +55,7 @@ const init = () => {
   }
 
   bindContentEvents();
+  attachNewMutationObserver(channel._nodes[0], onMutationCallback);
 };
 
 export default init;
