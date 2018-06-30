@@ -17,6 +17,11 @@ class Registry {
     return this._registry;
   }
 
+  getRegisteredSelectors() {
+    return Object
+      .keys(this._registry);
+  }
+
   /**
    * Returns component constructor for selector from map
    * @param {string} selector

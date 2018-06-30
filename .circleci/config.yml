@@ -12,14 +12,25 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-strudel-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - v1-strudel-{{ .Branch }}-{{ checksum "package-lock.json" }}
             - v1-strudel-{{ .Branch }}-
             - v1-strudel-
       - run: npm install
       - save_cache:
-          key: v1-strudel-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: v1-strudel-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - node_modules/
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - strudel
+
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: npm run build
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -37,6 +48,7 @@ jobs:
            if [[ -z $CI_PULL_REQUEST ]]; then
              ./node_modules/.bin/codecov
            fi
+
   test-e2e:
     <<: *defaults
     steps:
@@ -49,9 +61,12 @@ workflows:
   install-and-parallel-test:
     jobs:
       - install
+      - build:
+          requires:
+            - install
       - test-cover:
           requires:
-            - install
+            - build
       - test-e2e:
           requires:
-            - install
+            - build
