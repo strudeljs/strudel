@@ -928,8 +928,12 @@ var Linker = function () {
 
       var container = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document;
 
-      Object.keys(this.registry.getData()).forEach(function (selector) {
-        [].forEach.call(container.querySelectorAll(selector), function (el) {
+      this.registry.getRegisteredSelectors().forEach(function (selector) {
+        var elements = Array.prototype.slice.call(container.querySelectorAll(selector));
+        if (container !== document && $(container).is(selector)) {
+          elements.push(container);
+        }
+        [].forEach.call(elements, function (el) {
           if (!el.component) {
             var element = $(el);
             var data = element.data();
@@ -967,6 +971,11 @@ var Registry = function () {
     value: function getData() {
       return this._registry;
     }
+  }, {
+    key: "getRegisteredSelectors",
+    value: function getRegisteredSelectors() {
+      return Object.keys(this._registry);
+    }
 
     /**
      * Returns component constructor for selector from map
@@ -997,6 +1006,29 @@ var Registry = function () {
 
 var registry = new Registry();
 
+var onChildrenAddition = function onChildrenAddition(mutations, callback) {
+  mutations.forEach(function (mutation) {
+    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+      callback(mutation);
+    }
+  });
+};
+
+var attachNewMutationObserver = function attachNewMutationObserver(observerRoot, callback) {
+  var observer = new MutationObserver(function (mutations) {
+    onChildrenAddition(mutations, callback);
+  });
+  var observerConfig = {
+    childList: true,
+    subtree: true
+  };
+  observer.observe(observerRoot, observerConfig);
+};
+
+var attachNewMutationObserver$1 = (function (observerRoot, callback) {
+  return attachNewMutationObserver(observerRoot, callback);
+});
+
 var linker = new Linker(registry);
 var channel = $(document);
 
@@ -1025,6 +1057,20 @@ var bindContentEvents = function bindContentEvents() {
   });
 };
 
+var onMutationCallback = function onMutationCallback(mutation) {
+  var registeredSelectors = registry.getRegisteredSelectors();
+
+  Array.prototype.slice.call(mutation.addedNodes).filter(function (node) {
+    return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
+  }).forEach(function (node) {
+    if (registeredSelectors.find(function (el) {
+      return $(node).is(el);
+    })) {
+      bootstrap([node]);
+    }
+  });
+};
+
 var init = function init() {
   if (/comp|inter|loaded/.test(document.readyState)) {
     setTimeout(bootstrap, 0);
@@ -1033,6 +1079,7 @@ var init = function init() {
   }
 
   bindContentEvents();
+  attachNewMutationObserver$1(channel._nodes[0], onMutationCallback);
 };
 
 var config$1 = {

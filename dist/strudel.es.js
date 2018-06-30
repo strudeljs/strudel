@@ -712,8 +712,12 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container = document) {
-    Object.keys(this.registry.getData()).forEach((selector) => {
-      [].forEach.call(container.querySelectorAll(selector), (el) => {
+    this.registry.getRegisteredSelectors().forEach((selector) => {
+      const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
+      if (container !== document && $(container).is(selector)) {
+        elements.push(container);
+      }
+      [].forEach.call(elements, (el) => {
         if (!el.component) {
           const element = $(el);
           const data = element.data();
@@ -744,6 +748,11 @@ class Registry {
     return this._registry;
   }
 
+  getRegisteredSelectors() {
+    return Object
+      .keys(this._registry);
+  }
+
   /**
    * Returns component constructor for selector from map
    * @param {string} selector
@@ -764,6 +773,28 @@ class Registry {
 }
 
 var registry = new Registry();
+
+const onChildrenAddition = (mutations, callback) => {
+  mutations.forEach((mutation) => {
+    if (
+        mutation.type === 'childList'
+        && mutation.addedNodes.length > 0
+    ) {
+      callback(mutation);
+    }
+  });
+};
+
+const attachNewMutationObserver = (observerRoot, callback) => {
+  const observer = new MutationObserver((mutations) => { onChildrenAddition(mutations, callback); });
+  const observerConfig = {
+    childList: true,
+    subtree: true
+  };
+  observer.observe(observerRoot, observerConfig);
+};
+
+var attachNewMutationObserver$1 = (observerRoot, callback) => { return attachNewMutationObserver(observerRoot, callback); };
 
 const linker = new Linker(registry);
 const channel = $(document);
@@ -793,6 +824,22 @@ const bindContentEvents = () => {
   });
 };
 
+const onMutationCallback = (mutation) => {
+  const registeredSelectors = registry.getRegisteredSelectors();
+
+  Array.prototype.slice.call(mutation.addedNodes)
+  .filter((node) => {
+    return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
+  })
+  .forEach((node) => {
+    if (registeredSelectors.find((el) => {
+      return $(node).is(el);
+    })) {
+      bootstrap([node]);
+    }
+  });
+};
+
 const init = () => {
   if (/comp|inter|loaded/.test(document.readyState)) {
     setTimeout(bootstrap, 0);
@@ -801,6 +848,7 @@ const init = () => {
   }
 
   bindContentEvents();
+  attachNewMutationObserver$1(channel._nodes[0], onMutationCallback);
 };
 
 var config$1 = {
