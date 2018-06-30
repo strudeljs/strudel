@@ -30,7 +30,10 @@ $ npm run setup
 ```
 
 ### Committing Changes
+
 Commit messages should follow the commit message [covnention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular) so that changelogs can be automatically generated. If you are not familiar with the commit message convention, you can use `npm run commit` instead of `git commit`, which provides an interactive CLI for generating proper commit messages.
+
+**Do not commit dist files.**
 
 ### Useful NPM scripts
 

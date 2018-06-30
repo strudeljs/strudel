@@ -11,7 +11,6 @@
     "build": "src/**/*.js"
   },
   "scripts": {
-    "setup": "node scripts/install-hooks.js",
     "build": "node scripts/build.js",
     "examples": "gulp examples",
     "watch": "npm-watch",
@@ -25,6 +24,16 @@
     "release": "bash scripts/release.sh",
     "release:notes": "node scripts/release-notes.js",
     "commit": "git-cz"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged",
+    "commit-msg": "node scripts/verify-commit-msg.js"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "nyc": {
     "require": [
@@ -60,6 +69,7 @@
     "babel-register": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "chai": "^3.5.0",
+    "chalk": "^2.4.1",
     "chromedriver": "^2.32.3",
     "codecov": "^2.1.0",
     "commitizen": "^2.10.1",
@@ -75,6 +85,7 @@
     "gulp-open": "^2.0.0",
     "http-server": "^0.10.0",
     "istanbul": "^0.4.5",
+    "lint-staged": "^7.2.0",
     "mocha": "^3.0.2",
     "nightwatch": "^0.9.14",
     "nightwatch-helpers": "^1.2.0",
@@ -86,7 +97,8 @@
     "saucelabs": "^1.4.0",
     "selenium-server": "^3.3.1",
     "shelljs": "^0.7.8",
-    "uglify-js": "^2.8.22"
+    "uglify-js": "^2.8.22",
+    "yorkie": "^1.0.3"
   },
   "config": {
     "commitizen": {
