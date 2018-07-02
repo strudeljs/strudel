@@ -1,5 +1,5 @@
 const rollup = require('rollup');
-const babel = require('rollup-plugin-babel');
+const buble = require('rollup-plugin-buble');
 const replace = require('rollup-plugin-replace');
 const path = require('path');
 const fs = require('fs');
@@ -14,15 +14,21 @@ const banner =
   ' * Released under the MIT License.\n' +
   ' */';
 
+if (!fs.existsSync('dist')) {
+  fs.mkdirSync('dist')
+}
+
 const builds = [
   {
-    moduleName: 'Strudel',
-    entry: './src/index.js',
-    format: 'umd',
-    dest: './dist/strudel.js',
-    banner,
+    input: './src/index.js',
+    output: {
+      file: './dist/strudel.js',
+      name: 'Strudel',
+      format: 'umd',
+      banner
+    },
     plugins: [
-      babel({
+      buble({
         exclude: 'node_modules/**'
       }),
       replace({
@@ -31,13 +37,15 @@ const builds = [
     ]
   },
   {
-    moduleName: 'Strudel',
-    entry: './src/index.js',
-    format: 'umd',
-    dest: './dist/strudel.min.js',
-    banner,
+    input: './src/index.js',
+    output: {
+      file: './dist/strudel.min.js',
+      name: 'Strudel',
+      format: 'umd',
+      banner,
+    },
     plugins: [
-      babel({
+      buble({
         exclude: 'node_modules/**'
       }),
       replace({
@@ -46,10 +54,12 @@ const builds = [
     ]
   },
   {
-    entry: './src/index.js',
-    format: 'es',
-    dest: './dist/strudel.es.js',
-    banner,
+    input: './src/index.js',
+    output: {
+      format: 'es',
+      file: './dist/strudel.es.js',
+      banner,
+    },
     plugins: [
       replace({
         __VERSION__: version
@@ -88,25 +98,26 @@ const write = (dest, code, zip) => {
 }
 
 builds.forEach((config) => {
-  const isProd = /min\.js$/.test(config.dest);
-  rollup.rollup(config).then((bundle) => {
-    const code = bundle.generate(config).code;
-    if (isProd) {
-      var minified = (config.banner ? config.banner + '\n' : '') + uglify.minify(code, {
-          fromString: true,
-          output: {
-            screw_ie8: true,
-            ascii_only: true
-          },
-          compress: {
-            pure_funcs: ['makeMap']
-          }
-        }).code
-      return write(config.dest, minified, true);
-    } else {
-      return write(config.dest, code);
-    }
-  });
+  const output = config.output;
+  const { file, banner } = output;
+  const isProd = /min\.js$/.test(file);
+  rollup.rollup(config)
+    .then((bundle) => bundle.generate(output))
+    .then(({ code }) => {
+      if (isProd) {
+        var minified = (banner ? banner + '\n' : '') + uglify.minify(code, {
+            output: {
+              ascii_only: true
+            },
+            compress: {
+              pure_funcs: ['makeMap']
+            }
+          }).code
+        return write(file, minified, true);
+      } else {
+        return write(file, code);
+      }
+    });
 });
 
 
