@@ -1,7 +1,8 @@
 import Linker from './linker';
 import registry from './registry';
 import $ from '../dom/element';
-import attachNewMutationObserver from './observer';
+import { attachNewInitObserver, attachNewTeardownObserver } from './observer';
+import config from '../config';
 
 const linker = new Linker(registry);
 const channel = $(document);
@@ -25,13 +26,10 @@ const bindContentEvents = () => {
   channel.on('content:loaded', (evt) => {
     bootstrap(evt.detail);
   });
-
-  channel.on('content:unload', (evt) => {
-    linker.unlink(getElement(evt.detail));
-  });
 };
 
-const onMutationCallback = (mutation) => {
+
+const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
   Array.prototype.slice.call(mutation.addedNodes)
@@ -47,6 +45,20 @@ const onMutationCallback = (mutation) => {
   });
 };
 
+const onAutoTeardownCallback = (mutation) => {
+  const initializedSelector = `.${config.initializedClassName}`;
+
+  Array.prototype.slice.call(mutation.removedNodes)
+    .filter((node) => {
+      return node.nodeName !== 'SCRIPT'
+        && node.nodeType === 1
+        && $(node).is(initializedSelector);
+    })
+    .forEach((node) => {
+      linker.unlink(node);
+    });
+};
+
 const init = () => {
   if (/comp|inter|loaded/.test(document.readyState)) {
     setTimeout(bootstrap, 0);
@@ -55,7 +67,8 @@ const init = () => {
   }
 
   bindContentEvents();
-  attachNewMutationObserver(channel._nodes[0], onMutationCallback);
+  attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
+  attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
 };
 
 export default init;
