@@ -851,7 +851,7 @@ const init = () => {
   attachNewMutationObserver$1(channel._nodes[0], onMutationCallback);
 };
 
-var config = {
+var config$1 = {
   /**
    * Class added on components when initialised
    */
@@ -1057,7 +1057,7 @@ class Component extends EventEmitter {
 
     this.init();
 
-    this.$element.addClass(config.initializedClassName);
+    this.$element.addClass(config$1.initializedClassName);
   }
 
   /**
@@ -1090,7 +1090,7 @@ class Component extends EventEmitter {
   $teardown() {
     this.beforeDestroy();
     this.$element.off();
-    this.$element.removeClass(config.initializedClassName);
+    this.$element.removeClass(config$1.initializedClassName);
     delete this.$element.first().scope;
     delete this.$element;
     this.destroy();
@@ -1171,27 +1171,12 @@ function decorator$2(selector) {
   };
 }
 
-/**
- * OnInit decorator - sets method to be run at init
- * @returns (Function} decorator
- */
-
-function decorator$3(klass, method) {
-  const emptyFnc = function () {};
-  const org = klass.init || emptyFnc;
-
-  klass.init = function (...args) {
-    klass[method].apply(this, ...args);
-    return org.apply(this, ...args);
-  };
-}
-
 const version = '0.7.0';
-const config$1 = config;
+const config = config$1;
 const options = {
   components: registry.getData()
 };
 
 init();
 
-export { version, options, config$1 as config, EventEmitter, decorator as Component, decorator$1 as Evt, decorator$2 as El, decorator$3 as OnInit, $ as element, $ };
+export { version, options, config, EventEmitter, decorator as Component, decorator$1 as Evt, decorator$2 as El, $ as element, $ };
