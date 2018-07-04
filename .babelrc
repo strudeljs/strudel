@@ -11,9 +11,6 @@
     "transform-decorators-legacy",
     "transform-class-properties"
   ],
-  "ignore": [
-    "dist/*.js"
-  ],
   "env": {
     "test": {
       "presets": [

@@ -1,2 +1,2 @@
 --require test/unit/config.js
---compilers js:babel-core/register
+--compilers js:buble/register
