@@ -57,7 +57,7 @@ const builds = [
     input: './src/index.js',
     output: {
       format: 'es',
-      file: './dist/strudel.es.js',
+      file: './dist/strudel.esm.js',
       banner,
     },
     plugins: [
