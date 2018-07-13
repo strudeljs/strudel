@@ -2,6 +2,13 @@
   "name": "strudel",
   "version": "0.7.0",
   "description": "A front-end framework for back-end powered web.",
+  "main": "dist/strudel.js",
+  "module": "dist/strudel.esm.js",
+  "sideEffects": false,
+  "files": [
+    "dist/*.js",
+    "src"
+  ],
   "author": "Mateusz Łuczak <mateusz.luczak@outlook.com>",
   "license": "MIT",
   "directories": {
@@ -42,13 +49,6 @@
     "sourceMap": false,
     "instrument": false
   },
-  "main": "dist/strudel.js",
-  "module": "dist/strudel.es.js",
-  "files": [
-    "dist/strudel.js",
-    "dist/strudel.min.js",
-    "src"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/strudeljs/strudel"
