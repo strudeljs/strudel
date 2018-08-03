@@ -1,6 +1,7 @@
 import init from './core/init';
 import registry from './core/registry';
 import conf from './config';
+import mount from './util/devtools';
 
 const version = '__VERSION__';
 const config = conf;
@@ -16,4 +17,5 @@ export { default as El } from './decorators/el';
 /* Backward compatibility */
 export { default as element, default as $ } from './dom/element';
 
+mount();
 init();

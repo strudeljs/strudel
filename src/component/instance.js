@@ -4,6 +4,7 @@ import bindElements from '../dom/bindElements';
 import { isFunction } from '../util/helpers';
 import mix from './mixin';
 import config from '../config';
+import handleError from '../util/error';
 
 /**
  * @classdesc Base class for all components, implementing event emitter
@@ -14,24 +15,28 @@ class Component extends EventEmitter {
   constructor({ element, data } = {}) {
     super();
 
-    this.beforeInit();
+    try {
+      this.beforeInit();
 
-    this.$element = element;
-    this.$data = data;
+      this.$element = element;
+      this.$data = data;
 
-    delegateEvents(this, this._events);
-    bindElements(this, this._els);
+      delegateEvents(this, this._events);
+      bindElements(this, this._els);
 
-    if (this.mixins && this.mixins.length) {
-      this.mixins.forEach((mixin) => {
-        if (isFunction(mixin.init)) {
-          mixin.init.call(this);
-        }
-        mix(this, mixin);
-      });
+      if (this.mixins && this.mixins.length) {
+        this.mixins.forEach((mixin) => {
+          if (isFunction(mixin.init)) {
+            mixin.init.call(this);
+          }
+          mix(this, mixin);
+        });
+      }
+
+      this.init();
+    } catch (e) {
+      handleError(e, this.constructor, 'component hook');
     }
-
-    this.init();
 
     this.$element.addClass(config.initializedClassName);
   }
@@ -64,12 +69,16 @@ class Component extends EventEmitter {
    * Teardown the component and clear events
    */
   $teardown() {
-    this.beforeDestroy();
-    this.$element.off();
-    this.$element.removeClass(config.initializedClassName);
-    delete this.$element.first().scope;
-    delete this.$element;
-    this.destroy();
+    try {
+      this.beforeDestroy();
+      this.$element.off();
+      this.$element.removeClass(config.initializedClassName);
+      delete this.$element.first().scope;
+      delete this.$element;
+      this.destroy();
+    } catch (e) {
+      handleError(e, this.constructor, 'component hook');
+    }
   }
 }
 

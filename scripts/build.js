@@ -20,6 +20,7 @@ const builds = [
     entry: './src/index.js',
     format: 'umd',
     dest: './dist/strudel.js',
+    env: 'development',
     banner,
     plugins: [
       babel({
@@ -35,6 +36,7 @@ const builds = [
     entry: './src/index.js',
     format: 'umd',
     dest: './dist/strudel.min.js',
+    env: 'production',
     banner,
     plugins: [
       babel({
@@ -89,6 +91,15 @@ const write = (dest, code, zip) => {
 
 builds.forEach((config) => {
   const isProd = /min\.js$/.test(config.dest);
+
+  if (config.env) {
+    config.plugins.push(replace({
+      'process.env.NODE_ENV': JSON.stringify(config.env)
+    }));
+    delete config.env;
+  }
+
+
   rollup.rollup(config).then((bundle) => {
     const code = bundle.generate(config).code;
     if (isProd) {

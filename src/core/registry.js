@@ -1,3 +1,5 @@
+import { warn } from '../util/error';
+
 /**
  * Simple registry for storing selector-constructor pairs
  */
@@ -37,6 +39,9 @@ class Registry {
    * @param {Function} constructor
      */
   registerComponent(selector, klass) {
+    if (this._registry[selector]) {
+      warn(`Component registered under selector: ${selector} already exists.`, klass);
+    }
     this._registry[selector] = klass;
   }
 }

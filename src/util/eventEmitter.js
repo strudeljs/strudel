@@ -1,4 +1,5 @@
 import { isFunction } from './helpers';
+import handleError from './error';
 
 /**
  * Event listeners
@@ -66,9 +67,13 @@ class EventEmitter {
     const listeners = events[label];
 
     if (listeners && listeners.length) {
-      listeners.forEach((listener) => {
-        listener(...args);
-      });
+      try {
+        listeners.forEach((listener) => {
+          listener(...args);
+        });
+      } catch (e) {
+        handleError(e, this.constructor, 'event handler');
+      }
       return true;
     }
     return false;

@@ -13,5 +13,3 @@ trim_trailing_whitespace = true
 [*.md]
 max_line_length = 0
 trim_trailing_whitespace = false
-
-[COMMIT_EDITMSG]

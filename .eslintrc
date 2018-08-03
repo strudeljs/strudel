@@ -1,12 +1,12 @@
 {
+  "extends": "airbnb/base",
   "root": true,
   "parser": "babel-eslint",
-  "extends": "airbnb/base",
   "env": {
     "browser": true,
-    "mocha": true,
     "jasmine": true,
-    "node": true
+    "node": true,
+    "es6": true
   },
   "rules": {
     "max-len": [
@@ -29,6 +29,12 @@
       2,
       "always"
     ],
+    "no-console": [
+      2, {
+        "allow": ["warn", "error", "info"]
+      }
+    ],
+    "import/no-mutable-exports": 0,
     "import/no-extraneous-dependencies": [
       "error", {"devDependencies": ["build/*", "test/**/*"]}
     ]

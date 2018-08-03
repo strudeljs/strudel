@@ -1,4 +1,4 @@
-import EventEmitter from '../../../src/util/eventEmitter';
+import EventEmitter from '../../../../src/util/eventEmitter';
 
 describe('Util EventEmitter', () => {
   beforeEach(() => {
@@ -7,23 +7,23 @@ describe('Util EventEmitter', () => {
 
   it('instantiates', () => {
     const emitter = new EventEmitter();
-    expect(emitter).to.be.an.instanceof(EventEmitter);
+    expect(emitter).toEqual(jasmine.any(EventEmitter));
   });
 
   it('add event listener', () => {
     const emitter = new EventEmitter();
-    expect(Object.keys(EventEmitter.getEvents()).length).to.be.equal(0);
+    expect(Object.keys(EventEmitter.getEvents()).length).toEqual(0);
     emitter.$on('event', () => {});
-    expect(Object.keys(EventEmitter.getEvents()).length).to.be.equal(1);
+    expect(Object.keys(EventEmitter.getEvents()).length).toEqual(1);
   });
 
   it('remove event listener', () => {
     const emitter = new EventEmitter();
     const callback = () => {};
     emitter.$on('event', callback);
-    expect(EventEmitter.getEvents().event.length).to.be.equal(1);
+    expect(EventEmitter.getEvents().event.length).toEqual(1);
     emitter.$off('event', callback);
-    expect(EventEmitter.getEvents().event.length).to.be.equal(0);
+    expect(EventEmitter.getEvents().event.length).toEqual(0);
   });
 
   it('emit event', () => {
@@ -35,6 +35,6 @@ describe('Util EventEmitter', () => {
     emitter.$emit('event', {
       count: 1
     });
-    expect(count).to.be.equal(1);
+    expect(count).toEqual(1);
   });
 });

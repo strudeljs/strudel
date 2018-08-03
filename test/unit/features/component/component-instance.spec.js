@@ -1,10 +1,10 @@
-import Component from '../../../src/component/instance';
-import element from '../__mocks';
+import Component from '../../../../src/component/instance';
+import element from '../../__mocks';
 
 describe('Component Instance', () => {
   it('instantiates', () => {
     const component = new Component({ element });
-    expect(component).to.be.an.instanceof(Component);
+    expect(component).toEqual(jasmine.any(Component));
   });
 
   it('uses events', () => {
@@ -17,32 +17,32 @@ describe('Component Instance', () => {
     publisher.$emit('event', {
       count: 1
     });
-    expect(count).to.be.equal(1);
+    expect(count).toEqual(1);
   });
 
   it('has beforeInit hook', () => {
     const component = new Component({ element });
-    expect(component.beforeInit).to.be.a('function');
+    expect(component.beforeInit).toEqual(jasmine.any(Function));
   });
 
   it('has init hook', () => {
     const component = new Component({ element });
-    expect(component.init).to.be.a('function');
+    expect(component.init).toEqual(jasmine.any(Function));
   });
 
   it('has beforeDestroy hook', () => {
     const component = new Component({ element });
-    expect(component.beforeInit).to.be.a('function');
+    expect(component.beforeInit).toEqual(jasmine.any(Function));
   });
 
   it('has destroy hook', () => {
     const component = new Component({ element });
-    expect(component.destroy).to.be.a('function');
+    expect(component.destroy).toEqual(jasmine.any(Function));
   });
 
   it('should teardown', () => {
     const component = new Component({ element });
     component.$teardown();
-    expect(component.$element).to.be.an('undefined');
+    expect(component.$element).not.toBeDefined();
   });
 });

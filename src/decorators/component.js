@@ -1,6 +1,7 @@
 import registry from '../core/registry';
 import Component from '../component/instance';
 import { mixPrototypes } from '../util/helpers';
+import { warn } from '../util/error';
 
 /**
  * Component decorator - Registers decorated class in {@link Registry} as a component
@@ -8,11 +9,11 @@ import { mixPrototypes } from '../util/helpers';
  */
 const register = (target, selector) => {
   if (!selector) {
-    throw new Error('Selector must be provided for Component decorator');
+    warn('Selector must be provided for Component decorator', target);
   }
 
   if (!target.prototype) {
-    throw new Error('Decorator works only for classes');
+    warn('Decorator works only for classes', target);
   }
 
   const component = class extends Component {
@@ -24,6 +25,7 @@ const register = (target, selector) => {
   mixPrototypes(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
+  Object.defineProperty(component, 'name', { value: target.name });
   registry.registerComponent(selector, component);
 
   return component;
