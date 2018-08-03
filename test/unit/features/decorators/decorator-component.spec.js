@@ -1,7 +1,7 @@
-import Component from '../../../src/decorators/component';
-import ComponentType from '../../../src/component/instance';
-import registry from '../../../src/core/registry';
-import element from '../__mocks';
+import Component from '../../../../src/decorators/component';
+import ComponentType from '../../../../src/component/instance';
+import registry from '../../../../src/core/registry';
+import element from '../../__mocks';
 
 describe('Decorator Component', () => {
   let TestComponent;
@@ -19,36 +19,37 @@ describe('Decorator Component', () => {
   });
 
   it('registers', () => {
-    expect(registry.getComponent('test')).to.be.a('function');
-    registry._registry = {};
+    expect(registry.getComponent('test')).toEqual(jasmine.any(Function));
   });
 
   it('fails without selector', () => {
-    expect(Component()).to.throw('Selector must be provided for Component decorator');
+    @Component()
+    class ComponentClass { }
+    expect('Selector must be provided for Component decorator').toHaveBeenWarned();
   });
 
   it('has selector', () => {
     const component = new TestComponent({ element });
-    expect(component._selector).to.be.equal('test');
+    expect(component._selector).toEqual('test');
   });
 
   it('has inherited properties', () => {
     const component = new TestComponent({ element });
-    expect(component.$emit).to.be.a('function');
+    expect(component.$emit).toEqual(jasmine.any(Function));
   });
 
   it('is instance of Component', () => {
     const component = new TestComponent({ element });
-    expect(component).to.be.instanceof(ComponentType);
+    expect(component).toEqual(jasmine.any(ComponentType));
   });
 
   it('has own properties', () => {
     const component = new TestComponent({ element });
-    expect(component.property).to.be.equal(1);
+    expect(component.property).toEqual(1);
   });
 
   it('has own methods', () => {
     const component = new TestComponent({ element });
-    expect(component.method).to.be.a('function');
+    expect(component.method).toEqual(jasmine.any(Function));
   });
 });

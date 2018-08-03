@@ -45,11 +45,11 @@ class Linker {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
-        if (!el.component) {
+        if (!el.__strudel__) {
           const element = $(el);
           const data = element.data();
           const Instance = this.registry.getComponent(selector);
-          el.component = new Instance({ element, data });
+          el.__strudel__ = new Instance({ element, data });
         }
       });
     });

@@ -27,6 +27,7 @@ const builds = [
       format: 'umd',
       banner
     },
+    env: 'development',
     plugins: [
       buble({
         exclude: 'node_modules/**'
@@ -44,6 +45,7 @@ const builds = [
       format: 'umd',
       banner,
     },
+    env: 'production',
     plugins: [
       buble({
         exclude: 'node_modules/**'
@@ -101,6 +103,14 @@ builds.forEach((config) => {
   const output = config.output;
   const { file, banner } = output;
   const isProd = /min\.js$/.test(file);
+
+  if (config.env) {
+    config.plugins.push(replace({
+      'process.env.NODE_ENV': JSON.stringify(config.env)
+    }));
+    delete config.env;
+  }
+
   rollup.rollup(config)
     .then((bundle) => bundle.generate(output))
     .then(({ code }) => {

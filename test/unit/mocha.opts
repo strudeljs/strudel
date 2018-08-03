@@ -1,2 +1,0 @@
---require test/unit/config.js
---compilers js:buble/register

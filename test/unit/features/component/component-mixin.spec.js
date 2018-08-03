@@ -1,6 +1,6 @@
-import ComponentType from '../../../src/component/instance';
-import Component from '../../../src/decorators/component';
-import element from '../__mocks';
+import ComponentType from '../../../../src/component/instance';
+import Component from '../../../../src/decorators/component';
+import element from '../../__mocks';
 
 describe('Component Mixins', () => {
   let TestComponent;
@@ -16,7 +16,7 @@ describe('Component Mixins', () => {
   };
 
   beforeEach(() => {
-    @Component('test')
+    @Component('test2')
     class TestComponentClass {
       mixins = [mixin]
 
@@ -30,21 +30,21 @@ describe('Component Mixins', () => {
 
   it('instantiates', () => {
     const component = new TestComponent({ element });
-    expect(component).to.be.an.instanceof(ComponentType);
+    expect(component).toEqual(jasmine.any(ComponentType));
   });
 
   it('has mixin methods', () => {
     const component = new TestComponent({ element });
-    expect(component.method).to.be.a('function');
+    expect(component.method).toEqual(jasmine.any(Function));
   });
 
   it('runs init', () => {
     const component = new TestComponent({ element });
-    expect(component.property).to.exist; // eslint-disable-line no-unused-expressions
+    expect(component.property).toBeDefined();
   });
 
   it('inits before component', () => {
     const component = new TestComponent({ element });
-    expect(component.mirror).to.exist; // eslint-disable-line no-unused-expressions
+    expect(component.mirror).toBeDefined();
   });
 });

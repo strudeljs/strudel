@@ -3,6 +3,7 @@ import registry from './registry';
 import $ from '../dom/element';
 import { attachNewInitObserver, attachNewTeardownObserver } from './observer';
 import config from '../config';
+import mount from '../util/devtools';
 
 const linker = new Linker(registry);
 const channel = $(document);
@@ -66,6 +67,7 @@ const init = () => {
     channel.on('DOMContentLoaded', bootstrap);
   }
 
+  mount();
   bindContentEvents();
   attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
   attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);

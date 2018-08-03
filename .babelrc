@@ -10,19 +10,6 @@
   "plugins": [
     "transform-decorators-legacy",
     "transform-class-properties"
-  ],
-  "env": {
-    "test": {
-      "presets": [
-        "env"
-      ],
-      "plugins": [
-        "transform-decorators-legacy",
-        "transform-class-properties",
-        "transform-runtime",
-        "istanbul"
-      ]
-    }
-  }
+  ]
 }
 
