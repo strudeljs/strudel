@@ -9,13 +9,31 @@ const onChildrenAddition = (mutations, callback) => {
   });
 };
 
-const attachNewMutationObserver = (observerRoot, callback) => {
-  const observer = new MutationObserver((mutations) => { onChildrenAddition(mutations, callback); });
-  const observerConfig = {
-    childList: true,
-    subtree: true
-  };
-  observer.observe(observerRoot, observerConfig);
+const onChildrenRemoval = (mutations, callback) => {
+  mutations.forEach((mutation) => {
+    if (
+        mutation.type === 'childList'
+        && mutation.removedNodes.length > 0
+    ) {
+      callback(mutation);
+    }
+  });
 };
 
-export default (observerRoot, callback) => { return attachNewMutationObserver(observerRoot, callback); };
+const defaultObserverConfig = {
+  childList: true,
+  subtree: true
+};
+
+const attachNewObserver = (observerRoot, callback, mutationCallback) => {
+  const initializationObserver = new MutationObserver((mutations) => { mutationCallback(mutations, callback); });
+  initializationObserver.observe(observerRoot, defaultObserverConfig);
+};
+
+export const attachNewInitObserver = (observerRoot, callback) => {
+  attachNewObserver(observerRoot, callback, onChildrenAddition);
+};
+
+export const attachNewTeardownObserver = (observerRoot, callback) => {
+  attachNewObserver(observerRoot, callback, onChildrenRemoval);
+};

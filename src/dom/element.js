@@ -604,7 +604,8 @@ class Element {
   }
 
   /**
-   * Get the value of an attribute for the each element in the set of matched elements or set one or more attributes for every matched element.
+   * Get the value of an attribute for the first element in the set.
+   * When parameter is provided set the text contents of each element in the set.
    * @param [string|object] name - Name of the attribute to be retrieved/set. Can be object of attributes/values.
    * @param [string] value - Value of the attribute to be set.
    * @returns {string|Element}

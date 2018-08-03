@@ -1,5 +1,5 @@
 import config from '../config';
-import * as Strudel from '../index';
+import * as Strudel from '../module';
 
 const devtools = window.__STRUDEL_DEVTOOLS_GLOBAL_HOOK__;
 

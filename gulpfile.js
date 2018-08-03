@@ -8,7 +8,6 @@ const examples = () => {
   const connect = require('gulp-connect');
   const open = require('gulp-open');
   const cors = require('cors');
-  const path = require('path');
   const options = {
     uri: 'http://localhost:8080/examples',
     app: 'Google Chrome'
