@@ -52,7 +52,7 @@ To check more [examples](https://strudeljs.org/examples) and docs visit [strudel
 
 ## Contribution
 
-Please make sure to read the [Contributing Guide](https://github.com/strudeljs/strudel/blob/master/CONTRIBUTING.md) before making a pull request.
+Please make sure to read the [Contributing Guide](https://github.com/strudeljs/strudel/blob/master/.github/CONTRIBUTING.md) before making a pull request.
 
 ## License
 
