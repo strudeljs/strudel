@@ -12,11 +12,12 @@
 
 ## Introduction
 
-Strudel.js is a lightweight framework that is designed to help provide interactivity to back-end rendered pages through modern API and following latest standards. The main features are
+Strudel.js is a lightweight framework that is designed to help provide interactivity to back-end rendered pages through modern API and following latest standards. The main features are:
 
-* **Declarative API**: Boilerplate reduced to minimum thanks to the use of decorators
-* **Component architure**: Modularise and easily encapsulate interactive functionality
-* **Small footprint**: No dependencies, just ~4kb gzipped
+* **Declarative API**: Boilerplate reduced to minimum with handy decorators
+* **Component architecture**: Modularised and encapsulated way of writting functionality
+* **Small footprint**: Zero dependencies, ~4kb gzipped payload
+* **Ecosystem**: Specialised tools for better developer experience
 
 ## Browser Support
 
@@ -53,6 +54,10 @@ To check more [examples](https://strudeljs.org/examples) and docs visit [strudel
 ## Contribution
 
 Please make sure to read the [Contributing Guide](https://github.com/strudeljs/strudel/blob/master/.github/CONTRIBUTING.md) before making a pull request.
+
+## Stay in touch
+* [Twitter](https://twitter.com/strudeljs)
+* [Blog](https://medium.com/strudel-js)
 
 ## License
 
