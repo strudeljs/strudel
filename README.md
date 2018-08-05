@@ -43,11 +43,11 @@ To check more [examples](https://strudeljs.org/examples) and docs visit [strudel
 [strudel-redux]: https://github.com/strudeljs/strudel-redux
 
 [strudel-cli-status]: https://img.shields.io/npm/v/strudel-cli.svg
-[strudel-devtools-status]: https://img.shields.io/chrome-web-store/v/
+[strudel-devtools-status]: https://img.shields.io/chrome-web-store/v/akafkoceecgepokmamadojdimijcpnkl.svg
 [strudel-redux-status]: https://img.shields.io/npm/v/strudel-redux.svg
 
 [strudel-cli-package]: https://npmjs.com/package/strudel-cli
-[strudel-devtools-package]: https://chrome.google.com/webstore/detail/
+[strudel-devtools-package]: https://chrome.google.com/webstore/detail/strudel-devtools/akafkoceecgepokmamadojdimijcpnkl
 [strudel-redux-package]: https://npmjs.com/package/strudel-cli
 
 ## Contribution
