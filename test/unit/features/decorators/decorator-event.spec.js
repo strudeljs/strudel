@@ -21,6 +21,19 @@ describe('Decorator Event', () => {
     expect(Object.keys(component._events)).toEqual(['click .element1', 'click .element2']);
   });
 
+  it('prevents default', () => {
+    @Component('empty')
+    class TestComponent {
+      @Evt('click', true)
+      test() { }
+    }
+
+    const event = { preventDefault: jasmine.createSpy() }
+    const component = new TestComponent({ element });
+    component._events['click'](event);
+    expect(event.preventDefault).toHaveBeenCalled();
+  });
+
   it('fails without descriptor', () => {
     @Component('empty')
     class Empty {
