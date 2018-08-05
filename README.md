@@ -12,7 +12,7 @@
 
 ## Introduction
 
-Strudel.js is a lightweight framework that is helps providing interactivity to back-end rendered pages through modern toolstack and following API latest standards. It is designed to help writing code in elegant way in projects where you have little or no control over the HTML markup (i.e. projects based on back-end frameworks, component libraries or Content Management Systems). The main features are:
+Strudel.js is a lightweight framework that helps providing interactivity to back-end rendered pages through modern toolstack and following API latest standards. It is designed to help writing code in elegant way in projects where you have little or no control over the HTML markup (i.e. projects based on back-end frameworks, component libraries or Content Management Systems). The main features are:
 
 * **Declarative API**: Boilerplate reduced to minimum with handy decorators
 * **Component architecture**: Modularised and encapsulated way of writting functionality
