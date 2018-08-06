@@ -12,16 +12,16 @@
 
 ## Introduction
 
-Strudel.js is a lightweight framework that helps providing interactivity to back-end rendered pages through modern toolstack and following API latest standards. It is designed to help writing code in elegant way in projects where you have little or no control over the HTML markup (i.e. projects based on back-end frameworks, component libraries or Content Management Systems). The main features are:
+Strudel.js is a lightweight framework that helps providing interactivity to back-end rendered pages through modern toolstack and usage of latest standards. It is designed to support writing code in elegant, DRY way in projects where you have little or no control over the HTML markup (i.e. projects based on back-end frameworks, component libraries or Content Management Systems). The main features are:
 
 * **Declarative API**: Boilerplate reduced to minimum with handy decorators
-* **Component architecture**: Modularised and encapsulated way of writting functionality
-* **Small footprint**: Zero dependencies, ~4kb gzipped payload
-* **Ecosystem**: Specialised tools for better developer experience
+* **Component architecture**: Modularised and encapsulated way of writing code
+* **Small footprint**: Zero dependencies, concise API, ~4kb gzipped 
+* **Ecosystem**: Bunch of tools for better day-to-day developer life
 
 ## Browser Support
 
-Strudel.js supports all the browsers that are ES5 and DOM4 compliant (IE10 and below not supported).
+Strudel.js supports all the browsers that are ES5 (transpiled) and DOM4 compliant (IE10 and below not supported).
 
 <p align="center">
 <a href="https://saucelabs.com/beta/builds/1a3443d3a9484a33a80695fd8b1e8015"><img src="https://saucelabs.com/browser-matrix/hayalet.svg" alt="Browser Matrix"></a>
@@ -29,7 +29,7 @@ Strudel.js supports all the browsers that are ES5 and DOM4 compliant (IE10 and b
 
 ## Documentation
 
-To check [examples](https://strudeljs.org/examples) and docs visit [strudeljs.org](https://strudeljs.org).
+To check examples and docs visit [strudeljs.org](https://strudeljs.org).
 
 ## Ecosystem
 
@@ -53,7 +53,7 @@ To check [examples](https://strudeljs.org/examples) and docs visit [strudeljs.or
 
 ## Contribution
 
-Please make sure to read the [Contributing Guide](https://github.com/strudeljs/strudel/blob/master/.github/CONTRIBUTING.md) before making a pull request.
+Please make sure to read the [Contributing Guide](https://github.com/strudeljs/strudel/blob/dev/.github/CONTRIBUTING.md) before making a pull request.
 
 ## Stay in touch
 * [Twitter](https://twitter.com/strudeljs)
