@@ -22,6 +22,15 @@ describe('Decorator Component', () => {
     expect(registry.getComponent('test')).toEqual(jasmine.any(Function));
   });
 
+  it('requires class', () => {
+    class Test {
+      @Component('test')
+      method() { }
+    }
+
+    expect('[Strudel]: Decorator works only for classes').toHaveBeenWarned();
+  })
+
   it('fails without selector', () => {
     @Component()
     class ComponentClass { }

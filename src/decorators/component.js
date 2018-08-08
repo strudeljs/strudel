@@ -14,6 +14,7 @@ const register = (target, selector) => {
 
   if (!target.prototype) {
     warn('Decorator works only for classes', target);
+    return target;
   }
 
   const component = class extends Component {
