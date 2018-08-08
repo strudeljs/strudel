@@ -1,6 +1,6 @@
 {
   "name": "strudel",
-  "version": "0.8.1",
+  "version": "8.0.1",
   "description": "A front-end framework for back-end powered web.",
   "main": "dist/strudel.js",
   "module": "dist/strudel.esm.js",
