@@ -1,4 +1,5 @@
 import Component from '../../../../src/component/instance';
+import Decorator from '../../../../src/decorators/component';
 import element from '../../__mocks';
 
 describe('Component Instance', () => {
@@ -44,5 +45,23 @@ describe('Component Instance', () => {
     const component = new Component({ element });
     component.$teardown();
     expect(component.$element).not.toBeDefined();
+  });
+
+  it('handles errors', () => {
+    @Decorator('test')
+    class TestComponent {
+      init() {
+        this.asdf();
+      }
+
+      destroy() {
+        this.asdf();
+      }
+    }
+
+    const component = new TestComponent({ element });
+    expect('TypeError: this.asdf is not a function').toHaveBeenWarned();
+    component.$teardown();
+    expect('TypeError: this.asdf is not a function').toHaveBeenWarned();
   });
 });
