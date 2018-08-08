@@ -8,5 +8,4 @@ import Component from './component/instance';
 Component.prototype.getInstance = () => { return Strudel; };
 init();
 
-
-export default Strudel;
+export * from './module';

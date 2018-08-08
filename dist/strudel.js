@@ -1,13 +1,13 @@
 /*!
- * Strudel.js v0.8.0
+ * Strudel.js v8.0.1
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global.Strudel = factory());
-}(this, (function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (factory((global.Strudel = {})));
+}(this, (function (exports) { 'use strict';
 
   var warn = function () {};
 
@@ -1141,7 +1141,7 @@
     return new Element(selector, element);
   }
 
-  var version = '0.8.0';
+  var version = '8.0.1';
   var config$1 = config;
   var options = {
     components: registry.getData()
@@ -1351,6 +1351,17 @@
   Component.prototype.getInstance = function () { return Strudel; };
   init();
 
-  return Strudel;
+  exports.version = version;
+  exports.options = options;
+  exports.config = config$1;
+  exports.EventEmitter = EventEmitter;
+  exports.Component = decorator;
+  exports.Evt = decorator$1;
+  exports.El = decorator$2;
+  exports.OnInit = decorator$3;
+  exports.element = $;
+  exports.$ = $;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 })));

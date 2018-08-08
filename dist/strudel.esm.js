@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.8.0
+ * Strudel.js v8.0.1
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1114,7 +1114,7 @@ function $(selector, element) {
   return new Element(selector, element);
 }
 
-const version = '0.8.0';
+const version = '8.0.1';
 const config$1 = config;
 const options = {
   components: registry.getData()
@@ -1325,4 +1325,4 @@ const init = () => {
 Component.prototype.getInstance = () => { return Strudel; };
 init();
 
-export default Strudel;
+export { version, options, config$1 as config, EventEmitter, decorator as Component, decorator$1 as Evt, decorator$2 as El, decorator$3 as OnInit, $ as element, $ };
