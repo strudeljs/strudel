@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.8.0-rc1
+ * Strudel.js v0.8.0
  * (c) 2016-2018 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -349,6 +349,7 @@ const register = (target, selector) => {
 
   if (!target.prototype) {
     warn('Decorator works only for classes', target);
+    return target;
   }
 
   const component = class extends Component {
@@ -1113,7 +1114,7 @@ function $(selector, element) {
   return new Element(selector, element);
 }
 
-const version = '0.8.0-rc1';
+const version = '0.8.0';
 const config$1 = config;
 const options = {
   components: registry.getData()
@@ -1318,6 +1319,10 @@ const init = () => {
   attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
 };
 
+/**
+ * Expose Strudel in component prototype and start processing
+ */
+Component.prototype.getInstance = () => { return Strudel; };
 init();
 
 export default Strudel;
