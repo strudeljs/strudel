@@ -40,5 +40,16 @@ describe('Element', () => {
       Element('div').attr('title', null);
       expect(document.body.children[0].hasAttribute('title')).toEqual(false);
     });
+
+    it('returns correct node', () => {
+      document.body.innerHTML = `
+        <div>First element</div>
+        <div>Second element</div>
+      `;
+
+      expect(Element('div').get(0).innerHTML).toEqual('First element')
+      expect(Element('div').get(1).innerHTML).toEqual('Second element')
+      expect(Element('div').get().length).toEqual(2);
+    })
   });
 });
