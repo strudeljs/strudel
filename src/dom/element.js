@@ -200,7 +200,7 @@ class Element {
    * @returns {HTMLElement}
    */
   get(index) {
-    return (index && index <= this._nodes.length) ? this._nodes[index] : this._nodes;
+    return ((index || index === 0) && index <= this._nodes.length) ? this._nodes[index] : this._nodes;
   }
 
   /**
