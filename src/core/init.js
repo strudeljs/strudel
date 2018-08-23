@@ -39,7 +39,7 @@ const onAutoInitCallback = (mutation) => {
   })
   .forEach((node) => {
     if (registeredSelectors.find((el) => {
-      return $(node).is(el);
+      return $(node).is(el) || $(node).find(el).length;
     })) {
       bootstrap([node]);
     }
