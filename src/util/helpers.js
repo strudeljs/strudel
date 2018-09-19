@@ -29,3 +29,17 @@ export const mixPrototypes = (target, source) => {
     }
   });
 };
+
+export const createDecorator = (factory) => {
+  return (options) => {
+    return (Ctor, property) => {
+      if (!Ctor.__decorators__) {
+        Ctor.__decorators__ = [];
+      }
+
+      Ctor.__decorators__.push(() => {
+        return factory(property, options);
+      });
+    };
+  };
+};
