@@ -4,6 +4,7 @@
   "description": "A front-end framework for back-end powered web.",
   "main": "dist/strudel.js",
   "module": "dist/strudel.esm.js",
+  "browser": "dist/strudel.esm.js",
   "sideEffects": false,
   "files": [
     "dist/*.js",
