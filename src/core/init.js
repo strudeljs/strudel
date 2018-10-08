@@ -38,9 +38,9 @@ const onAutoInitCallback = (mutation) => {
     return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
   })
   .forEach((node) => {
-    if (registeredSelectors.find((el) => {
+    if (registeredSelectors.filter((el) => {
       return $(node).is(el) || $(node).find(el).length;
-    })) {
+    })[0]) {
       bootstrap([node]);
     }
   });
