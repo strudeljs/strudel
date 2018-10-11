@@ -3,12 +3,19 @@
  * @returns (Function} decorator
  */
 
-export default function decorator(klass, method) {
-  const emptyFnc = function () {};
-  const org = klass.init || emptyFnc;
+export default function decorator(target) {
+  return {
+    ...target,
+    finisher: (targetClass) => {
+      const emptyFnc = function () {};
+      const org = targetClass.prototype.init || emptyFnc;
 
-  klass.init = function (...args) {
-    klass[method].apply(this, ...args);
-    return org.apply(this, ...args);
+      targetClass.prototype.init = function (...args) {
+        targetClass.prototype[target.key].apply(this, ...args);
+        return org.apply(this, ...args);
+      };
+
+      return targetClass;
+    }
   };
 }

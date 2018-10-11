@@ -6,13 +6,20 @@ import { warn } from '../util/error';
  * @returns (Function} decorator
  */
 export default function decorator(selector) {
-  return function _decorator(klass, property) {
+  return function _decorator(target) {
     if (!selector) {
-      warn('Selector must be provided for El decorator', klass);
+      warn('Selector must be provided for El decorator', target);
+      return target;
     }
-    if (!klass._els) {
-      klass._els = [];
-    }
-    klass._els[selector] = property;
+    return {
+      ...target,
+      finisher: (targetClass) => {
+        if (!targetClass._els) {
+          targetClass.prototype._els = {};
+        }
+        targetClass.prototype._els[selector] = target.key;
+        return targetClass;
+      }
+    };
   };
 }

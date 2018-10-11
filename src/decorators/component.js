@@ -8,28 +8,32 @@ import { warn } from '../util/error';
  * @param {string} CSS selector
  */
 const register = (target, selector) => {
+  if (target.kind === 'class' && selector) {
+    const component = class extends Component {
+      constructor(...args) { /* eslint no-useless-constructor: 0 */
+        super(...args);
+      }
+    };
+
+    return {
+      ...target,
+      finisher: (targetClass) => {
+        mixPrototypes(component, targetClass);
+        Object.defineProperty(component.prototype, '_selector', { value: selector });
+        Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
+        Object.defineProperty(component, 'name', { value: targetClass.name });
+        registry.registerComponent(selector, component);
+
+        return component;
+      }
+    };
+  }
   if (!selector) {
     warn('Selector must be provided for Component decorator', target);
-  }
-
-  if (!target.prototype) {
-    warn('Decorator works only for classes', target);
     return target;
   }
-
-  const component = class extends Component {
-    constructor(...args) { /* eslint no-useless-constructor: 0 */
-      super(...args);
-    }
-  };
-
-  mixPrototypes(component, target);
-  Object.defineProperty(component.prototype, '_selector', { value: selector });
-  Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
-  Object.defineProperty(component, 'name', { value: target.name });
-  registry.registerComponent(selector, component);
-
-  return component;
+  warn('Decorator works only for classes', target);
+  return target;
 };
 
 export default function decorator(selector) {
