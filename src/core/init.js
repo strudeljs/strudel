@@ -69,8 +69,8 @@ const init = () => {
 
   mount();
   bindContentEvents();
-  attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
-  attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
+  attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
+  attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
 };
 
 export default init;
