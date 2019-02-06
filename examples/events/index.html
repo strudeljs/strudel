@@ -33,12 +33,12 @@
 
     @Strudel.Component('.count-control')
     class CountControl {
-      @Strudel.Evt('click .control-increment')
+      @Strudel.Evt('click', '.control-increment')
       increment() {
         this.$emit('counter.increment');
       }
 
-      @Strudel.Evt('click .control-decrement')
+      @Strudel.Evt('click', '.control-decrement')
       decrement() {
         this.$emit('counter.decrement');
       }

@@ -5,7 +5,7 @@ import handleError, { warn } from '../util/error';
  * @param {string} event
  * @returns (Function} decorator
  */
-export default function decorator(event, preventDefault) {
+export default function decorator(event, selector, preventDefault) {
   return function _decorator(klass, method) {
     if (!event) {
       warn('Event descriptor must be provided for Evt decorator');
@@ -15,7 +15,7 @@ export default function decorator(event, preventDefault) {
       klass._events = [];
     }
 
-    const cb = function handler(...args) {
+    const callback = function handler(...args) {
       try {
         klass[method].apply(this, args);
       } catch (e) {
@@ -27,6 +27,10 @@ export default function decorator(event, preventDefault) {
       }
     };
 
-    klass._events[event] = cb;
+    klass._events.push({
+      event,
+      selector,
+      callback
+    });
   };
 }

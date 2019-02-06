@@ -1,5 +1,3 @@
-const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
-
 /**
  * Wrapper for Element on method
  * @param {Element} element - element that will receive listener
@@ -26,11 +24,9 @@ const delegateEvents = (context, events) => {
     return false;
   }
 
-  return Object.keys(events).forEach((key) => {
-    const method = events[key];
-    const match = key.match(DELEGATE_EVENT_SPLITTER);
+  return events.forEach(({ event, selector, callback }) => {
     if (context.$element) {
-      delegate(context.$element, match[1], match[2], method.bind(context));
+      delegate(context.$element, event, selector, callback.bind(context));
     }
   });
 };
