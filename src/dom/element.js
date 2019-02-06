@@ -538,7 +538,7 @@ class Element {
                   return target;
                 }
               });
-            } catch (err) {}
+            } catch (err) { }
             cb2.apply(target, args);
           }
         });
@@ -554,7 +554,7 @@ class Element {
 
       node._e = node._e || {};
       node._e[event] = node._e[event] || [];
-      node._e[event].push(callback);
+      node._e[event].push([cb.name, callback]);
     });
   }
 
@@ -562,8 +562,8 @@ class Element {
    * Remove an event handler
    * @param {string} events
    */
-  off(events) {
-    if (events === undefined) {
+  off(events, callback) {
+    if (events === undefined && callback === undefined) {
       this.each(function (node) {
         for (var evt in node._e) {
           node._e[evt].forEach(function (cb) {
@@ -575,7 +575,9 @@ class Element {
 
     return this.eacharg(events, function (node, event) {
       new Element(node._e ? node._e[event] : []).each(function (cb) {
-        node.removeEventListener(event, cb);
+        if (callback.name === cb[0]) {
+          node.removeEventListener(event, cb[1]);
+        }
       });
     });
   }
