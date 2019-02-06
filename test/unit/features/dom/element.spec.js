@@ -1,4 +1,3 @@
-import Component from '../../../../src/decorators/component';
 import Element from '../../../../src/dom/element';
 
 describe('Element', () => {
