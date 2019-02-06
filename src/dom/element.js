@@ -574,9 +574,13 @@ class Element {
     }
 
     return this.eacharg(events, function (node, event) {
-      new Element(node._e ? node._e[event] : []).each(function (cb) {
+      new Element(node._e ? node._e[event] : []).each(function (cb, idx) {
         if (callback.name === cb[0]) {
           node.removeEventListener(event, cb[1]);
+          node._e[event] = [
+            ...node._e[event].slice(0, idx),
+            ...node._e[event].slice(idx + 1),
+          ];
         }
       });
     });
