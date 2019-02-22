@@ -28,8 +28,8 @@ class Linker {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
-        if (el.component) {
-          el.component.$teardown();
+        if (el.__strudel__) {
+          el.__strudel__.component.$teardown();
         }
       });
     });
