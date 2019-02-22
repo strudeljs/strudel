@@ -28,7 +28,7 @@ class Linker {
       }
       [].forEach.call(elements, (el) => {
         if (el.__strudel__) {
-          el.__strudel__.component.$teardown();
+          el.__strudel__.$teardown();
         }
       });
     });
