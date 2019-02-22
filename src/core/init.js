@@ -38,9 +38,9 @@ const onAutoInitCallback = (mutation) => {
     return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
   })
   .forEach((node) => {
-    if (registeredSelectors.find((el) => {
+    if (registeredSelectors.filter((el) => {
       return $(node).is(el) || $(node).find(el).length;
-    })) {
+    })[0]) {
       bootstrap([node]);
     }
   });
@@ -69,8 +69,8 @@ const init = () => {
 
   mount();
   bindContentEvents();
-  attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
-  attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
+  attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
+  attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
 };
 
 export default init;

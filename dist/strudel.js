@@ -1,6 +1,6 @@
 /*!
- * Strudel.js v0.8.2
- * (c) 2016-2018 Mateusz Łuczak
+ * Strudel.js v0.8.3
+ * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -1141,7 +1141,7 @@
     return new Element(selector, element);
   }
 
-  var version = '0.8.2';
+  var version = '0.8.3';
   var config$1 = config;
   var options = {
     components: registry.getData()
@@ -1183,8 +1183,8 @@
         elements.push(container);
       }
       [].forEach.call(elements, function (el) {
-        if (el.component) {
-          el.component.$teardown();
+        if (el.__strudel__) {
+          el.__strudel__.component.$teardown();
         }
       });
     });
@@ -1209,6 +1209,8 @@
           var data = element.data();
           var Instance = this$1.registry.getComponent(selector);
           el.__strudel__ = new Instance({ element: element, data: data });
+        } else {
+          warn(("Trying to attach component to already initialized node, component with selector " + selector + " will not be attached"));
         }
       });
     });
@@ -1310,9 +1312,9 @@
       return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
     })
     .forEach(function (node) {
-      if (registeredSelectors.find(function (el) {
+      if (registeredSelectors.filter(function (el) {
         return $(node).is(el) || $(node).find(el).length;
-      })) {
+      })[0]) {
         bootstrap([node]);
       }
     });
@@ -1341,8 +1343,8 @@
 
     mount();
     bindContentEvents();
-    attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
-    attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
+    attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
+    attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
   };
 
   /**
