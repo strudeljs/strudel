@@ -1,6 +1,6 @@
 /*!
- * Strudel.js v0.8.2
- * (c) 2016-2018 Mateusz Łuczak
+ * Strudel.js v0.8.3
+ * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
 let warn = () => {};
@@ -1114,7 +1114,7 @@ function $(selector, element) {
   return new Element(selector, element);
 }
 
-const version = '0.8.2';
+const version = '0.8.3';
 const config$1 = config;
 const options = {
   components: registry.getData()
@@ -1159,8 +1159,8 @@ class Linker {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
-        if (el.component) {
-          el.component.$teardown();
+        if (el.__strudel__) {
+          el.__strudel__.component.$teardown();
         }
       });
     });
@@ -1182,6 +1182,8 @@ class Linker {
           const data = element.data();
           const Instance = this.registry.getComponent(selector);
           el.__strudel__ = new Instance({ element, data });
+        } else {
+          warn(`Trying to attach component to already initialized node, component with selector ${selector} will not be attached`);
         }
       });
     });
@@ -1284,9 +1286,9 @@ const onAutoInitCallback = (mutation) => {
     return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
   })
   .forEach((node) => {
-    if (registeredSelectors.find((el) => {
+    if (registeredSelectors.filter((el) => {
       return $(node).is(el) || $(node).find(el).length;
-    })) {
+    })[0]) {
       bootstrap([node]);
     }
   });
@@ -1315,8 +1317,8 @@ const init = () => {
 
   mount();
   bindContentEvents();
-  attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
-  attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
+  attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
+  attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
 };
 
 /**
