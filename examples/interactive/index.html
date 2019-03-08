@@ -8,7 +8,7 @@
 <script type="text/babel" data-plugins="transform-decorators-legacy">
   @Strudel.Component('.clicker')
   class Clicker {
-    @Strudel.Evt('click .clicker__btn', true)
+    @Strudel.Evt('click', '.clicker__btn', true)
     click() {
       this.$element.append("<div class='alert' data-message='Hello'></div>")
     }
