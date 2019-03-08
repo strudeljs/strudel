@@ -56,6 +56,13 @@ const onAutoTeardownCallback = (mutation) => {
         && $(node).is(initializedSelector);
     })
     .forEach((node) => {
+      const initializedSubNodes = node.querySelector(initializedSelector);
+
+      if (initializedSubNodes) {
+        Array.prototype.slice.call(initializedSubNodes).forEach(
+          (subNode) => { linker.unlink(subNode); }
+        );
+      }
       linker.unlink(node);
     });
 };
