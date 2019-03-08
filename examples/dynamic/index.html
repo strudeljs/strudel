@@ -20,7 +20,7 @@
         }.bind(this));
 
         this.$on('counter.teardown', function () {
-          this.value = 0;
+          this.value = -1;
           this.render();
         }.bind(this));
 

@@ -9,7 +9,7 @@ module.exports = {
       .click('.control-decrement')
       .assert.containsText('.count', '100')
       .click('.control-remove')
-      .assert.containsText('.count', '0')
+      .assert.containsText('.count', '-1')
       .end();
   }
 };
