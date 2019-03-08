@@ -1,13 +1,14 @@
 <p align="center"><img width="100px" src="http://strudeljs.org/images/strudel-twoline.svg"></p>
 <br>
 <p align="center">
-<a href="https://nodejs.org/api/documentation.html#documentation_stability_index"><img src="https://img.shields.io/badge/stability-experimental-orange.svg" alt="Stability"></a>
 <a href="https://circleci.com/gh/strudeljs/strudel/tree/dev"><img src="https://circleci.com/gh/strudeljs/strudel.svg?style=shield&circle-token=:circle-token" alt="Build Status"></a>
 <a href="https://codecov.io/gh/strudeljs/strudel"><img src="https://codecov.io/gh/strudeljs/strudel/branch/master/graph/badge.svg" alt="Codecov" /></a>
 <a href="https://npmcharts.com/compare/strudel?minimal=true"><img src="https://img.shields.io/npm/dm/strudel.svg" alt="Downloads"></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/v/strudel.svg" alt="Version"></a>
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/l/strudel.svg" alt="License"></a>
 <a href="https://gitter.im/strudel-js"><img src="https://img.shields.io/gitter/room/nwjs/nw.js.svg" alt="Gitter"></a> 
+<br>
+<a href="https://app.saucelabs.com/builds/50f8372d79f743a3b25fb6ca4851ca4c"><img src="https://app.saucelabs.com/buildstatus/vuejs" alt="Build Status"></a>
 </p>
 
 ## Introduction
@@ -21,11 +22,7 @@ Strudel.js is a lightweight framework that helps providing interactivity to back
 
 ## Browser Support
 
-Strudel.js supports all the browsers that are ES5 (transpiled) and DOM4 compliant (IE10 and below not supported).
-
-<p align="center">
-<a href="https://saucelabs.com/beta/builds/1a3443d3a9484a33a80695fd8b1e8015"><img src="https://saucelabs.com/browser-matrix/hayalet.svg" alt="Browser Matrix"></a>
-</p>
+Strudel.js supports all the browsers that are [ES5-compliant](http://kangax.github.io/compat-table/es5/) and DOM4 compliant (IE10 and below not supported).
 
 ## Documentation
 
