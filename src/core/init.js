@@ -29,6 +29,7 @@ const bindContentEvents = () => {
   });
 };
 
+const initializedSelector = `.${config.initializedClassName}`;
 
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
@@ -38,17 +39,17 @@ const onAutoInitCallback = (mutation) => {
     return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
   })
   .forEach((node) => {
-    if (registeredSelectors.filter((el) => {
-      return $(node).is(el) || $(node).find(el).length;
-    })[0]) {
+    if (registeredSelectors.find((el) => {
+      const lookupSelector = `${el}:not(${initializedSelector})`;
+
+      return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
+    })) {
       bootstrap([node]);
     }
   });
 };
 
 const onAutoTeardownCallback = (mutation) => {
-  const initializedSelector = `.${config.initializedClassName}`;
-
   Array.prototype.slice.call(mutation.removedNodes)
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
