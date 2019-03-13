@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.9.0
+ * Strudel.js v0.9.1
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1141,7 +1141,7 @@
     return new Element(selector, element);
   }
 
-  var version = '0.9.0';
+  var version = '0.9.1';
   var config$1 = config;
   var options = {
     components: registry.getData()
@@ -1303,6 +1303,7 @@
     });
   };
 
+  var initializedSelector$1 = "." + (config.initializedClassName);
 
   var onAutoInitCallback = function (mutation) {
     var registeredSelectors = registry.getRegisteredSelectors();
@@ -1312,25 +1313,25 @@
       return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
     })
     .forEach(function (node) {
-      if (registeredSelectors.filter(function (el) {
-        return $(node).is(el) || $(node).find(el).length;
-      })[0]) {
+      if (registeredSelectors.find(function (el) {
+        var lookupSelector = el + ":not(" + initializedSelector$1 + ")";
+
+        return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
+      })) {
         bootstrap([node]);
       }
     });
   };
 
   var onAutoTeardownCallback = function (mutation) {
-    var initializedSelector = "." + (config.initializedClassName);
-
     Array.prototype.slice.call(mutation.removedNodes)
       .filter(function (node) {
         return node.nodeName !== 'SCRIPT'
           && node.nodeType === 1
-          && $(node).is(initializedSelector);
+          && $(node).is(initializedSelector$1);
       })
       .forEach(function (node) {
-        var initializedSubNodes = node.querySelector(initializedSelector);
+        var initializedSubNodes = node.querySelector(initializedSelector$1);
 
         if (initializedSubNodes) {
           Array.prototype.slice.call(initializedSubNodes).forEach(

@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.9.0
+ * Strudel.js v0.9.1
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1114,7 +1114,7 @@ function $(selector, element) {
   return new Element(selector, element);
 }
 
-const version = '0.9.0';
+const version = '0.9.1';
 const config$1 = config;
 const options = {
   components: registry.getData()
@@ -1277,6 +1277,7 @@ const bindContentEvents = () => {
   });
 };
 
+const initializedSelector$1 = `.${config.initializedClassName}`;
 
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
@@ -1286,25 +1287,25 @@ const onAutoInitCallback = (mutation) => {
     return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
   })
   .forEach((node) => {
-    if (registeredSelectors.filter((el) => {
-      return $(node).is(el) || $(node).find(el).length;
-    })[0]) {
+    if (registeredSelectors.find((el) => {
+      const lookupSelector = `${el}:not(${initializedSelector$1})`;
+
+      return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
+    })) {
       bootstrap([node]);
     }
   });
 };
 
 const onAutoTeardownCallback = (mutation) => {
-  const initializedSelector = `.${config.initializedClassName}`;
-
   Array.prototype.slice.call(mutation.removedNodes)
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(initializedSelector);
+        && $(node).is(initializedSelector$1);
     })
     .forEach((node) => {
-      const initializedSubNodes = node.querySelector(initializedSelector);
+      const initializedSubNodes = node.querySelector(initializedSelector$1);
 
       if (initializedSubNodes) {
         Array.prototype.slice.call(initializedSubNodes).forEach(
