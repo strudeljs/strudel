@@ -26,7 +26,7 @@ const register = (target, selector) => {
   mixPrototypes(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
-  Object.defineProperty(component, 'name', { value: target.name });
+  Object.defineProperty(component.prototype, 'name', { value: target.name });
   registry.registerComponent(selector, component);
 
   return component;
