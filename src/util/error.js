@@ -2,7 +2,7 @@ export let warn = () => {};
 
 if (process.env.NODE_ENV !== 'production') {
   const generateTrace = (vm) => {
-    const componentName = vm.name;
+    const componentName = vm.prototype ? vm.prototype.name || vm.name : vm.constructor.name;
     return ` (found in ${componentName})`;
   };
   warn = (msg, vm) => {
