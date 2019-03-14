@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.9.1
+ * Strudel.js v0.9.2
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -7,7 +7,7 @@ let warn = () => {};
 
 if (process.env.NODE_ENV !== 'production') {
   const generateTrace = (vm) => {
-    const componentName = vm.name;
+    const componentName = vm.prototype ? vm.prototype.name || vm.name : vm.constructor.name;
     return ` (found in ${componentName})`;
   };
   warn = (msg, vm) => {
@@ -361,7 +361,7 @@ const register = (target, selector) => {
   mixPrototypes(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
-  Object.defineProperty(component, 'name', { value: target.name });
+  Object.defineProperty(component.prototype, 'name', { value: target.name });
   registry.registerComponent(selector, component);
 
   return component;
@@ -1114,7 +1114,7 @@ function $(selector, element) {
   return new Element(selector, element);
 }
 
-const version = '0.9.1';
+const version = '0.9.2';
 const config$1 = config;
 const options = {
   components: registry.getData()
