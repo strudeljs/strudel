@@ -40,7 +40,9 @@ describe('Element', () => {
       Element('div').attr('title', null);
       expect(document.body.children[0].hasAttribute('title')).toEqual(false);
     });
+  });
 
+  describe('.get()', () => {
     it('returns correct node', () => {
       document.body.innerHTML = `
         <div>First element</div>
