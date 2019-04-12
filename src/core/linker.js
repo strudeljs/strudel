@@ -1,5 +1,5 @@
 import $ from '../dom/element';
-import initializedSelector from '../config';
+import { initializedSelector } from '../module';
 import { warn } from '../util/error';
 
 /**

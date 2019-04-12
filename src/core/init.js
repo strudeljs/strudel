@@ -2,7 +2,7 @@ import Linker from './linker';
 import registry from './registry';
 import $ from '../dom/element';
 import { attachNewInitObserver, attachNewTeardownObserver } from './observer';
-import initializedSelector from '../config';
+import { initializedSelector } from '../module';
 import mount from '../util/devtools';
 
 const linker = new Linker(registry);
