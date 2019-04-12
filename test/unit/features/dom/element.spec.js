@@ -60,8 +60,9 @@ describe('Element', () => {
       <span id="two"></span>
       </div>`;
 
+      expect(Element('div').index(Element('#one'))).toEqual(0);
       expect(Element('div').index(Element('#two').first())).toEqual(1);
-      expect(Element('div').index(Element('#foo').first())).toEqual(-1);
+      expect(Element('div').index(Element('#foo'))).toEqual(-1);
     });
   });
 });

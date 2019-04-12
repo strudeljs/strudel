@@ -212,12 +212,13 @@ class Element {
   }
 
   /**
-   * Returns index of a given node
-   * @param {HTMLElement} node - HTML element
+   * Returns index of a given element
+   * @param {HTMLElement|Element} element
    * @returns {Number}
    */
-  index(node) {
+  index(element) {
     const siblings = this.children()._nodes;
+    const node = element instanceof HTMLElement ? element : element.first();
     for (let i = 0; i < siblings.length; i++) {
       if (siblings[i] === node) {
         return i;
