@@ -8,7 +8,7 @@ const options = {
   components: registry.getData()
 };
 
-export { version, options, config, initializedClassName, initializedSelector };
+export { version, options, initializedClassName, initializedSelector };
 export { default as EventEmitter } from './util/eventEmitter';
 export { default as Component } from './decorators/component';
 export { default as Evt } from './decorators/event';
