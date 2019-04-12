@@ -212,6 +212,21 @@ class Element {
   }
 
   /**
+   * Returns index of a given node
+   * @param {HTMLElement} node - HTML element
+   * @returns {Number}
+   */
+  index(node) {
+    const siblings = this.children()._nodes;
+    for (let i = 0; i < siblings.length; i++) {
+      if (siblings[i] === node) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  /**
    * Converts Arraylike to array
    * @private
    */
