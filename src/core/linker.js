@@ -1,8 +1,6 @@
 import $ from '../dom/element';
-import config from '../config';
+import initializedSelector from '../config';
 import { warn } from '../util/error';
-
-const initializedSelector = `.${config.initializedClassName}`;
 
 /**
  * @classdesc Class linking components with DOM

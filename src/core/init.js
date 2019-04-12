@@ -2,7 +2,7 @@ import Linker from './linker';
 import registry from './registry';
 import $ from '../dom/element';
 import { attachNewInitObserver, attachNewTeardownObserver } from './observer';
-import config from '../config';
+import initializedSelector from '../config';
 import mount from '../util/devtools';
 
 const linker = new Linker(registry);
@@ -28,8 +28,6 @@ const bindContentEvents = () => {
     bootstrap(evt.detail);
   });
 };
-
-const initializedSelector = `.${config.initializedClassName}`;
 
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();

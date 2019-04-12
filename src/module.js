@@ -1,13 +1,14 @@
 import registry from './core/registry';
-import conf from './config';
+import config from './config';
 
 const version = '__VERSION__';
-const config = conf;
+const initializedClassName = config.initializedClassName;
+const initializedSelector = `.${config.initializedClassName}`;
 const options = {
   components: registry.getData()
 };
 
-export { version, options, config };
+export { version, options, config, initializedClassName, initializedSelector };
 export { default as EventEmitter } from './util/eventEmitter';
 export { default as Component } from './decorators/component';
 export { default as Evt } from './decorators/event';
