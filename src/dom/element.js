@@ -219,12 +219,7 @@ class Element {
   index(element) {
     const siblings = this.children()._nodes;
     const node = element instanceof HTMLElement ? element : element.first();
-    for (let i = 0; i < siblings.length; i++) {
-      if (siblings[i] === node) {
-        return i;
-      }
-    }
-    return -1;
+    return Array.prototype.indexOf.call(siblings, node);
   }
 
   /**
