@@ -40,7 +40,9 @@ describe('Element', () => {
       Element('div').attr('title', null);
       expect(document.body.children[0].hasAttribute('title')).toEqual(false);
     });
+  });
 
+  describe('.get()', () => {
     it('returns correct node', () => {
       document.body.innerHTML = `
         <div>First element</div>
@@ -50,6 +52,19 @@ describe('Element', () => {
       expect(Element('div').get(0).innerHTML).toEqual('First element')
       expect(Element('div').get(1).innerHTML).toEqual('Second element')
       expect(Element('div').get().length).toEqual(2);
-    })
+    });
+  });
+
+  describe('.index()', () => {
+    it('returns correct index', () => {
+      document.body.innerHTML = `<div>
+      <span id="one"></span>
+      <span id="two"></span>
+      </div>`;
+
+      expect(Element('div').index(Element('#one'))).toEqual(0);
+      expect(Element('div').index(Element('#two').first())).toEqual(1);
+      expect(Element('div').index(Element('#foo'))).toEqual(-1);
+    });
   });
 });

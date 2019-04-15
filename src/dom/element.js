@@ -212,6 +212,17 @@ class Element {
   }
 
   /**
+   * Returns index of a given element
+   * @param {HTMLElement|Element} element
+   * @returns {Number}
+   */
+  index(element) {
+    const siblings = this.children()._nodes;
+    const node = element instanceof HTMLElement ? element : element.first();
+    return Array.prototype.indexOf.call(siblings, node);
+  }
+
+  /**
    * Converts Arraylike to array
    * @private
    */
