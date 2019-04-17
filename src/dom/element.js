@@ -490,6 +490,16 @@ class Element {
    */
   find(selector) {
     return this.map(function (node) {
+      if (selector[0] === '>') {
+        const array =  selector.split(' ');
+        const el = new Element(node).children(array[1]);
+        if (array.length <= 2) {
+          return el;
+        } else {
+          return el.find(array.splice(2, array.length - 2).join(' '));
+        }
+      }
+
       return new Element(selector || '*', node);
     });
   }
