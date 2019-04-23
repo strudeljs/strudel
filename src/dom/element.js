@@ -491,16 +491,22 @@ class Element {
   find(selector) {
     return this.map(function (node) {
       if (selector[0] === '>') {
-        const array =  selector.split(' ');
-        const el = new Element(node).children(array[1]);
-        if (array.length <= 2) {
-          return el;
-        } else {
-          return el.find(array.splice(2, array.length - 2).join(' '));
+        var hadId = true;
+        if (!node.id) {
+          hadId = false;
+          node.id = Math.random().toString(36).substr(2, 9);
         }
+
+        selector = '#' + node.id + selector;
       }
 
-      return new Element(selector || '*', node);
+      const result = new Element(selector || '*', node);
+
+      if (!hadId) {
+        node.id = '';
+      }
+
+      return result;
     });
   }
 
