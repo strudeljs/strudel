@@ -7,12 +7,8 @@ const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
  * @param {string} selector - CSS selector for delegation
  * @param {Function} listener - function listener
  */
-const delegate = (element, eventName, selector, listener) => {
-  if (selector) {
-    element.on(eventName, selector, listener);
-  } else {
-    element.on(eventName, listener);
-  }
+const delegate = (element, eventName, listener) => {
+  element.on(eventName, listener);
 };
 
 /**
@@ -30,7 +26,14 @@ const delegateEvents = (context, events) => {
     const method = events[key];
     const match = key.match(DELEGATE_EVENT_SPLITTER);
     if (context.$element) {
-      delegate(context.$element, match[1], match[2], method.bind(context));
+      const selector = match[2];
+      let $el = context.$element;
+
+      if (selector) {
+        $el = $el.find(selector) || $el;
+      }
+
+      delegate($el, match[1], method.bind(context));
     }
   });
 };
