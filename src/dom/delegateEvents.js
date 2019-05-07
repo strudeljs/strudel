@@ -7,7 +7,7 @@ const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
  * @param {string} eventName - name of the event eg. click
  */
 const cannotBubble = (eventName) => {
-  return nonBubblingEvents.includes(eventName);
+  return nonBubblingEvents.indexOf(eventName) >= 0;
 };
 
 /**

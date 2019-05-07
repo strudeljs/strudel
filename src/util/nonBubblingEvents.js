@@ -1,29 +1,7 @@
 export default [
-  // Resource events
-  'cached',
-  'error',
-  'abort',
-  'load',
-  'beforeunload',
-  'unload',
-  // Network events
-  'online',
-  'offline',
   // Focus events
   'focus',
   'blur',
-  // WebSocket events
-  'open',
-  'message',
-  'close',
-  // Session History events
-  'pagehide',
-  'pageshow',
-  // Printing events
-  'beforeprint',
-  'afterprint',
-  // View events
-  'resize',
   // Mouse events
   'mouseenter',
   'mouseleave',
@@ -47,10 +25,5 @@ export default [
   'suspend',
   'timeupdate',
   'volumechange',
-  'waiting',
-  // Progress events
-  'loadend',
-  'loadstart',
-  'progress',
-  'timeout'
+  'waiting'
 ];
