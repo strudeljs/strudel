@@ -12,7 +12,7 @@ console.info = noop;
 let asserted;
 
 function createCompareFn(spy) {
-  const hasWarned = (msg) => {
+  const hasThrownError = (msg) => {
     let count = spy.calls.count();
     let args;
 
@@ -32,13 +32,13 @@ function createCompareFn(spy) {
     compare: (msg) => {
       asserted = asserted.concat(msg);
 
-      const warned = Array.isArray(msg) ? msg.some(hasWarned) : hasWarned(msg);
+      const warned = Array.isArray(msg) ? msg.some(hasThrownError) : hasThrownError(msg);
 
       return {
         pass: warned,
         message: warned
-          ? `Expected message "${msg}" not to have been warned`
-          : `Expected message "${msg}" to have been warned`
+          ? `Expected message "${msg}" not to have thrown error`
+          : `Expected message "${msg}" to have thrown error`
       };
     }
   };
@@ -46,22 +46,22 @@ function createCompareFn(spy) {
 
 beforeEach(() => {
   asserted = [];
-  spyOn(console, 'warn');
+  spyOn(console, 'error');
   jasmine.addMatchers({
-    toHaveBeenWarned: () => { return createCompareFn(console.warn); }
+    toHaveThrownError: () => { return createCompareFn(console.error); }
   });
 });
 
 afterEach((done) => {
-  const warned = (msg) => { return asserted.some((assertedMsg) => { return msg.toString().indexOf(assertedMsg) > -1; }); };
-  let count = console.warn.calls.count();
+  const thrownError = (msg) => { return asserted.some((assertedMsg) => { return msg.toString().indexOf(assertedMsg) > -1; }); };
+  let count = console.error.calls.count();
 
   let args;
 
   while (count--) {
-    args = console.warn.calls.argsFor(count);
-    if (!warned(args[0])) {
-      done.fail(`Unexpected console.warn message: ${args[0]}`);
+    args = console.error.calls.argsFor(count);
+    if (!thrownError(args[0])) {
+      done.fail(`Unexpected console.error message: ${args[0]}`);
       return;
     }
   }
