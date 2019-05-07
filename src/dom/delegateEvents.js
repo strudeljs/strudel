@@ -40,8 +40,7 @@ const delegateEvents = (context, events) => {
     const method = events[key];
     const match = key.match(DELEGATE_EVENT_SPLITTER);
     if (context.$element) {
-      const eventName = match[1];
-      const selector = match[2];
+      const [, eventName, selector] = match;
       let $el = context.$element;
 
       if (selector && cannotBubble(eventName)) {
