@@ -490,7 +490,23 @@ class Element {
    */
   find(selector) {
     return this.map(function (node) {
-      return new Element(selector || '*', node);
+      if (selector[0] === '>') {
+        var hadId = true;
+        if (!node.id) {
+          hadId = false;
+          node.id = Math.random().toString(36).substr(2, 9);
+        }
+
+        selector = '#' + node.id + selector;
+      }
+
+      const result = new Element(selector || '*', node);
+
+      if (!hadId) {
+        node.id = '';
+      }
+
+      return result;
     });
   }
 

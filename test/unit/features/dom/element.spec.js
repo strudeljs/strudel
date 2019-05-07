@@ -42,6 +42,21 @@ describe('Element', () => {
     });
   });
 
+  describe('.find()', () => {
+    it('accepts selector starting with > operator', () => {
+      document.body.innerHTML = `
+        <div id="parent">
+          <div id="child">
+            <div id="grandchild"></div>  
+          </div>
+        </div>
+      `;
+
+      expect(Element('#parent').find('> div')).toEqual(Element('#child'));
+      expect(Element('#parent').find('> div > div')).toEqual(Element('#grandchild'));
+    })
+  });
+
   describe('.get()', () => {
     it('returns correct node', () => {
       document.body.innerHTML = `
