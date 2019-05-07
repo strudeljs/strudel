@@ -6,7 +6,7 @@ const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
  * Utility for checking if event can bubble
  * @param {string} eventName - name of the event eg. click
  */
-const canBubble = (eventName) => {
+const cannotBubble = (eventName) => {
   return nonBubblingEvents.includes(eventName);
 };
 
@@ -44,7 +44,7 @@ const delegateEvents = (context, events) => {
       const selector = match[2];
       let $el = context.$element;
 
-      if (selector && canBubble(eventName)) {
+      if (selector && cannotBubble(eventName)) {
         $el = $el.find(selector) || $el;
         delegate($el, eventName, method.bind(context));
         return;
