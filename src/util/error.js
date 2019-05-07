@@ -1,4 +1,5 @@
 export let warn = () => {};
+export let error = () => {};
 
 if (process.env.NODE_ENV !== 'production') {
   const generateTrace = (vm) => {
@@ -7,13 +8,17 @@ if (process.env.NODE_ENV !== 'production') {
   };
   warn = (msg, vm) => {
     const trace = vm ? generateTrace(vm) : '';
+    console.warn(`[Strudel]: ${msg}${trace}`);
+  };
+  error = (msg, vm) => {
+    const trace = vm ? generateTrace(vm) : '';
     console.error(`[Strudel]: ${msg}${trace}`);
   };
 }
 
 const handleError = (err, vm, info) => {
   if (process.env.NODE_ENV !== 'production') {
-    warn(`Error in ${info}: "${err.toString()}"`, vm);
+    error(`Error in ${info}: "${err.toString()}"`, vm);
   }
 
   console.error(err);
