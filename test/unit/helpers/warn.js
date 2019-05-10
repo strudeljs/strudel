@@ -47,8 +47,10 @@ function createCompareFn(spy) {
 beforeEach(() => {
   asserted = [];
   spyOn(console, 'warn');
+  spyOn(console, 'error');
   jasmine.addMatchers({
-    toHaveBeenWarned: () => { return createCompareFn(console.warn); }
+    toHaveBeenWarned: () => createCompareFn(console.warn),
+    toHaveThrownError: () => createCompareFn(console.error)
   });
 });
 
