@@ -60,8 +60,8 @@ describe('Component Instance', () => {
     }
 
     const component = new TestComponent({ element });
-    expect('TypeError: this.asdf is not a function').toHaveBeenWarned();
+    expect('TypeError: this.asdf is not a function').toHaveThrownError();
     component.$teardown();
-    expect('TypeError: this.asdf is not a function').toHaveBeenWarned();
+    expect('TypeError: this.asdf is not a function').toHaveThrownError();
   });
 });
