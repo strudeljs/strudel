@@ -494,10 +494,10 @@ class Element {
         var hadId = true;
         if (!node.id) {
           hadId = false;
-          node.id = Math.random().toString(36).substr(2, 9);
+          node.id = `strudel-${Math.random().toString(36).substr(2, 9)}`;
         }
 
-        selector = '#' + node.id + selector;
+        selector = `#${node.id}${selector}`;
       }
 
       const result = new Element(selector || '*', node);
