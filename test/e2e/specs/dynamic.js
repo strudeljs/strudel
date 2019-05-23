@@ -10,6 +10,10 @@ module.exports = {
       .assert.containsText('.count', '100')
       .click('.control-remove')
       .assert.containsText('.count', '-1')
+      .waitForElementVisible('.input-container', 5000)
+      .assert.containsText('.input-value', 'Start')
+      .click('.input-set')
+      .assert.containsText('.input-value', 'test')
       .end();
   }
 };

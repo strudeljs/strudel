@@ -40,7 +40,7 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container = document) {
-    this.registry.getRegisteredSelectors().forEach((selector) => {
+    this.registry.getNewlyRegisteredSelectors().forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
       if (container !== document && $(container).is(selector)) {
         elements.push(container);
@@ -51,6 +51,7 @@ class Linker {
           const data = element.data();
           const Instance = this.registry.getComponent(selector);
           el.__strudel__ = new Instance({ element, data });
+          this.registry.setSelectorAsRegistered(selector);
         } else {
           warn(`Trying to attach component to already initialized node, component with selector ${selector} will not be attached`);
         }
