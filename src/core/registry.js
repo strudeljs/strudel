@@ -9,15 +9,15 @@ class Registry {
    */
   constructor() {
     this._registry = {};
-    this._tempRegistry = {};
+    this._registrationQueue = {};
   }
 
   /**
-   * Retunrs all registry data
+   * Returns both permanent registry and the registration queue entires
    * @returns {{}|*}
    */
   getData() {
-    return Object.assign(this._registry, this._tempRegistry);
+    return Object.assign(this._registry, this._registrationQueue);
   }
 
   /**
@@ -33,9 +33,9 @@ class Registry {
    * Returns an Array of temporary registry entires
    * @returns {Array} registry entries
    */
-  getNewlyRegisteredSelectors() {
+  getSelectorsFromRegistrationQueue() {
     return Object
-      .keys(this._tempRegistry);
+      .keys(this._registrationQueue);
   }
 
   /**
@@ -43,8 +43,8 @@ class Registry {
    * @param {string} selector
    */
   setSelectorAsRegistered(selector) {
-    this._registry[selector] = this._tempRegistry[selector];
-    delete this._tempRegistry[selector];
+    this._registry[selector] = this._registrationQueue[selector];
+    delete this._registrationQueue[selector];
   }
 
   /**
@@ -53,7 +53,10 @@ class Registry {
    * @returns {Function} constructor
    */
   getComponent(selector) {
-    return this._tempRegistry[selector];
+    if (this._registrationQueue[selector]) {
+      return this._registrationQueue[selector];
+    }
+    return this._registry[selector];
   }
 
   /**
@@ -62,10 +65,10 @@ class Registry {
    * @param {Function} constructor
    */
   registerComponent(selector, klass) {
-    if (this._registry[selector] || this._tempRegistry[selector]) {
+    if (this._registry[selector] || this._registrationQueue[selector]) {
       warn(`Component registered under selector: ${selector} already exists.`, klass);
     } else {
-      this._tempRegistry[selector] = klass;
+      this._registrationQueue[selector] = klass;
     }
   }
 }

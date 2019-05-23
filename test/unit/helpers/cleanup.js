@@ -6,6 +6,6 @@ beforeAll(() => {
 
 afterEach((done) => {
   registry._registry = {};
-  registry._tempRegistry = {};
+  registry._registrationQueue = {};
   done();
 });
