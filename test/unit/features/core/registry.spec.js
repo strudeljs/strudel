@@ -30,6 +30,16 @@ describe('Core Registry', () => {
     expect(registry.getSelectorsFromRegistrationQueue()).not.toContain('selector');
   });
 
+  it('properly merges registration queue and permanent registry', () => {
+    registry.registerComponent('tempComponent', Component);
+    registry.registerComponent('permComponent', Component);
+    registry.setSelectorAsRegistered('permComponent');
+
+    expect([...Object.keys(registry.getData())].length).toEqual(2);
+    expect(registry.getRegisteredSelectors()).toContain('permComponent');
+    expect(registry.getSelectorsFromRegistrationQueue()).toContain('tempComponent');
+  });
+
   it('warns duplicates selectors', () => {
     registry.registerComponent('selector', Component);
     registry.registerComponent('selector', Component);

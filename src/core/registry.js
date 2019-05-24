@@ -17,7 +17,16 @@ class Registry {
    * @returns {{}|*}
    */
   getData() {
-    return Object.assign(this._registry, this._registrationQueue);
+    const registryArray = [this._registry, this._registrationQueue];
+
+    const mergedRegistry = registryArray.reduce((prev, curr) => {
+      Object.keys(curr).forEach((key) => {
+        prev[key] = curr[key];
+      });
+      return prev;
+    });
+
+    return mergedRegistry;
   }
 
   /**
