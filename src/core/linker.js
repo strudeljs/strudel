@@ -40,6 +40,8 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container = document) {
+    const isNewNodeAdded = (container === document);
+
     const selectors = (container === document)
       ? this.registry.getSelectorsFromRegistrationQueue()
       : this.registry.getRegisteredSelectors();
@@ -60,7 +62,7 @@ class Linker {
         }
       });
 
-      if (container === document) {
+      if (isNewNodeAdded) {
         this.registry.setSelectorAsRegistered(selector);
       }
     });

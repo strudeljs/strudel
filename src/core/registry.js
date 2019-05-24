@@ -62,10 +62,7 @@ class Registry {
    * @returns {Function} constructor
    */
   getComponent(selector) {
-    if (this._registrationQueue[selector]) {
-      return this._registrationQueue[selector];
-    }
-    return this._registry[selector];
+    return this._registrationQueue[selector] || this._registry[selector];
   }
 
   /**
