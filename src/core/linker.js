@@ -40,9 +40,9 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container = document) {
-    const isNewNodeAdded = (container === document);
+    const isRootNode = (container === document);
 
-    const selectors = (container === document)
+    const selectors = (isRootNode)
       ? this.registry.getSelectorsFromRegistrationQueue()
       : this.registry.getRegisteredSelectors();
 
@@ -62,7 +62,7 @@ class Linker {
         }
       });
 
-      if (isNewNodeAdded) {
+      if (isRootNode) {
         this.registry.setSelectorAsRegistered(selector);
       }
     });
