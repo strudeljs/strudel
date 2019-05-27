@@ -19,14 +19,12 @@ class Registry {
   getData() {
     const registryArray = [this._registry, this._registrationQueue];
 
-    const mergedRegistry = registryArray.reduce((prev, curr) => {
+    return registryArray.reduce((prev, curr) => {
       Object.keys(curr).forEach((key) => {
         prev[key] = curr[key];
       });
       return prev;
     });
-
-    return mergedRegistry;
   }
 
   /**
@@ -51,9 +49,9 @@ class Registry {
    * Moves selected registry entry from temporary to permanent
    * @param {string} selector
    */
-  setSelectorAsRegistered(selector) {
-    this._registry[selector] = this._registrationQueue[selector];
-    delete this._registrationQueue[selector];
+  setSelectorsAsRegistered() {
+    this._registry = this._registrationQueue;
+    this._registrationQueue = {};
   }
 
   /**

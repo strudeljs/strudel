@@ -61,11 +61,11 @@ class Linker {
           warn(`Trying to attach component to already initialized node, component with selector ${selector} will not be attached`);
         }
       });
-
-      if (isRootNode) {
-        this.registry.setSelectorAsRegistered(selector);
-      }
     });
+
+    if (isRootNode) {
+      this.registry.setSelectorsAsRegistered();
+    }
   }
 }
 

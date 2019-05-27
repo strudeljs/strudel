@@ -20,24 +20,14 @@ describe('Core Registry', () => {
     expect(registry.getSelectorsFromRegistrationQueue()).toContain('selector2');
   });
 
-  it('moves selector from temp to perm registry', () => {
+  it('moves entires from registration queue to permanent registry', () => {
     registry.registerComponent('selector', Component);
-    expect(registry.getRegisteredSelectors()).not.toContain('selector');
     expect(registry.getSelectorsFromRegistrationQueue()).toContain('selector');
+    expect(registry.getRegisteredSelectors()).not.toContain('selector');
 
-    registry.setSelectorAsRegistered('selector');
-    expect(registry.getRegisteredSelectors()).toContain('selector');
+    registry.setSelectorsAsRegistered();
     expect(registry.getSelectorsFromRegistrationQueue()).not.toContain('selector');
-  });
-
-  it('properly merges registration queue and permanent registry', () => {
-    registry.registerComponent('tempComponent', Component);
-    registry.registerComponent('permComponent', Component);
-    registry.setSelectorAsRegistered('permComponent');
-
-    expect([...Object.keys(registry.getData())].length).toEqual(2);
-    expect(registry.getRegisteredSelectors()).toContain('permComponent');
-    expect(registry.getSelectorsFromRegistrationQueue()).toContain('tempComponent');
+    expect(registry.getRegisteredSelectors()).toContain('selector');
   });
 
   it('warns duplicates selectors', () => {
