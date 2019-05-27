@@ -29,8 +29,6 @@ const bindContentEvents = () => {
   });
 };
 
-const initializedSelector = `.${config.initializedClassName}`;
-
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
@@ -40,7 +38,7 @@ const onAutoInitCallback = (mutation) => {
   })
   .forEach((node) => {
     if (registeredSelectors.find((el) => {
-      const lookupSelector = `${el}:not(${initializedSelector})`;
+      const lookupSelector = `${el}:not(${config.initializedSelector})`;
 
       return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
     })) {
@@ -54,10 +52,10 @@ const onAutoTeardownCallback = (mutation) => {
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(initializedSelector);
+        && $(node).is(config.initializedSelector);
     })
     .forEach((node) => {
-      const initializedSubNodes = node.querySelector(initializedSelector);
+      const initializedSubNodes = node.querySelector(config.initializedSelector);
 
       if (initializedSubNodes) {
         Array.prototype.slice.call(initializedSubNodes).forEach(

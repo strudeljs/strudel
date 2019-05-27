@@ -1,8 +1,14 @@
+const initializedClassName = 'strudel-init';
+
 export default {
   /**
    * Class added on components when initialised
    */
-  initializedClassName: 'strudel-init',
+  initializedClassName,
+  /**
+   * Selector for components that have been initialized
+   */
+  initializedSelector: `.${initializedClassName}`,
   /**
    * Whether to enable devtools
    */
