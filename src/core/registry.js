@@ -1,4 +1,5 @@
 import { warn } from '../util/error';
+import { mergeObjects } from '../util/helpers';
 
 /**
  * Simple registry for storing selector-constructor pairs
@@ -13,18 +14,11 @@ class Registry {
   }
 
   /**
-   * Returns both permanent registry and the registration queue entires
+   * Returns both permanent registry and the registration queue entires as one object
    * @returns {{}|*}
    */
   getData() {
-    const registryArray = [this._registry, this._registrationQueue];
-
-    return registryArray.reduce((prev, curr) => {
-      Object.keys(curr).forEach((key) => {
-        prev[key] = curr[key];
-      });
-      return prev;
-    });
+    return mergeObjects(this._registry, this._registrationQueue);
   }
 
   /**
@@ -46,11 +40,11 @@ class Registry {
   }
 
   /**
-   * Moves selected registry entry from temporary to permanent
+   * Moves all entries from the registration queue to permanent registry and clears queue
    * @param {string} selector
    */
   setSelectorsAsRegistered() {
-    this._registry = this._registrationQueue;
+    this._registry = mergeObjects(this._registry, this._registrationQueue);
     this._registrationQueue = {};
   }
 
