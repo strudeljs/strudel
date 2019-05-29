@@ -8,14 +8,25 @@
   <script type="text/babel" data-plugins="transform-decorators-legacy">
     @Strudel.Component('.static')
     class Clicker {
+      init() {
+        setTimeout(() => {
+          this.$teardown();
+        }, 2000);
+
+        setTimeout(() => {
+          console.log(this.$element);
+        }, 4000);
+      }
+
+
       $teardown() {
-        console.log('Overriden by class');
-        // [Strudel]: Instance method $teardown is being overridden by a component
+        console.log('Overriden by class'); // Won't show up
+        // [Strudel]: Component tried to override instance method $teardown in component Clicker
       }
 
       $off() {
-        console.log('Overriden by class');
-        // [Strudel]: Instance method $off is being overridden by a component
+        console.log('Overriden by class'); // Won't show up
+        // [Strudel]: Component tried to override instance method $off in component Clicker
       }        
     }
 

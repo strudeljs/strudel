@@ -65,30 +65,38 @@ describe('Component Instance', () => {
     expect('TypeError: this.asdf is not a function').toHaveThrownError();
   });
 
-  it('notifies about methods being overriden', () => {
+  it('warns when component tries to override instance methods', () => {
     @Decorator('test')
     class TestComponent {
-      $teardown() {
+      $teardown() {}
 
-      }
+      $on() {}
 
-      $on() {
+      $off() {}
 
-      }
-
-      $off() {
-
-      }
-
-      $emit() {
-        
-      }
+      $emit() {}
     }
 
     const component = new TestComponent({ element });
-    expect('[Strudel]: Instance method $teardown is being overridden by a component').toHaveBeenWarned();
-    expect('[Strudel]: Instance method $on is being overridden by a component').toHaveBeenWarned();
-    expect('[Strudel]: Instance method $off is being overridden by a component').toHaveBeenWarned();
-    expect('[Strudel]: Instance method $emit is being overridden by a component').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method constructor in component TestComponent').not.toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $teardown in component TestComponent').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $on in component TestComponent').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $off in component TestComponent').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $emit in component TestComponent').toHaveBeenWarned();
+  });
+
+  it('does not override instance methods', () => {
+    @Decorator('test')
+      class TestComponent {
+      init() {
+
+      }
+
+      $teardown() {}
+    }
+
+    const component = new TestComponent({ element });
+    expect(component.$teardown.toString().indexOf('$teardown() {}')).toEqual(-1);
+    expect('[Strudel]: Component tried to override instance method $teardown in component TestComponent').toHaveBeenWarned();
   });
 });
