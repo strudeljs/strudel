@@ -64,4 +64,33 @@ describe('Component Instance', () => {
     component.$teardown();
     expect('TypeError: this.asdf is not a function').toHaveThrownError();
   });
+
+  it('notifies about methods being overriden', () => {
+    @Decorator('test')
+    class TestComponent {
+      $teardown() {
+
+      }
+
+      $on() {
+
+      }
+
+      $off() {
+
+      }
+
+      $emit() {
+        
+      }
+    }
+
+    console.log(document.querySelectorAll('*'));
+
+    const component = new TestComponent({ element });
+    expect('[Strudel]: Instance method $teardown is being overridden by a component').toHaveBeenWarned();
+    expect('[Strudel]: Instance method $on is being overridden by a component').toHaveBeenWarned();
+    expect('[Strudel]: Instance method $off is being overridden by a component').toHaveBeenWarned();
+    expect('[Strudel]: Instance method $emit is being overridden by a component').toHaveBeenWarned();
+  });
 });

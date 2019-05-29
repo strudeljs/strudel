@@ -1,10 +1,10 @@
 import EventEmitter from '../util/eventEmitter';
 import { delegateEvents } from '../dom/delegateEvents';
 import bindElements from '../dom/bindElements';
-import { isFunction } from '../util/helpers';
+import { isFunction, createHash, getWatchedMethods } from '../util/helpers';
 import mix from './mixin';
 import config from '../config';
-import handleError from '../util/error';
+import handleError, { warn } from '../util/error';
 
 /**
  * @classdesc Base class for all components, implementing event emitter
@@ -32,6 +32,13 @@ class Component extends EventEmitter {
           mix(this, mixin);
         });
       }
+
+      getWatchedMethods(this).forEach((func) => {
+        const hash = createHash(func.method.toString().trim());
+        if (hash !== func.originalHash && hash !== func.testHash) {
+          warn(`Instance method ${func.method.name} is being overridden by a component`);
+        }
+      });
 
       this.init();
     } catch (e) {

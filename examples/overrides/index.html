@@ -1,0 +1,25 @@
+<body>
+    <div class="static">
+      <p>Component with overriden methods</p>
+    </div>
+    
+    <script src="../../dist/strudel.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
+    <script type="text/babel" data-plugins="transform-decorators-legacy">
+      @Strudel.Component('.static')
+      class Clicker {
+        $teardown() {
+          console.log('Overriden by class');
+          // [Strudel]: Instance method $teardown is being overridden by a component
+        }
+
+        $off() {
+          console.log('Overriden by class');
+          // [Strudel]: Instance method $off is being overridden by a component
+        }        
+      }
+
+      Strudel.element(document).trigger('content:loaded');
+    </script>
+    </body>
+    
