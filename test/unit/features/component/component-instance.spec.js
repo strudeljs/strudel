@@ -85,8 +85,6 @@ describe('Component Instance', () => {
       }
     }
 
-    console.log(document.querySelectorAll('*'));
-
     const component = new TestComponent({ element });
     expect('[Strudel]: Instance method $teardown is being overridden by a component').toHaveBeenWarned();
     expect('[Strudel]: Instance method $on is being overridden by a component').toHaveBeenWarned();
