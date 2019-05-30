@@ -78,11 +78,11 @@ describe('Component Instance', () => {
     }
 
     const component = new TestComponent({ element });
-    expect('[Strudel]: Component tried to override instance method constructor in component TestComponent').not.toHaveBeenWarned();
-    expect('[Strudel]: Component tried to override instance method $teardown in component TestComponent').toHaveBeenWarned();
-    expect('[Strudel]: Component tried to override instance method $on in component TestComponent').toHaveBeenWarned();
-    expect('[Strudel]: Component tried to override instance method $off in component TestComponent').toHaveBeenWarned();
-    expect('[Strudel]: Component tried to override instance method $emit in component TestComponent').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method constructor (found in TestComponent)').not.toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $teardown (found in TestComponent)').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $on (found in TestComponent)').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $off (found in TestComponent)').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $emit (found in TestComponent)').toHaveBeenWarned();
   });
 
   it('does not override instance methods', () => {
@@ -97,6 +97,6 @@ describe('Component Instance', () => {
 
     const component = new TestComponent({ element });
     expect(component.$teardown.toString().indexOf('$teardown() {}')).toEqual(-1);
-    expect('[Strudel]: Component tried to override instance method $teardown in component TestComponent').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $teardown (found in TestComponent)').toHaveBeenWarned();
   });
 });
