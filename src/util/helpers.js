@@ -1,5 +1,9 @@
 import { warn } from './error';
 
+/**
+ * List of instance methods that won't be overriden by a component
+ * when prototypes are mixed.
+ */
 const protectedMethods = [
   'constructor',
   '$teardown',
