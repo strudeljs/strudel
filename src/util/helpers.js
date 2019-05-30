@@ -1,3 +1,17 @@
+import { warn } from './error';
+
+/**
+ * List of instance methods that won't be overriden by a component
+ * when prototypes are mixed.
+ */
+const protectedMethods = [
+  'constructor',
+  '$teardown',
+  '$on',
+  '$off',
+  '$emit'
+];
+
 /**
  * Check if passed parameter is a function
  * @param obj
@@ -24,7 +38,11 @@ export const mixPrototypes = (target, source) => {
   });
 
   Object.getOwnPropertyNames(sourceProto).forEach((name) => {
-    if (name !== 'constructor') {
+    if (protectedMethods.indexOf(name) !== -1) {
+      if (name !== 'constructor') {
+        warn(`Component tried to override instance method ${name}`, source);
+      }
+    } else {
       Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
     }
   });
