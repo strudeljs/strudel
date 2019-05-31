@@ -11,7 +11,7 @@ class Registry {
   constructor() {
     this._registry = {};
     this._registrationQueue = {};
-    this._isRegisterScheduled = false;
+    this._isRegistrationScheduled = false;
   }
 
   /**
@@ -69,13 +69,13 @@ class Registry {
     } else {
       this._registrationQueue[selector] = klass;
 
-      if (!this._isRegisterScheduled) {
-        this._isRegisterScheduled = true;
+      if (!this._isRegistrationScheduled) {
+        this._isRegistrationScheduled = true;
 
-        setTimeout(() => {
+        window.requestAnimationFrame(() => {
           const ev = new Event('content:loaded');
           document.dispatchEvent(ev);
-        }, 0);
+        });
       }
     }
   }
