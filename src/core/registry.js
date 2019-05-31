@@ -11,6 +11,7 @@ class Registry {
   constructor() {
     this._registry = {};
     this._registrationQueue = {};
+    this._isRegisterScheduled = false;
   }
 
   /**
@@ -67,6 +68,15 @@ class Registry {
       warn(`Component registered under selector: ${selector} already exists.`, klass);
     } else {
       this._registrationQueue[selector] = klass;
+
+      if (!this._isRegisterScheduled) {
+        this._isRegisterScheduled = true;
+
+        setTimeout(() => {
+          const ev = new Event('content:loaded');
+          document.dispatchEvent(ev);
+        }, 0);
+      }
     }
   }
 }
