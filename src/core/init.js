@@ -71,8 +71,6 @@ const onAutoTeardownCallback = (mutation) => {
 const init = () => {
   if (/comp|inter|loaded/.test(document.readyState)) {
     setTimeout(bootstrap, 0);
-  } else {
-    channel.on('DOMContentLoaded', bootstrap);
   }
 
   mount();
