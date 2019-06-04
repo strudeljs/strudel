@@ -77,11 +77,17 @@ class Registry {
 
 var registry = new Registry();
 
+const initializedClassName = 'strudel-init';
+
 var config = {
   /**
    * Class added on components when initialised
    */
-  initializedClassName: 'strudel-init',
+  initializedClassName,
+  /**
+   * Selector for components that have been initialized
+   */
+  initializedSelector: `.${initializedClassName}`,
   /**
    * Whether to enable devtools
    */
@@ -91,6 +97,18 @@ var config = {
    */
   productionTip: process.env.NODE_ENV !== 'production'
 };
+
+/**
+ * List of instance methods that won't be overriden by a component
+ * when prototypes are mixed.
+ */
+const protectedMethods = [
+  'constructor',
+  '$teardown',
+  '$on',
+  '$off',
+  '$emit'
+];
 
 /**
  * Check if passed parameter is a function
@@ -118,7 +136,11 @@ const mixPrototypes = (target, source) => {
   });
 
   Object.getOwnPropertyNames(sourceProto).forEach((name) => {
-    if (name !== 'constructor') {
+    if (protectedMethods.indexOf(name) !== -1) {
+      if (name !== 'constructor') {
+        warn(`Component tried to override instance method ${name}`, source);
+      }
+    } else {
       Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
     }
   });
@@ -378,7 +400,7 @@ var event = createDecorator((component, property, ...params) => {
 
   if (params && params[0]) {
     component._events[params[0]] = cb;
-    
+
     const match = params[0].match(DELEGATE_EVENT_SPLITTER);
     if (match) {
       delegate(component.$element, match[1], match[2], cb.bind(component));
@@ -1124,16 +1146,19 @@ function $(selector, element) {
   return new Element(selector, element);
 }
 
-const version = '0.9.2';
+const VERSION = '0.9.2';
 const config$1 = config;
+const INIT_CLASS = config$1.initializedClassName;
+const INIT_SELECTOR = config$1.initializedSelector;
 const options = {
   components: registry.getData()
 };
 
 var Strudel = /*#__PURE__*/Object.freeze({
-  version: version,
+  VERSION: VERSION,
+  INIT_CLASS: INIT_CLASS,
+  INIT_SELECTOR: INIT_SELECTOR,
   options: options,
-  config: config$1,
   EventEmitter: EventEmitter,
   Component: decorator,
   Evt: event,
@@ -1143,8 +1168,6 @@ var Strudel = /*#__PURE__*/Object.freeze({
   element: $,
   $: $
 });
-
-const initializedSelector = `.${config.initializedClassName}`;
 
 /**
  * @classdesc Class linking components with DOM
@@ -1166,7 +1189,7 @@ class Linker {
   unlink(container = document) {
     this.registry.getRegisteredSelectors().forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
-      if (container !== document && $(container).is(initializedSelector)) {
+      if (container !== document && $(container).is(config.initializedSelector)) {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
@@ -1288,8 +1311,6 @@ const bindContentEvents = () => {
   });
 };
 
-const initializedSelector$1 = `.${config.initializedClassName}`;
-
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
@@ -1299,7 +1320,7 @@ const onAutoInitCallback = (mutation) => {
   })
   .forEach((node) => {
     if (registeredSelectors.find((el) => {
-      const lookupSelector = `${el}:not(${initializedSelector$1})`;
+      const lookupSelector = `${el}:not(${config.initializedSelector})`;
 
       return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
     })) {
@@ -1313,10 +1334,10 @@ const onAutoTeardownCallback = (mutation) => {
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(initializedSelector$1);
+        && $(node).is(config.initializedSelector);
     })
     .forEach((node) => {
-      const initializedSubNodes = node.querySelector(initializedSelector$1);
+      const initializedSubNodes = node.querySelector(config.initializedSelector);
 
       if (initializedSubNodes) {
         Array.prototype.slice.call(initializedSubNodes).forEach(
@@ -1346,4 +1367,4 @@ const init = () => {
 Component.prototype.getInstance = () => { return Strudel; };
 init();
 
-export { version, options, config$1 as config, EventEmitter, decorator as Component, event as Evt, el as El, onInit as OnInit, createDecorator, $ as element, $ };
+export { VERSION, INIT_CLASS, INIT_SELECTOR, options, EventEmitter, decorator as Component, event as Evt, el as El, onInit as OnInit, createDecorator, $ as element, $ };

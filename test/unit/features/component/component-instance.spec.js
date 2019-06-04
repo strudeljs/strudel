@@ -64,4 +64,39 @@ describe('Component Instance', () => {
     component.$teardown();
     expect('TypeError: this.asdf is not a function').toHaveThrownError();
   });
+
+  it('warns when component tries to override instance methods', () => {
+    @Decorator('test')
+    class TestComponent {
+      $teardown() {}
+
+      $on() {}
+
+      $off() {}
+
+      $emit() {}
+    }
+
+    const component = new TestComponent({ element });
+    expect('[Strudel]: Component tried to override instance method constructor (found in TestComponent)').not.toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $teardown (found in TestComponent)').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $on (found in TestComponent)').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $off (found in TestComponent)').toHaveBeenWarned();
+    expect('[Strudel]: Component tried to override instance method $emit (found in TestComponent)').toHaveBeenWarned();
+  });
+
+  it('does not override instance methods', () => {
+    @Decorator('test')
+      class TestComponent {
+      init() {
+
+      }
+
+      $teardown() {}
+    }
+
+    const component = new TestComponent({ element });
+    expect(component.$teardown.toString().indexOf('$teardown() {}')).toEqual(-1);
+    expect('[Strudel]: Component tried to override instance method $teardown (found in TestComponent)').toHaveBeenWarned();
+  });
 });

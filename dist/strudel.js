@@ -78,11 +78,17 @@
 
   var registry = new Registry();
 
+  var initializedClassName = 'strudel-init';
+
   var config = {
     /**
      * Class added on components when initialised
      */
-    initializedClassName: 'strudel-init',
+    initializedClassName: initializedClassName,
+    /**
+     * Selector for components that have been initialized
+     */
+    initializedSelector: ("." + initializedClassName),
     /**
      * Whether to enable devtools
      */
@@ -92,6 +98,18 @@
      */
     productionTip: "development" !== 'production'
   };
+
+  /**
+   * List of instance methods that won't be overriden by a component
+   * when prototypes are mixed.
+   */
+  var protectedMethods = [
+    'constructor',
+    '$teardown',
+    '$on',
+    '$off',
+    '$emit'
+  ];
 
   /**
    * Check if passed parameter is a function
@@ -119,7 +137,11 @@
     });
 
     Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
-      if (name !== 'constructor') {
+      if (protectedMethods.indexOf(name) !== -1) {
+        if (name !== 'constructor') {
+          warn(("Component tried to override instance method " + name), source);
+        }
+      } else {
         Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
       }
     });
@@ -408,7 +430,7 @@
 
     if (params && params[0]) {
       component._events[params[0]] = cb;
-      
+
       var match = params[0].match(DELEGATE_EVENT_SPLITTER);
       if (match) {
         delegate(component.$element, match[1], match[2], cb.bind(component));
@@ -1157,16 +1179,19 @@
     return new Element(selector, element);
   }
 
-  var version = '0.9.2';
+  var VERSION = '0.9.2';
   var config$1 = config;
+  var INIT_CLASS = config$1.initializedClassName;
+  var INIT_SELECTOR = config$1.initializedSelector;
   var options = {
     components: registry.getData()
   };
 
   var Strudel = /*#__PURE__*/Object.freeze({
-    version: version,
+    VERSION: VERSION,
+    INIT_CLASS: INIT_CLASS,
+    INIT_SELECTOR: INIT_SELECTOR,
     options: options,
-    config: config$1,
     EventEmitter: EventEmitter,
     Component: decorator,
     Evt: event,
@@ -1176,8 +1201,6 @@
     element: $,
     $: $
   });
-
-  var initializedSelector = "." + (config.initializedClassName);
 
   /**
    * @classdesc Class linking components with DOM
@@ -1196,7 +1219,7 @@
 
     this.registry.getRegisteredSelectors().forEach(function (selector) {
       var elements = Array.prototype.slice.call(container.querySelectorAll(selector));
-      if (container !== document && $(container).is(initializedSelector)) {
+      if (container !== document && $(container).is(config.initializedSelector)) {
         elements.push(container);
       }
       [].forEach.call(elements, function (el) {
@@ -1277,7 +1300,7 @@
 
   var mount = function () {
     setTimeout(function () {
-      if (config.devtools) {
+      {
         if (devtools) {
           devtools.emit('init', Strudel);
         } else {
@@ -1287,7 +1310,7 @@
           );
         }
       }
-      if (config.productionTip !== false) {
+      {
         console.info(
           'You are running Strudel in development mode.\n' +
           'Make sure to turn on production mode when deploying for production.'
@@ -1320,8 +1343,6 @@
     });
   };
 
-  var initializedSelector$1 = "." + (config.initializedClassName);
-
   var onAutoInitCallback = function (mutation) {
     var registeredSelectors = registry.getRegisteredSelectors();
 
@@ -1331,7 +1352,7 @@
     })
     .forEach(function (node) {
       if (registeredSelectors.find(function (el) {
-        var lookupSelector = el + ":not(" + initializedSelector$1 + ")";
+        var lookupSelector = el + ":not(" + (config.initializedSelector) + ")";
 
         return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
       })) {
@@ -1345,10 +1366,10 @@
       .filter(function (node) {
         return node.nodeName !== 'SCRIPT'
           && node.nodeType === 1
-          && $(node).is(initializedSelector$1);
+          && $(node).is(config.initializedSelector);
       })
       .forEach(function (node) {
-        var initializedSubNodes = node.querySelector(initializedSelector$1);
+        var initializedSubNodes = node.querySelector(config.initializedSelector);
 
         if (initializedSubNodes) {
           Array.prototype.slice.call(initializedSubNodes).forEach(
@@ -1378,9 +1399,10 @@
   Component.prototype.getInstance = function () { return Strudel; };
   init();
 
-  exports.version = version;
+  exports.VERSION = VERSION;
+  exports.INIT_CLASS = INIT_CLASS;
+  exports.INIT_SELECTOR = INIT_SELECTOR;
   exports.options = options;
-  exports.config = config$1;
   exports.EventEmitter = EventEmitter;
   exports.Component = decorator;
   exports.Evt = event;
