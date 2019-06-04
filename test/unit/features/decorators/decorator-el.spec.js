@@ -15,12 +15,13 @@ describe('Decorator Element', () => {
   });
 
   it('fails without selector', () => {
-    @Component('empty')
+    @Component('.empty')
     class Empty {
       @El()
-      test
+      test;
     }
 
-    expect('Selector must be provided for El decorator').toHaveBeenWarned();
+    const component = new Empty({ element });
+    expect('[Strudel]: Selector must be provided for El decorator').toHaveBeenWarned();
   });
 });

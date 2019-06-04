@@ -1,16 +1,21 @@
 /*!
- * Strudel.js v0.8.1
- * (c) 2016-2018 Mateusz Łuczak
+ * Strudel.js v0.9.2
+ * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
 let warn = () => {};
+let error = () => {};
 
 if (process.env.NODE_ENV !== 'production') {
   const generateTrace = (vm) => {
-    const componentName = vm.name;
+    const componentName = vm.prototype ? vm.prototype.name || vm.name : vm.constructor.name;
     return ` (found in ${componentName})`;
   };
   warn = (msg, vm) => {
+    const trace = vm ? generateTrace(vm) : '';
+    console.warn(`[Strudel]: ${msg}${trace}`);
+  };
+  error = (msg, vm) => {
     const trace = vm ? generateTrace(vm) : '';
     console.error(`[Strudel]: ${msg}${trace}`);
   };
@@ -18,7 +23,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const handleError = (err, vm, info) => {
   if (process.env.NODE_ENV !== 'production') {
-    warn(`Error in ${info}: "${err.toString()}"`, vm);
+    error(`Error in ${info}: "${err.toString()}"`, vm);
   }
 
   console.error(err);
@@ -120,14 +125,14 @@ const mixPrototypes = (target, source) => {
 };
 
 const createDecorator = (factory) => {
-  return (options) => {
+  return (options, param) => {
     return (Ctor, property) => {
       if (!Ctor.__decorators__) {
         Ctor.__decorators__ = [];
       }
 
       Ctor.__decorators__.push((component) => {
-        return factory(component, property, options);
+        return factory(component, property, options, param);
       });
     };
   };
@@ -323,7 +328,7 @@ const register = (target, selector) => {
   mixPrototypes(component, target);
   Object.defineProperty(component.prototype, '_selector', { value: selector });
   Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
-  Object.defineProperty(component, 'name', { value: target.name });
+  Object.defineProperty(component.prototype, 'name', { value: target.name });
   registry.registerComponent(selector, component);
 
   return component;
@@ -351,8 +356,12 @@ const delegate = (element, eventName, selector, listener) => {
  * @returns (Function} decorator
  */
 var event = createDecorator((component, property, ...params) => {
-  if (!params[0]) {
+  if (!params || !params[0]) {
     warn('Event descriptor must be provided for Evt decorator');
+  }
+
+  if (!component._events) {
+    component._events = [];
   }
 
   const cb = function handler(...args) {
@@ -367,8 +376,14 @@ var event = createDecorator((component, property, ...params) => {
     }
   };
 
-  const match = params[0].match(DELEGATE_EVENT_SPLITTER);
-  delegate(component.$element, match[1], match[2], cb.bind(component));
+  if (params && params[0]) {
+    component._events[params[0]] = cb;
+    
+    const match = params[0].match(DELEGATE_EVENT_SPLITTER);
+    if (match) {
+      delegate(component.$element, match[1], match[2], cb.bind(component));
+    }
+  }
 });
 
 /**
@@ -377,11 +392,17 @@ var event = createDecorator((component, property, ...params) => {
  * @returns (Function} decorator
  */
 var el = createDecorator((component, property, ...params) => {
-  if (!params[0]) {
-    warn('Selector must be provided for El decorator', component);
+  if (params && params[0]) {
+    component[property] = component.$element.find(params[0]);
+  } else {
+    warn('Selector must be provided for El decorator');
   }
 
-  component[property] = component.$element.find(params[0]);
+  if (!component._els) {
+    component._els = [];
+  }
+
+  component._els[property] = property;
 });
 
 /**
@@ -609,6 +630,17 @@ class Element {
    */
   first() {
     return this._nodes[0] || false;
+  }
+
+  /**
+   * Returns index of a given element
+   * @param {HTMLElement|Element} element
+   * @returns {Number}
+   */
+  index(element) {
+    const siblings = this.children()._nodes;
+    const node = element instanceof HTMLElement ? element : element.first();
+    return Array.prototype.indexOf.call(siblings, node);
   }
 
   /**
@@ -879,7 +911,23 @@ class Element {
    */
   find(selector) {
     return this.map(function (node) {
-      return new Element(selector || '*', node);
+      if (selector[0] === '>') {
+        var hadId = true;
+        if (!node.id) {
+          hadId = false;
+          node.id = `strudel-${Math.random().toString(36).substr(2, 9)}`;
+        }
+
+        selector = `#${node.id}${selector}`;
+      }
+
+      const result = new Element(selector || '*', node);
+
+      if (!hadId) {
+        node.id = '';
+      }
+
+      return result;
     });
   }
 
@@ -1076,7 +1124,7 @@ function $(selector, element) {
   return new Element(selector, element);
 }
 
-const version = '0.8.1';
+const version = '0.9.2';
 const config$1 = config;
 const options = {
   components: registry.getData()
@@ -1091,6 +1139,7 @@ var Strudel = /*#__PURE__*/Object.freeze({
   Evt: event,
   El: el,
   OnInit: onInit,
+  createDecorator: createDecorator,
   element: $,
   $: $
 });
@@ -1121,8 +1170,8 @@ class Linker {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
-        if (el.component) {
-          el.component.$teardown();
+        if (el.__strudel__) {
+          el.__strudel__.$teardown();
         }
       });
     });
@@ -1144,6 +1193,8 @@ class Linker {
           const data = element.data();
           const Instance = this.registry.getComponent(selector);
           el.__strudel__ = new Instance({ element, data });
+        } else {
+          warn(`Trying to attach component to already initialized node, component with selector ${selector} will not be attached`);
         }
       });
     });
@@ -1237,6 +1288,7 @@ const bindContentEvents = () => {
   });
 };
 
+const initializedSelector$1 = `.${config.initializedClassName}`;
 
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
@@ -1247,7 +1299,9 @@ const onAutoInitCallback = (mutation) => {
   })
   .forEach((node) => {
     if (registeredSelectors.find((el) => {
-      return $(node).is(el) || $(node).find(el).length;
+      const lookupSelector = `${el}:not(${initializedSelector$1})`;
+
+      return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
     })) {
       bootstrap([node]);
     }
@@ -1255,15 +1309,20 @@ const onAutoInitCallback = (mutation) => {
 };
 
 const onAutoTeardownCallback = (mutation) => {
-  const initializedSelector = `.${config.initializedClassName}`;
-
   Array.prototype.slice.call(mutation.removedNodes)
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(initializedSelector);
+        && $(node).is(initializedSelector$1);
     })
     .forEach((node) => {
+      const initializedSubNodes = node.querySelector(initializedSelector$1);
+
+      if (initializedSubNodes) {
+        Array.prototype.slice.call(initializedSubNodes).forEach(
+          (subNode) => { linker.unlink(subNode); }
+        );
+      }
       linker.unlink(node);
     });
 };
@@ -1277,8 +1336,8 @@ const init = () => {
 
   mount();
   bindContentEvents();
-  attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
-  attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
+  attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
+  attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
 };
 
 /**
@@ -1287,4 +1346,4 @@ const init = () => {
 Component.prototype.getInstance = () => { return Strudel; };
 init();
 
-export { version, options, config$1 as config, EventEmitter, decorator as Component, event as Evt, el as El, onInit as OnInit, $ as element, $ };
+export { version, options, config$1 as config, EventEmitter, decorator as Component, event as Evt, el as El, onInit as OnInit, createDecorator, $ as element, $ };

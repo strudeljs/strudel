@@ -1,5 +1,6 @@
 import $ from '../dom/element';
 import config from '../config';
+import { warn } from '../util/error';
 
 const initializedSelector = `.${config.initializedClassName}`;
 
@@ -27,8 +28,8 @@ class Linker {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
-        if (el.component) {
-          el.component.$teardown();
+        if (el.__strudel__) {
+          el.__strudel__.$teardown();
         }
       });
     });
@@ -50,6 +51,8 @@ class Linker {
           const data = element.data();
           const Instance = this.registry.getComponent(selector);
           el.__strudel__ = new Instance({ element, data });
+        } else {
+          warn(`Trying to attach component to already initialized node, component with selector ${selector} will not be attached`);
         }
       });
     });

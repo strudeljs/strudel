@@ -1,6 +1,6 @@
 /*!
- * Strudel.js v0.8.1
- * (c) 2016-2018 Mateusz Łuczak
+ * Strudel.js v0.9.2
+ * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -10,13 +10,18 @@
 }(this, (function (exports) { 'use strict';
 
   var warn = function () {};
+  var error = function () {};
 
   {
     var generateTrace = function (vm) {
-      var componentName = vm.name;
+      var componentName = vm.prototype ? vm.prototype.name || vm.name : vm.constructor.name;
       return (" (found in " + componentName + ")");
     };
     warn = function (msg, vm) {
+      var trace = vm ? generateTrace(vm) : '';
+      console.warn(("[Strudel]: " + msg + trace));
+    };
+    error = function (msg, vm) {
       var trace = vm ? generateTrace(vm) : '';
       console.error(("[Strudel]: " + msg + trace));
     };
@@ -24,7 +29,7 @@
 
   var handleError = function (err, vm, info) {
     {
-      warn(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
+      error(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
     }
 
     console.error(err);
@@ -121,14 +126,14 @@
   };
 
   var createDecorator = function (factory) {
-    return function (options) {
+    return function (options, param) {
       return function (Ctor, property) {
         if (!Ctor.__decorators__) {
           Ctor.__decorators__ = [];
         }
 
         Ctor.__decorators__.push(function (component) {
-          return factory(component, property, options);
+          return factory(component, property, options, param);
         });
       };
     };
@@ -347,7 +352,7 @@
     mixPrototypes(component, target);
     Object.defineProperty(component.prototype, '_selector', { value: selector });
     Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
-    Object.defineProperty(component, 'name', { value: target.name });
+    Object.defineProperty(component.prototype, 'name', { value: target.name });
     registry.registerComponent(selector, component);
 
     return component;
@@ -378,8 +383,12 @@
     var params = [], len = arguments.length - 2;
     while ( len-- > 0 ) params[ len ] = arguments[ len + 2 ];
 
-    if (!params[0]) {
+    if (!params || !params[0]) {
       warn('Event descriptor must be provided for Evt decorator');
+    }
+
+    if (!component._events) {
+      component._events = [];
     }
 
     var cb = function handler() {
@@ -397,8 +406,14 @@
       }
     };
 
-    var match = params[0].match(DELEGATE_EVENT_SPLITTER);
-    delegate(component.$element, match[1], match[2], cb.bind(component));
+    if (params && params[0]) {
+      component._events[params[0]] = cb;
+      
+      var match = params[0].match(DELEGATE_EVENT_SPLITTER);
+      if (match) {
+        delegate(component.$element, match[1], match[2], cb.bind(component));
+      }
+    }
   });
 
   /**
@@ -410,11 +425,17 @@
     var params = [], len = arguments.length - 2;
     while ( len-- > 0 ) params[ len ] = arguments[ len + 2 ];
 
-    if (!params[0]) {
-      warn('Selector must be provided for El decorator', component);
+    if (params && params[0]) {
+      component[property] = component.$element.find(params[0]);
+    } else {
+      warn('Selector must be provided for El decorator');
     }
 
-    component[property] = component.$element.find(params[0]);
+    if (!component._els) {
+      component._els = [];
+    }
+
+    component._els[property] = property;
   });
 
   /**
@@ -641,6 +662,17 @@
    */
   Element.prototype.first = function first () {
     return this._nodes[0] || false;
+  };
+
+  /**
+   * Returns index of a given element
+   * @param {HTMLElement|Element} element
+   * @returns {Number}
+   */
+  Element.prototype.index = function index (element) {
+    var siblings = this.children()._nodes;
+    var node = element instanceof HTMLElement ? element : element.first();
+    return Array.prototype.indexOf.call(siblings, node);
   };
 
   /**
@@ -911,7 +943,23 @@
    */
   Element.prototype.find = function find (selector) {
     return this.map(function (node) {
-      return new Element(selector || '*', node);
+      if (selector[0] === '>') {
+        var hadId = true;
+        if (!node.id) {
+          hadId = false;
+          node.id = "strudel-" + (Math.random().toString(36).substr(2, 9));
+        }
+
+        selector = "#" + (node.id) + selector;
+      }
+
+      var result = new Element(selector || '*', node);
+
+      if (!hadId) {
+        node.id = '';
+      }
+
+      return result;
     });
   };
 
@@ -1109,7 +1157,7 @@
     return new Element(selector, element);
   }
 
-  var version = '0.8.1';
+  var version = '0.9.2';
   var config$1 = config;
   var options = {
     components: registry.getData()
@@ -1124,6 +1172,7 @@
     Evt: event,
     El: el,
     OnInit: onInit,
+    createDecorator: createDecorator,
     element: $,
     $: $
   });
@@ -1151,8 +1200,8 @@
         elements.push(container);
       }
       [].forEach.call(elements, function (el) {
-        if (el.component) {
-          el.component.$teardown();
+        if (el.__strudel__) {
+          el.__strudel__.$teardown();
         }
       });
     });
@@ -1177,6 +1226,8 @@
           var data = element.data();
           var Instance = this$1.registry.getComponent(selector);
           el.__strudel__ = new Instance({ element: element, data: data });
+        } else {
+          warn(("Trying to attach component to already initialized node, component with selector " + selector + " will not be attached"));
         }
       });
     });
@@ -1269,6 +1320,7 @@
     });
   };
 
+  var initializedSelector$1 = "." + (config.initializedClassName);
 
   var onAutoInitCallback = function (mutation) {
     var registeredSelectors = registry.getRegisteredSelectors();
@@ -1279,7 +1331,9 @@
     })
     .forEach(function (node) {
       if (registeredSelectors.find(function (el) {
-        return $(node).is(el) || $(node).find(el).length;
+        var lookupSelector = el + ":not(" + initializedSelector$1 + ")";
+
+        return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
       })) {
         bootstrap([node]);
       }
@@ -1287,15 +1341,20 @@
   };
 
   var onAutoTeardownCallback = function (mutation) {
-    var initializedSelector = "." + (config.initializedClassName);
-
     Array.prototype.slice.call(mutation.removedNodes)
       .filter(function (node) {
         return node.nodeName !== 'SCRIPT'
           && node.nodeType === 1
-          && $(node).is(initializedSelector);
+          && $(node).is(initializedSelector$1);
       })
       .forEach(function (node) {
+        var initializedSubNodes = node.querySelector(initializedSelector$1);
+
+        if (initializedSubNodes) {
+          Array.prototype.slice.call(initializedSubNodes).forEach(
+            function (subNode) { linker.unlink(subNode); }
+          );
+        }
         linker.unlink(node);
       });
   };
@@ -1309,8 +1368,8 @@
 
     mount();
     bindContentEvents();
-    attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
-    attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
+    attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
+    attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
   };
 
   /**
@@ -1327,6 +1386,7 @@
   exports.Evt = event;
   exports.El = el;
   exports.OnInit = onInit;
+  exports.createDecorator = createDecorator;
   exports.element = $;
   exports.$ = $;
 

@@ -17,8 +17,12 @@ const delegate = (element, eventName, selector, listener) => {
  * @returns (Function} decorator
  */
 export default createDecorator((component, property, ...params) => {
-  if (!params[0]) {
+  if (!params || !params[0]) {
     warn('Event descriptor must be provided for Evt decorator');
+  }
+
+  if (!component._events) {
+    component._events = [];
   }
 
   const cb = function handler(...args) {
@@ -33,6 +37,12 @@ export default createDecorator((component, property, ...params) => {
     }
   };
 
-  const match = params[0].match(DELEGATE_EVENT_SPLITTER);
-  delegate(component.$element, match[1], match[2], cb.bind(component));
+  if (params && params[0]) {
+    component._events[params[0]] = cb;
+
+    const match = params[0].match(DELEGATE_EVENT_SPLITTER);
+    if (match) {
+      delegate(component.$element, match[1], match[2], cb.bind(component));
+    }
+  }
 });

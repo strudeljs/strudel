@@ -31,14 +31,14 @@ export const mixPrototypes = (target, source) => {
 };
 
 export const createDecorator = (factory) => {
-  return (options) => {
+  return (options, param) => {
     return (Ctor, property) => {
       if (!Ctor.__decorators__) {
         Ctor.__decorators__ = [];
       }
 
-      Ctor.__decorators__.push(() => {
-        return factory(property, options);
+      Ctor.__decorators__.push((component) => {
+        return factory(component, property, options, param);
       });
     };
   };

@@ -1,9 +1,10 @@
 {
   "name": "strudel",
-  "version": "0.8.1",
+  "version": "0.9.2",
   "description": "A front-end framework for back-end powered web.",
   "main": "dist/strudel.js",
   "module": "dist/strudel.esm.js",
+  "browser": "dist/strudel.esm.js",
   "sideEffects": false,
   "files": [
     "dist/*.js",
@@ -25,6 +26,7 @@
     "test": "NODE_ENV=test npm run lint && npm run test:unit && npm run test:e2e && npm run test:cover",
     "test:types": "tsc -p ./types/test/tsconfig.json",
     "test:unit": "karma start test/unit/karma.unit.config.js",
+    "test:unitDebug": "karma start test/unit/karma.unit.config.js --browsers=Chrome --single-run=false",
     "test:cover": "karma start test/unit/karma.cover.config.js",
     "test:e2e": "node test/e2e/runner.js",
     "test:sauce": "node test/e2e/runner.js --config ./test/e2e/sauce.config.js --test tabs --env chrome,firefox,ie11,edge,safari,android,iphone",
