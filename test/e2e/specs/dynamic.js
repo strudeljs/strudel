@@ -8,6 +8,8 @@ module.exports = {
       .assert.containsText('.count', '101')
       .click('.control-decrement')
       .assert.containsText('.count', '100')
+      .click('.control-remove')
+      .assert.containsText('.count', '-1')
       .end();
   }
 };

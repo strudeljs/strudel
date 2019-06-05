@@ -29,7 +29,6 @@ const bindContentEvents = () => {
   });
 };
 
-
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
@@ -39,7 +38,9 @@ const onAutoInitCallback = (mutation) => {
   })
   .forEach((node) => {
     if (registeredSelectors.find((el) => {
-      return $(node).is(el) || $(node).find(el).length;
+      const lookupSelector = `${el}:not(${config.initializedSelector})`;
+
+      return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
     })) {
       bootstrap([node]);
     }
@@ -47,15 +48,20 @@ const onAutoInitCallback = (mutation) => {
 };
 
 const onAutoTeardownCallback = (mutation) => {
-  const initializedSelector = `.${config.initializedClassName}`;
-
   Array.prototype.slice.call(mutation.removedNodes)
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(initializedSelector);
+        && $(node).is(config.initializedSelector);
     })
     .forEach((node) => {
+      const initializedSubNodes = node.querySelector(config.initializedSelector);
+
+      if (initializedSubNodes) {
+        Array.prototype.slice.call(initializedSubNodes).forEach(
+          (subNode) => { linker.unlink(subNode); }
+        );
+      }
       linker.unlink(node);
     });
 };
@@ -69,8 +75,8 @@ const init = () => {
 
   mount();
   bindContentEvents();
-  attachNewInitObserver(channel._nodes[0], onAutoInitCallback);
-  attachNewTeardownObserver(channel._nodes[0], onAutoTeardownCallback);
+  attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
+  attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
 };
 
 export default init;

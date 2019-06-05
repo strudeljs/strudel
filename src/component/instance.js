@@ -1,6 +1,4 @@
 import EventEmitter from '../util/eventEmitter';
-import { delegateEvents } from '../dom/delegateEvents';
-import bindElements from '../dom/bindElements';
 import { isFunction } from '../util/helpers';
 import mix from './mixin';
 import config from '../config';
@@ -21,8 +19,12 @@ class Component extends EventEmitter {
       this.$element = element;
       this.$data = data;
 
-      delegateEvents(this, this._events);
-      bindElements(this, this._els);
+      if (this.__decorators__) {
+        this.__decorators__.forEach((fn) => {
+          fn(this);
+        });
+        delete this.__decorators__;
+      }
 
       if (this.mixins && this.mixins.length) {
         this.mixins.forEach((mixin) => {

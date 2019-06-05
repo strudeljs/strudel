@@ -1,4 +1,14 @@
+import nonBubblingEvents from '../util/nonBubblingEvents';
+
 const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
+
+/**
+ * Utility for checking if event can bubble
+ * @param {string} eventName - name of the event eg. click
+ */
+const cannotBubble = (eventName) => {
+  return nonBubblingEvents.indexOf(eventName) >= 0;
+};
 
 /**
  * Wrapper for Element on method
@@ -30,7 +40,16 @@ const delegateEvents = (context, events) => {
     const method = events[key];
     const match = key.match(DELEGATE_EVENT_SPLITTER);
     if (context.$element) {
-      delegate(context.$element, match[1], match[2], method.bind(context));
+      const [, eventName, selector] = match;
+      let $el = context.$element;
+
+      if (selector && cannotBubble(eventName)) {
+        $el = $el.find(selector) || $el;
+        delegate($el, eventName, method.bind(context));
+        return;
+      }
+
+      delegate($el, eventName, selector, method.bind(context));
     }
   });
 };

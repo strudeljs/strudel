@@ -1,7 +1,6 @@
 import $ from '../dom/element';
 import config from '../config';
-
-const initializedSelector = `.${config.initializedClassName}`;
+import { warn } from '../util/error';
 
 /**
  * @classdesc Class linking components with DOM
@@ -23,12 +22,12 @@ class Linker {
   unlink(container = document) {
     this.registry.getRegisteredSelectors().forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
-      if (container !== document && $(container).is(initializedSelector)) {
+      if (container !== document && $(container).is(config.initializedSelector)) {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
-        if (el.component) {
-          el.component.$teardown();
+        if (el.__strudel__) {
+          el.__strudel__.$teardown();
         }
       });
     });
@@ -50,6 +49,8 @@ class Linker {
           const data = element.data();
           const Instance = this.registry.getComponent(selector);
           el.__strudel__ = new Instance({ element, data });
+        } else {
+          warn(`Trying to attach component to already initialized node, component with selector ${selector} will not be attached`);
         }
       });
     });

@@ -7,7 +7,7 @@
     @Strudel.Component('.count')
     class Count {
       init() {
-      	this.value = parseInt(this.$data.start, 10);
+        this.value = parseInt(this.$data.start, 10);
 
       	this.$on('counter.increment', function () {
       		this.value++;
@@ -16,6 +16,11 @@
 
         this.$on('counter.decrement', function () {
           this.value--;
+          this.render();
+        }.bind(this));
+
+        this.$on('counter.teardown', function () {
+          this.value = -1;
           this.render();
         }.bind(this));
 
@@ -38,6 +43,15 @@
       decrement() {
         this.$emit('counter.decrement');
       }
+
+      @Strudel.Evt('click .control-remove')
+      remove() {
+        this.$element.remove();
+      }
+
+      destroy() {
+        this.$emit('counter.teardown');
+      }
     }
 
     Strudel.element(document).trigger('content:loaded');
@@ -48,6 +62,7 @@
        <div class="count-control">
         <button class="control-increment">+1</button>
         <button class="control-decrement">-1</button>
+        <button class="control-remove">Remove</button>
        </div>
       `))
     }, 500);

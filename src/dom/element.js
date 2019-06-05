@@ -212,6 +212,17 @@ class Element {
   }
 
   /**
+   * Returns index of a given element
+   * @param {HTMLElement|Element} element
+   * @returns {Number}
+   */
+  index(element) {
+    const siblings = this.children()._nodes;
+    const node = element instanceof HTMLElement ? element : element.first();
+    return Array.prototype.indexOf.call(siblings, node);
+  }
+
+  /**
    * Converts Arraylike to array
    * @private
    */
@@ -479,7 +490,23 @@ class Element {
    */
   find(selector) {
     return this.map(function (node) {
-      return new Element(selector || '*', node);
+      if (selector[0] === '>') {
+        var hadId = true;
+        if (!node.id) {
+          hadId = false;
+          node.id = `strudel-${Math.random().toString(36).substr(2, 9)}`;
+        }
+
+        selector = `#${node.id}${selector}`;
+      }
+
+      const result = new Element(selector || '*', node);
+
+      if (!hadId) {
+        node.id = '';
+      }
+
+      return result;
     });
   }
 

@@ -1,14 +1,16 @@
+import { createOptionlessDecorator } from '../util/helpers';
+
 /**
  * OnInit decorator - sets method to be run at init
- * @returns (Function} decorator
+ * @returns {Function} decorator
  */
 
-export default function decorator(klass, method) {
+export default createOptionlessDecorator((component, property) => {
   const emptyFnc = function () {};
-  const org = klass.init || emptyFnc;
+  const org = component.init || emptyFnc;
 
-  klass.init = function (...args) {
-    klass[method].apply(this, ...args);
+  component.init = function (...args) {
+    component[property].apply(this, ...args);
     return org.apply(this, ...args);
   };
-}
+});

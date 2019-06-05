@@ -41,6 +41,7 @@ describe('Decorator Event', () => {
       test() { }
     }
 
-    expect('Event descriptor must be provided for Evt decorator').toHaveBeenWarned();
+    const component = new Empty({ element });
+    expect('[Strudel]: Event descriptor must be provided for Evt decorator').toHaveBeenWarned();
   });
 });

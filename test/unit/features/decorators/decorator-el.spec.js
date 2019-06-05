@@ -21,6 +21,7 @@ describe('Decorator Element', () => {
       test
     }
 
-    expect('Selector must be provided for El decorator').toHaveBeenWarned();
+    const component = new Empty({ element });
+    expect('[Strudel]: Selector must be provided for El decorator').toHaveBeenWarned();
   });
 });

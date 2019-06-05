@@ -1,3 +1,17 @@
+import { warn } from './error';
+
+/**
+ * List of instance methods that won't be overriden by a component
+ * when prototypes are mixed.
+ */
+const protectedMethods = [
+  'constructor',
+  '$teardown',
+  '$on',
+  '$off',
+  '$emit'
+];
+
 /**
  * Check if passed parameter is a function
  * @param obj
@@ -24,8 +38,48 @@ export const mixPrototypes = (target, source) => {
   });
 
   Object.getOwnPropertyNames(sourceProto).forEach((name) => {
-    if (name !== 'constructor') {
+    if (protectedMethods.indexOf(name) !== -1) {
+      if (name !== 'constructor') {
+        warn(`Component tried to override instance method ${name}`, source);
+      }
+    } else {
       Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
     }
   });
+};
+
+/**
+ * Util used to create decorators
+ * @param {Function} decorator
+ * @param {Function} source
+ */
+export const createDecorator = (factory) => {
+  return (options, param) => {
+    return (Ctor, property) => {
+      if (!Ctor.__decorators__) {
+        Ctor.__decorators__ = [];
+      }
+
+      Ctor.__decorators__.push((component) => {
+        return factory(component, property, options, param);
+      });
+    };
+  };
+};
+
+/**
+ * Util used to create decorators with no parentheses
+ * @param {Function} decorator
+ * @param {Function} source
+ */
+export const createOptionlessDecorator = (factory) => {
+  return (Ctor, property) => {
+    if (!Ctor.__decorators__) {
+      Ctor.__decorators__ = [];
+    }
+
+    Ctor.__decorators__.push((component) => {
+      return factory(component, property);
+    });
+  };
 };
