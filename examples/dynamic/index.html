@@ -7,21 +7,26 @@
     @Strudel.Component('.count')
     class Count {
       init() {
-      	this.value = parseInt(this.$data.start, 10);
+        this.value = parseInt(this.$data.start, 10);
+        
       	this.$on('counter.increment', function () {
       		this.value++;
       		this.render();
         }.bind(this));
+
         this.$on('counter.decrement', function () {
           this.value--;
           this.render();
         }.bind(this));
+
         this.$on('counter.teardown', function () {
           this.value = -1;
           this.render();
         }.bind(this));
+
         this.render();
       }
+
       render() {
         this.$element.html(this.value);
       }
@@ -32,19 +37,24 @@
       increment() {
         this.$emit('counter.increment');
       }
+
       @Strudel.Evt('click .control-decrement')
       decrement() {
         this.$emit('counter.decrement');
       }
+
       @Strudel.Evt('click .control-remove')
       remove() {
         this.$element.remove();
       }
+      
       destroy() {
         this.$emit('counter.teardown');
       }
     }
+
     Strudel.element(document).trigger('content:loaded');
+
     setTimeout(() => {
       Strudel.$('.dynamic-container').append(Strudel.$(`
        <div class="count" data-start="100"></div>

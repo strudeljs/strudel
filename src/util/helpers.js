@@ -48,6 +48,11 @@ export const mixPrototypes = (target, source) => {
   });
 };
 
+/**
+ * Util used to create decorators
+ * @param {Function} decorator
+ * @param {Function} factory
+ */
 export const createDecorator = (factory) => {
   return (options, param) => {
     return (Ctor, property) => {
@@ -59,5 +64,22 @@ export const createDecorator = (factory) => {
         return factory(component, property, options, param);
       });
     };
+  };
+};
+
+/**
+ * Util used to create decorators with no parentheses
+ * @param {Function} decorator
+ * @param {Function} factory
+ */
+export const createOptionlessDecorator = (factory) => {
+  return (Ctor, property) => {
+    if (!Ctor.__decorators__) {
+      Ctor.__decorators__ = [];
+    }
+
+    Ctor.__decorators__.push((component) => {
+      return factory(component, property);
+    });
   };
 };

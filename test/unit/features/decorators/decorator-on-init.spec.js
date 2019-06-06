@@ -16,12 +16,12 @@ describe('Decorator OnInit', () => {
         this.isInit = true;
       }
 
-      @OnInit()
+      @OnInit
       method1() {
         this.isFirstMethodFired = true;
       }
 
-      @OnInit()
+      @OnInit
       method2() {
         this.isSecondMethodFired = true;
       }
