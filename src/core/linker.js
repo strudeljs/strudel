@@ -46,6 +46,10 @@ class Linker {
       ? this.registry.getSelectorsFromRegistrationQueue()
       : this.registry.getRegisteredSelectors();
 
+    if (selectors.length === 0) {
+      return;
+    }
+
     selectors.forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
       if (container !== document && $(container).is(selector)) {
