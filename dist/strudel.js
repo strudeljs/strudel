@@ -10,7 +10,6 @@
 }(this, (function (exports) { 'use strict';
 
   var warn = function () {};
-  var error = function () {};
 
   {
     var generateTrace = function (vm) {
@@ -19,17 +18,13 @@
     };
     warn = function (msg, vm) {
       var trace = vm ? generateTrace(vm) : '';
-      console.warn(("[Strudel]: " + msg + trace));
-    };
-    error = function (msg, vm) {
-      var trace = vm ? generateTrace(vm) : '';
       console.error(("[Strudel]: " + msg + trace));
     };
   }
 
   var handleError = function (err, vm, info) {
     {
-      error(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
+      warn(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
     }
 
     console.error(err);
@@ -78,17 +73,11 @@
 
   var registry = new Registry();
 
-  var initializedClassName = 'strudel-init';
-
   var config = {
     /**
      * Class added on components when initialised
      */
-    initializedClassName: initializedClassName,
-    /**
-     * Selector for components that have been initialized
-     */
-    initializedSelector: ("." + initializedClassName),
+    initializedClassName: 'strudel-init',
     /**
      * Whether to enable devtools
      */
@@ -98,18 +87,6 @@
      */
     productionTip: "development" !== 'production'
   };
-
-  /**
-   * List of instance methods that won't be overriden by a component
-   * when prototypes are mixed.
-   */
-  var protectedMethods = [
-    'constructor',
-    '$teardown',
-    '$on',
-    '$off',
-    '$emit'
-  ];
 
   /**
    * Check if passed parameter is a function
@@ -137,28 +114,10 @@
     });
 
     Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
-      if (protectedMethods.indexOf(name) !== -1) {
-        if (name !== 'constructor') {
-          warn(("Component tried to override instance method " + name), source);
-        }
-      } else {
+      if (name !== 'constructor') {
         Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
       }
     });
-  };
-
-  var createDecorator = function (factory) {
-    return function (options, param) {
-      return function (Ctor, property) {
-        if (!Ctor.__decorators__) {
-          Ctor.__decorators__ = [];
-        }
-
-        Ctor.__decorators__.push(function (component) {
-          return factory(component, property, options, param);
-        });
-      };
-    };
   };
 
   /**
@@ -243,6 +202,62 @@
     return false;
   };
 
+  var DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
+
+  /**
+   * Wrapper for Element on method
+   * @param {Element} element - element that will receive listener
+   * @param {string} eventName - name of the event eg. click
+   * @param {string} selector - CSS selector for delegation
+   * @param {Function} listener - function listener
+   */
+  var delegate = function (element, eventName, selector, listener) {
+    if (selector) {
+      element.on(eventName, selector, listener);
+    } else {
+      element.on(eventName, listener);
+    }
+  };
+
+  /**
+   * Utility for binding events to class methods
+   * @param {Component} context - context Component to bind elements for
+   * @param {object} events - map of event strings / methods
+   * @returns {*}
+   */
+  var delegateEvents = function (context, events) {
+    if (!events) {
+      return false;
+    }
+
+    return Object.keys(events).forEach(function (key) {
+      var method = events[key];
+      var match = key.match(DELEGATE_EVENT_SPLITTER);
+      if (context.$element) {
+        delegate(context.$element, match[1], match[2], method.bind(context));
+      }
+    });
+  };
+
+  /**
+   * Utility for binding elements to class properties
+   * @param {Component} context Component to bind elements for
+   * @param {object} elements Map of elements / properties of class
+   * @returns {*}
+   */
+  var bindElements = function (context, elements) {
+    if (!elements) {
+      return false;
+    }
+
+    return Object.keys(elements).forEach(function (key) {
+      var property = elements[key];
+      if (context.$element) {
+        context[property] = context.$element.find(key);
+      }
+    });
+  };
+
   var mix = function (target, source) {
     Object.keys(source).forEach(function (prop) {
       if (!target[prop]) {
@@ -271,12 +286,8 @@
         this.$element = element;
         this.$data = data;
 
-        if (this.__decorators__) {
-          this.__decorators__.forEach(function (fn) {
-            fn(this$1);
-          });
-          delete this.__decorators__;
-        }
+        delegateEvents(this, this._events);
+        bindElements(this, this._els);
 
         if (this.mixins && this.mixins.length) {
           this.mixins.forEach(function (mixin) {
@@ -386,97 +397,75 @@
     };
   }
 
-  var DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
-
-  var delegate = function (element, eventName, selector, listener) {
-    if (selector) {
-      element.on(eventName, selector, listener);
-    } else {
-      element.on(eventName, listener);
-    }
-  };
-
   /**
    * Event decorator - binds method to event based on the event string
    * @param {string} event
    * @returns (Function} decorator
    */
-  var event = createDecorator(function (component, property) {
-    var params = [], len = arguments.length - 2;
-    while ( len-- > 0 ) params[ len ] = arguments[ len + 2 ];
-
-    if (!params || !params[0]) {
-      warn('Event descriptor must be provided for Evt decorator');
-    }
-
-    if (!component._events) {
-      component._events = [];
-    }
-
-    var cb = function handler() {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      try {
-        component[property].apply(this, args);
-      } catch (e) {
-        handleError(e, component.constructor, 'component handler');
+  function decorator$1(event, preventDefault) {
+    return function _decorator(klass, method) {
+      if (!event) {
+        warn('Event descriptor must be provided for Evt decorator');
       }
 
-      if (params[1]) {
-        args[0].preventDefault();
+      if (!klass._events) {
+        klass._events = [];
       }
+
+      var cb = function handler() {
+        var args = [], len = arguments.length;
+        while ( len-- ) args[ len ] = arguments[ len ];
+
+        try {
+          klass[method].apply(this, args);
+        } catch (e) {
+          handleError(e, klass.constructor, 'component handler');
+        }
+
+        if (preventDefault) {
+          args[0].preventDefault();
+        }
+      };
+
+      klass._events[event] = cb;
     };
-
-    if (params && params[0]) {
-      component._events[params[0]] = cb;
-
-      var match = params[0].match(DELEGATE_EVENT_SPLITTER);
-      if (match) {
-        delegate(component.$element, match[1], match[2], cb.bind(component));
-      }
-    }
-  });
+  }
 
   /**
    * Element decorator - Creates {@link Element} for matching selector and assigns to decorated property.
    * @param {string} CSS selector
    * @returns (Function} decorator
    */
-  var el = createDecorator(function (component, property) {
-    var params = [], len = arguments.length - 2;
-    while ( len-- > 0 ) params[ len ] = arguments[ len + 2 ];
-
-    if (params && params[0]) {
-      component[property] = component.$element.find(params[0]);
-    } else {
-      warn('Selector must be provided for El decorator');
-    }
-
-    if (!component._els) {
-      component._els = [];
-    }
-
-    component._els[property] = property;
-  });
+  function decorator$2(selector) {
+    return function _decorator(klass, property) {
+      if (!selector) {
+        warn('Selector must be provided for El decorator', klass);
+      }
+      if (!klass._els) {
+        klass._els = [];
+      }
+      klass._els[selector] = property;
+    };
+  }
 
   /**
    * OnInit decorator - sets method to be run at init
    * @returns (Function} decorator
    */
-  var onInit = createDecorator(function (component, property) {
-    var emptyFnc = function () {};
-    var org = component.init || emptyFnc;
 
-    component.init = function () {
+  function decorator$3(klass, method) {
+    var emptyFnc = function () {};
+    var org = klass.init || emptyFnc;
+
+    klass.init = function () {
       var ref;
 
       var args = [], len = arguments.length;
       while ( len-- ) args[ len ] = arguments[ len ];
-      (ref = component[property]).apply.apply(ref, [ this ].concat( args ));
+      (ref = klass[method]).apply.apply(ref, [ this ].concat( args ));
       return org.apply.apply(org, [ this ].concat( args ));
     };
-  });
+  }
 
   /* eslint-disable */
 
@@ -684,17 +673,6 @@
    */
   Element.prototype.first = function first () {
     return this._nodes[0] || false;
-  };
-
-  /**
-   * Returns index of a given element
-   * @param {HTMLElement|Element} element
-   * @returns {Number}
-   */
-  Element.prototype.index = function index (element) {
-    var siblings = this.children()._nodes;
-    var node = element instanceof HTMLElement ? element : element.first();
-    return Array.prototype.indexOf.call(siblings, node);
   };
 
   /**
@@ -965,23 +943,7 @@
    */
   Element.prototype.find = function find (selector) {
     return this.map(function (node) {
-      if (selector[0] === '>') {
-        var hadId = true;
-        if (!node.id) {
-          hadId = false;
-          node.id = "strudel-" + (Math.random().toString(36).substr(2, 9));
-        }
-
-        selector = "#" + (node.id) + selector;
-      }
-
-      var result = new Element(selector || '*', node);
-
-      if (!hadId) {
-        node.id = '';
-      }
-
-      return result;
+      return new Element(selector || '*', node);
     });
   };
 
@@ -1179,28 +1141,26 @@
     return new Element(selector, element);
   }
 
-  var VERSION = '0.9.2';
+  var version = '0.9.2';
   var config$1 = config;
-  var INIT_CLASS = config$1.initializedClassName;
-  var INIT_SELECTOR = config$1.initializedSelector;
   var options = {
     components: registry.getData()
   };
 
   var Strudel = /*#__PURE__*/Object.freeze({
-    VERSION: VERSION,
-    INIT_CLASS: INIT_CLASS,
-    INIT_SELECTOR: INIT_SELECTOR,
+    version: version,
     options: options,
+    config: config$1,
     EventEmitter: EventEmitter,
     Component: decorator,
-    Evt: event,
-    El: el,
-    OnInit: onInit,
-    createDecorator: createDecorator,
+    Evt: decorator$1,
+    El: decorator$2,
+    OnInit: decorator$3,
     element: $,
     $: $
   });
+
+  var initializedSelector = "." + (config.initializedClassName);
 
   /**
    * @classdesc Class linking components with DOM
@@ -1219,7 +1179,7 @@
 
     this.registry.getRegisteredSelectors().forEach(function (selector) {
       var elements = Array.prototype.slice.call(container.querySelectorAll(selector));
-      if (container !== document && $(container).is(config.initializedSelector)) {
+      if (container !== document && $(container).is(initializedSelector)) {
         elements.push(container);
       }
       [].forEach.call(elements, function (el) {
@@ -1300,7 +1260,7 @@
 
   var mount = function () {
     setTimeout(function () {
-      {
+      if (config.devtools) {
         if (devtools) {
           devtools.emit('init', Strudel);
         } else {
@@ -1310,7 +1270,7 @@
           );
         }
       }
-      {
+      if (config.productionTip !== false) {
         console.info(
           'You are running Strudel in development mode.\n' +
           'Make sure to turn on production mode when deploying for production.'
@@ -1343,6 +1303,8 @@
     });
   };
 
+  var initializedSelector$1 = "." + (config.initializedClassName);
+
   var onAutoInitCallback = function (mutation) {
     var registeredSelectors = registry.getRegisteredSelectors();
 
@@ -1352,7 +1314,7 @@
     })
     .forEach(function (node) {
       if (registeredSelectors.find(function (el) {
-        var lookupSelector = el + ":not(" + (config.initializedSelector) + ")";
+        var lookupSelector = el + ":not(" + initializedSelector$1 + ")";
 
         return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
       })) {
@@ -1366,10 +1328,10 @@
       .filter(function (node) {
         return node.nodeName !== 'SCRIPT'
           && node.nodeType === 1
-          && $(node).is(config.initializedSelector);
+          && $(node).is(initializedSelector$1);
       })
       .forEach(function (node) {
-        var initializedSubNodes = node.querySelector(config.initializedSelector);
+        var initializedSubNodes = node.querySelector(initializedSelector$1);
 
         if (initializedSubNodes) {
           Array.prototype.slice.call(initializedSubNodes).forEach(
@@ -1399,16 +1361,14 @@
   Component.prototype.getInstance = function () { return Strudel; };
   init();
 
-  exports.VERSION = VERSION;
-  exports.INIT_CLASS = INIT_CLASS;
-  exports.INIT_SELECTOR = INIT_SELECTOR;
+  exports.version = version;
   exports.options = options;
+  exports.config = config$1;
   exports.EventEmitter = EventEmitter;
   exports.Component = decorator;
-  exports.Evt = event;
-  exports.El = el;
-  exports.OnInit = onInit;
-  exports.createDecorator = createDecorator;
+  exports.Evt = decorator$1;
+  exports.El = decorator$2;
+  exports.OnInit = decorator$3;
   exports.element = $;
   exports.$ = $;
 

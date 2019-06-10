@@ -4,7 +4,6 @@
  * Released under the MIT License.
  */
 let warn = () => {};
-let error = () => {};
 
 if (process.env.NODE_ENV !== 'production') {
   const generateTrace = (vm) => {
@@ -13,17 +12,13 @@ if (process.env.NODE_ENV !== 'production') {
   };
   warn = (msg, vm) => {
     const trace = vm ? generateTrace(vm) : '';
-    console.warn(`[Strudel]: ${msg}${trace}`);
-  };
-  error = (msg, vm) => {
-    const trace = vm ? generateTrace(vm) : '';
     console.error(`[Strudel]: ${msg}${trace}`);
   };
 }
 
 const handleError = (err, vm, info) => {
   if (process.env.NODE_ENV !== 'production') {
-    error(`Error in ${info}: "${err.toString()}"`, vm);
+    warn(`Error in ${info}: "${err.toString()}"`, vm);
   }
 
   console.error(err);
@@ -77,17 +72,11 @@ class Registry {
 
 var registry = new Registry();
 
-const initializedClassName = 'strudel-init';
-
 var config = {
   /**
    * Class added on components when initialised
    */
-  initializedClassName,
-  /**
-   * Selector for components that have been initialized
-   */
-  initializedSelector: `.${initializedClassName}`,
+  initializedClassName: 'strudel-init',
   /**
    * Whether to enable devtools
    */
@@ -97,18 +86,6 @@ var config = {
    */
   productionTip: process.env.NODE_ENV !== 'production'
 };
-
-/**
- * List of instance methods that won't be overriden by a component
- * when prototypes are mixed.
- */
-const protectedMethods = [
-  'constructor',
-  '$teardown',
-  '$on',
-  '$off',
-  '$emit'
-];
 
 /**
  * Check if passed parameter is a function
@@ -136,28 +113,10 @@ const mixPrototypes = (target, source) => {
   });
 
   Object.getOwnPropertyNames(sourceProto).forEach((name) => {
-    if (protectedMethods.indexOf(name) !== -1) {
-      if (name !== 'constructor') {
-        warn(`Component tried to override instance method ${name}`, source);
-      }
-    } else {
+    if (name !== 'constructor') {
       Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
     }
   });
-};
-
-const createDecorator = (factory) => {
-  return (options, param) => {
-    return (Ctor, property) => {
-      if (!Ctor.__decorators__) {
-        Ctor.__decorators__ = [];
-      }
-
-      Ctor.__decorators__.push((component) => {
-        return factory(component, property, options, param);
-      });
-    };
-  };
 };
 
 /**
@@ -239,6 +198,62 @@ class EventEmitter {
   }
 }
 
+const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
+
+/**
+ * Wrapper for Element on method
+ * @param {Element} element - element that will receive listener
+ * @param {string} eventName - name of the event eg. click
+ * @param {string} selector - CSS selector for delegation
+ * @param {Function} listener - function listener
+ */
+const delegate = (element, eventName, selector, listener) => {
+  if (selector) {
+    element.on(eventName, selector, listener);
+  } else {
+    element.on(eventName, listener);
+  }
+};
+
+/**
+ * Utility for binding events to class methods
+ * @param {Component} context - context Component to bind elements for
+ * @param {object} events - map of event strings / methods
+ * @returns {*}
+ */
+const delegateEvents = (context, events) => {
+  if (!events) {
+    return false;
+  }
+
+  return Object.keys(events).forEach((key) => {
+    const method = events[key];
+    const match = key.match(DELEGATE_EVENT_SPLITTER);
+    if (context.$element) {
+      delegate(context.$element, match[1], match[2], method.bind(context));
+    }
+  });
+};
+
+/**
+ * Utility for binding elements to class properties
+ * @param {Component} context Component to bind elements for
+ * @param {object} elements Map of elements / properties of class
+ * @returns {*}
+ */
+const bindElements = (context, elements) => {
+  if (!elements) {
+    return false;
+  }
+
+  return Object.keys(elements).forEach((key) => {
+    const property = elements[key];
+    if (context.$element) {
+      context[property] = context.$element.find(key);
+    }
+  });
+};
+
 const mix = (target, source) => {
   Object.keys(source).forEach((prop) => {
     if (!target[prop]) {
@@ -262,12 +277,8 @@ class Component extends EventEmitter {
       this.$element = element;
       this.$data = data;
 
-      if (this.__decorators__) {
-        this.__decorators__.forEach((fn) => {
-          fn(this);
-        });
-        delete this.__decorators__;
-      }
+      delegateEvents(this, this._events);
+      bindElements(this, this._els);
 
       if (this.mixins && this.mixins.length) {
         this.mixins.forEach((mixin) => {
@@ -362,84 +373,68 @@ function decorator(selector) {
   };
 }
 
-const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
-
-const delegate = (element, eventName, selector, listener) => {
-  if (selector) {
-    element.on(eventName, selector, listener);
-  } else {
-    element.on(eventName, listener);
-  }
-};
-
 /**
  * Event decorator - binds method to event based on the event string
  * @param {string} event
  * @returns (Function} decorator
  */
-var event = createDecorator((component, property, ...params) => {
-  if (!params || !params[0]) {
-    warn('Event descriptor must be provided for Evt decorator');
-  }
-
-  if (!component._events) {
-    component._events = [];
-  }
-
-  const cb = function handler(...args) {
-    try {
-      component[property].apply(this, args);
-    } catch (e) {
-      handleError(e, component.constructor, 'component handler');
+function decorator$1(event, preventDefault) {
+  return function _decorator(klass, method) {
+    if (!event) {
+      warn('Event descriptor must be provided for Evt decorator');
     }
 
-    if (params[1]) {
-      args[0].preventDefault();
+    if (!klass._events) {
+      klass._events = [];
     }
+
+    const cb = function handler(...args) {
+      try {
+        klass[method].apply(this, args);
+      } catch (e) {
+        handleError(e, klass.constructor, 'component handler');
+      }
+
+      if (preventDefault) {
+        args[0].preventDefault();
+      }
+    };
+
+    klass._events[event] = cb;
   };
-
-  if (params && params[0]) {
-    component._events[params[0]] = cb;
-
-    const match = params[0].match(DELEGATE_EVENT_SPLITTER);
-    if (match) {
-      delegate(component.$element, match[1], match[2], cb.bind(component));
-    }
-  }
-});
+}
 
 /**
  * Element decorator - Creates {@link Element} for matching selector and assigns to decorated property.
  * @param {string} CSS selector
  * @returns (Function} decorator
  */
-var el = createDecorator((component, property, ...params) => {
-  if (params && params[0]) {
-    component[property] = component.$element.find(params[0]);
-  } else {
-    warn('Selector must be provided for El decorator');
-  }
-
-  if (!component._els) {
-    component._els = [];
-  }
-
-  component._els[property] = property;
-});
+function decorator$2(selector) {
+  return function _decorator(klass, property) {
+    if (!selector) {
+      warn('Selector must be provided for El decorator', klass);
+    }
+    if (!klass._els) {
+      klass._els = [];
+    }
+    klass._els[selector] = property;
+  };
+}
 
 /**
  * OnInit decorator - sets method to be run at init
  * @returns (Function} decorator
  */
-var onInit = createDecorator((component, property) => {
-  const emptyFnc = function () {};
-  const org = component.init || emptyFnc;
 
-  component.init = function (...args) {
-    component[property].apply(this, ...args);
+function decorator$3(klass, method) {
+  const emptyFnc = function () {};
+  const org = klass.init || emptyFnc;
+
+  klass.init = function (...args) {
+    klass[method].apply(this, ...args);
     return org.apply(this, ...args);
   };
-});
+}
 
 /* eslint-disable */
 
@@ -652,17 +647,6 @@ class Element {
    */
   first() {
     return this._nodes[0] || false;
-  }
-
-  /**
-   * Returns index of a given element
-   * @param {HTMLElement|Element} element
-   * @returns {Number}
-   */
-  index(element) {
-    const siblings = this.children()._nodes;
-    const node = element instanceof HTMLElement ? element : element.first();
-    return Array.prototype.indexOf.call(siblings, node);
   }
 
   /**
@@ -933,23 +917,7 @@ class Element {
    */
   find(selector) {
     return this.map(function (node) {
-      if (selector[0] === '>') {
-        var hadId = true;
-        if (!node.id) {
-          hadId = false;
-          node.id = `strudel-${Math.random().toString(36).substr(2, 9)}`;
-        }
-
-        selector = `#${node.id}${selector}`;
-      }
-
-      const result = new Element(selector || '*', node);
-
-      if (!hadId) {
-        node.id = '';
-      }
-
-      return result;
+      return new Element(selector || '*', node);
     });
   }
 
@@ -1146,28 +1114,26 @@ function $(selector, element) {
   return new Element(selector, element);
 }
 
-const VERSION = '0.9.2';
+const version = '0.9.2';
 const config$1 = config;
-const INIT_CLASS = config$1.initializedClassName;
-const INIT_SELECTOR = config$1.initializedSelector;
 const options = {
   components: registry.getData()
 };
 
 var Strudel = /*#__PURE__*/Object.freeze({
-  VERSION: VERSION,
-  INIT_CLASS: INIT_CLASS,
-  INIT_SELECTOR: INIT_SELECTOR,
+  version: version,
   options: options,
+  config: config$1,
   EventEmitter: EventEmitter,
   Component: decorator,
-  Evt: event,
-  El: el,
-  OnInit: onInit,
-  createDecorator: createDecorator,
+  Evt: decorator$1,
+  El: decorator$2,
+  OnInit: decorator$3,
   element: $,
   $: $
 });
+
+const initializedSelector = `.${config.initializedClassName}`;
 
 /**
  * @classdesc Class linking components with DOM
@@ -1189,7 +1155,7 @@ class Linker {
   unlink(container = document) {
     this.registry.getRegisteredSelectors().forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
-      if (container !== document && $(container).is(config.initializedSelector)) {
+      if (container !== document && $(container).is(initializedSelector)) {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
@@ -1311,6 +1277,8 @@ const bindContentEvents = () => {
   });
 };
 
+const initializedSelector$1 = `.${config.initializedClassName}`;
+
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
@@ -1320,7 +1288,7 @@ const onAutoInitCallback = (mutation) => {
   })
   .forEach((node) => {
     if (registeredSelectors.find((el) => {
-      const lookupSelector = `${el}:not(${config.initializedSelector})`;
+      const lookupSelector = `${el}:not(${initializedSelector$1})`;
 
       return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
     })) {
@@ -1334,10 +1302,10 @@ const onAutoTeardownCallback = (mutation) => {
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(config.initializedSelector);
+        && $(node).is(initializedSelector$1);
     })
     .forEach((node) => {
-      const initializedSubNodes = node.querySelector(config.initializedSelector);
+      const initializedSubNodes = node.querySelector(initializedSelector$1);
 
       if (initializedSubNodes) {
         Array.prototype.slice.call(initializedSubNodes).forEach(
@@ -1367,4 +1335,4 @@ const init = () => {
 Component.prototype.getInstance = () => { return Strudel; };
 init();
 
-export { VERSION, INIT_CLASS, INIT_SELECTOR, options, EventEmitter, decorator as Component, event as Evt, el as El, onInit as OnInit, createDecorator, $ as element, $ };
+export { version, options, config$1 as config, EventEmitter, decorator as Component, decorator$1 as Evt, decorator$2 as El, decorator$3 as OnInit, $ as element, $ };
