@@ -38,7 +38,17 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container = document) {
-    this.registry.getRegisteredSelectors().forEach((selector) => {
+    const isRootNode = (container === document);
+
+    const selectors = (isRootNode)
+      ? this.registry.getSelectorsFromRegistrationQueue()
+      : this.registry.getRegisteredSelectors();
+
+    if (selectors.length === 0) {
+      return;
+    }
+
+    selectors.forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
       if (container !== document && $(container).is(selector)) {
         elements.push(container);
@@ -54,6 +64,10 @@ class Linker {
         }
       });
     });
+
+    if (isRootNode) {
+      this.registry.setSelectorsAsRegistered();
+    }
   }
 }
 
