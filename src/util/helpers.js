@@ -50,8 +50,7 @@ export const mixPrototypes = (target, source) => {
 
 /**
  * Util used to create decorators
- * @param {Function} decorator
- * @param {Function} factory
+ * @param {Function} factory - The function that the decorator will be created from
  */
 export const createDecorator = (factory) => {
   return (options, param) => {
