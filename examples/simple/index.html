@@ -4,8 +4,9 @@
   <script src="../../dist/strudel.js"></script>
   <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
   <script type="text/babel" data-plugins="transform-decorators-legacy">
+    const { Component, Evt } = Strudel;
 
-    @Strudel.Component('.greeter')
+    @Component('.greeter')
     class Greeter {
       init() {
         this.$element.html(`Greetings: ${this.$data.msg}!`);

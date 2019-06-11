@@ -6,15 +6,17 @@
 <script src="../../dist/strudel.js"></script>
 <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
 <script type="text/babel" data-plugins="transform-decorators-legacy">
-  @Strudel.Component('.clicker')
+  const { Component, Evt } = Strudel;
+
+  @Component('.clicker')
   class Clicker {
-    @Strudel.Evt('click .clicker__btn', true)
+    @Evt('click .clicker__btn', true)
     click() {
       this.$element.append("<div class='alert' data-message='Hello'></div>")
     }
   }
 
-  @Strudel.Component('.alert')
+  @Component('.alert')
   class Alert {
     init() {
     	this.$element.html(this.$data.message);

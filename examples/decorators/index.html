@@ -13,7 +13,7 @@
   <script src="../../dist/strudel.js"></script>
   <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
   <script type="text/babel" data-plugins="transform-decorators-legacy">
-    const { createDecorator } = Strudel;
+    const { createDecorator, Component, Evt } = Strudel;
 
     const Debug = createDecorator((component, property) => {
       const originalFn = component[property];
@@ -24,29 +24,29 @@
       }
     })();
 
-    @Strudel.Component('.container')
+    @Component('.container')
     class ButtonsContainer {
 
       @Debug
-      @Strudel.Evt('click .button-log') 
+      @Evt('click .button-log') 
       buttonLog() {
         console.log('You have clicked a button.')
       }
 
       @Debug
-      @Strudel.Evt('click .button-alert') 
+      @Evt('click .button-alert') 
       buttonAlert() {
         alert('You have clicked a button.')
       }      
       
       @Debug
-      @Strudel.Evt('click .button-change') 
+      @Evt('click .button-change') 
       buttonChange() {
         document.querySelector('p').innerText = 'This text has been changed'
       }      
       
       @Debug
-      @Strudel.Evt('click .button-remove') 
+      @Evt('click .button-remove') 
       buttonRemove() {
         document.querySelector('.button-remove').remove();
         this.buttonChange();
