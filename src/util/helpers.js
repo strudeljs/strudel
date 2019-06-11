@@ -47,3 +47,18 @@ export const mixPrototypes = (target, source) => {
     }
   });
 };
+
+/**
+ * Util used to merge two objects together
+ * @param obj
+ * @param obj
+ * @returns {{}|*}
+ */
+export const mergeObjects = (obj1, obj2) => {
+  return [obj1, obj2].reduce((prev, curr) => {
+    Object.keys(curr).forEach((key) => {
+      prev[key] = curr[key];
+    });
+    return prev;
+  });
+};

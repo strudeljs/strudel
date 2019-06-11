@@ -1,0 +1,45 @@
+<body>
+  <div class="dynamic-input-container"></div>
+
+  <script src="../../dist/strudel.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
+  <script type="text/babel" data-plugins="transform-decorators-legacy">
+    setTimeout(() => {
+      Strudel.$('.dynamic-input-container').append(Strudel.$(`
+        <p class="input-value"></p>
+        <div class="input-container">
+          <input class="input" type="text" value="test" />
+          <button class="input-set">Set Value</button>
+        </div>
+      `))
+
+      @Strudel.Component('.input-value')
+      class InputValue {
+        init() {
+          this.value = 'Start';
+
+          this.$on('input.value-changed', function (val) {
+            if (val) {
+              this.value = val;
+              this.render();
+            }
+          }.bind(this))
+
+          this.render();
+        }
+
+        render() {
+          this.$element.html(this.value);
+        }
+      }
+
+      @Strudel.Component('.input-container')
+      class InputContainer {
+        @Strudel.Evt('click .input-set')
+        setValue() {
+          this.$emit('input.value-changed', Strudel.$('.input').first().value);
+        }
+      }
+    }, 1000)
+  </script>
+</body>

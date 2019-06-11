@@ -1,8 +1,11 @@
 <body>
-  <div class="count" data-start="100"></div>
-  <div class="count-control">
-    <button class="control-increment">+1</button>
-    <button class="control-decrement">-1</button>
+  <div class="dynamic-container">
+    <div class="count" data-start="100"></div>
+    <div class="count-control">
+     <button class="control-increment">+1</button>
+     <button class="control-decrement">-1</button>
+     <button class="control-remove">Remove</button>
+    </div>
   </div>
 
   <script src="../../dist/strudel.js"></script>
@@ -20,6 +23,11 @@
 
         this.$on('counter.decrement', function () {
           this.value--;
+          this.render();
+        }.bind(this));
+
+        this.$on('counter.teardown', function () {
+          this.value = -1;
           this.render();
         }.bind(this));
 
@@ -41,6 +49,15 @@
       @Strudel.Evt('click .control-decrement')
       decrement() {
         this.$emit('counter.decrement');
+      }
+
+      @Strudel.Evt('click .control-remove')
+      remove() {
+        this.$element.remove();
+      }
+
+      destroy() {
+        this.$emit('counter.teardown');
       }
     }
   </script>
