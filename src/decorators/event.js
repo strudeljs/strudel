@@ -16,7 +16,7 @@ const delegate = (element, eventName, selector, listener) => {
  * @param {string} event
  * @returns (Function} decorator
  */
-export default createDecorator((component, property, ...params) => {
+export default createDecorator((component, property, params) => {
   if (!params || !params[0]) {
     warn('Event descriptor must be provided for Evt decorator');
   }

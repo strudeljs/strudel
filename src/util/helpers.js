@@ -53,14 +53,14 @@ export const mixPrototypes = (target, source) => {
  * @param {Function} factory - The function that the decorator will be created from
  */
 export const createDecorator = (factory) => {
-  return (options, param) => {
+  return (...args) => {
     return (Ctor, property) => {
       if (!Ctor.__decorators__) {
         Ctor.__decorators__ = [];
       }
 
       Ctor.__decorators__.push((component) => {
-        return factory(component, property, options, param);
+        return factory(component, property, args);
       });
     };
   };
