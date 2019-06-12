@@ -49,6 +49,24 @@ export const mixPrototypes = (target, source) => {
 };
 
 /**
+ * Util used to create decorators
+ * @param {Function} factory - The function that the decorator will be created from
+ */
+export const createDecorator = (factory) => {
+  return (...args) => {
+    return (Ctor, property) => {
+      if (!Ctor.__decorators__) {
+        Ctor.__decorators__ = [];
+      }
+
+      Ctor.__decorators__.push((component) => {
+        return factory(component, property, args);
+      });
+    };
+  };
+};
+
+/**
  * Util used to merge two objects together
  * @param obj
  * @param obj

@@ -1,0 +1,58 @@
+<body>
+  </div>
+
+  <div class="container">
+    <button class="button-log">Simple Log</button>
+    <button class="button-alert">Alert</button>
+    <button class="button-change">Change Text</button>
+    <button class="button-remove">Remove Me</button>
+  </div>
+  
+  <p>Check the console</p>
+
+  <script src="../../dist/strudel.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
+  <script type="text/babel" data-plugins="transform-decorators-legacy">
+    const { createDecorator, Component, Evt } = Strudel;
+
+    const Debug = createDecorator((component, property) => {
+      const originalFn = component[property];
+
+      component[property] = function () {
+        console.info(`DEBUG: Function "${property}" called in "${component.name}"`);
+        originalFn.apply(component, arguments);
+      }
+    })();
+
+    @Component('.container')
+    class ButtonsContainer {
+
+      @Debug
+      @Evt('click .button-log') 
+      buttonLog() {
+        console.log('You have clicked a button.')
+      }
+
+      @Debug
+      @Evt('click .button-alert') 
+      buttonAlert() {
+        alert('You have clicked a button.')
+      }      
+      
+      @Debug
+      @Evt('click .button-change') 
+      buttonChange() {
+        document.querySelector('p').innerText = 'This text has been changed'
+      }      
+      
+      @Debug
+      @Evt('click .button-remove') 
+      buttonRemove() {
+        document.querySelector('.button-remove').remove();
+        this.buttonChange();
+      }
+    }
+
+    Strudel.element(document).trigger('content:loaded');
+  </script>
+</body>

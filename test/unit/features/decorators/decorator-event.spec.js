@@ -18,7 +18,7 @@ describe('Decorator Event', () => {
     }
 
     const component = new TestComponent({ element });
-    expect(Object.keys(component._events)).toEqual(['click .element1', 'click .element2']);
+    expect(Object.keys(component._events)).toEqual(["click .element1", "click .element2"]);
   });
 
   it('prevents default', () => {
@@ -41,6 +41,7 @@ describe('Decorator Event', () => {
       test() { }
     }
 
-    expect('Event descriptor must be provided for Evt decorator').toHaveBeenWarned();
+    const component = new Empty({ element });
+    expect('[Strudel]: Event descriptor must be provided for Evt decorator').toHaveBeenWarned();
   });
 });
