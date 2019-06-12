@@ -6,7 +6,7 @@ import { createDecorator } from '../util/helpers';
  * @param {string} CSS selector
  * @returns (Function} decorator
  */
-export default createDecorator((component, property, ...params) => {
+export default createDecorator((component, property, params) => {
   if (params && params[0]) {
     component[property] = component.$element.find(params[0]);
   } else {
