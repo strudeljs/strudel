@@ -25,7 +25,6 @@
     "build": "node scripts/build.js",
     "test": "NODE_ENV=test npm run lint && npm run test:unit && npm run test:e2e && npm run test:cover",
     "test:unit": "karma start test/unit/karma.unit.config.js",
-    "test:unitDebug": "karma start test/unit/karma.unit.config.js --browsers=Chrome --single-run=false",
     "test:cover": "karma start test/unit/karma.cover.config.js",
     "test:e2e": "node test/e2e/runner.js",
     "test:sauce": "node test/e2e/runner.js --config ./test/e2e/sauce.config.js --test tabs --env chrome,firefox,ie11,edge,safari,android,iphone",
