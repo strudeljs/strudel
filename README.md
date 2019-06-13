@@ -8,7 +8,7 @@
 <a href="https://www.npmjs.com/package/strudel"><img src="https://img.shields.io/npm/l/strudel.svg" alt="License"></a>
 <a href="https://gitter.im/strudel-js"><img src="https://img.shields.io/gitter/room/nwjs/nw.js.svg" alt="Gitter"></a> 
 <br>
-<a href="https://app.saucelabs.com/builds/50f8372d79f743a3b25fb6ca4851ca4c"><img src="https://app.saucelabs.com/buildstatus/vuejs" alt="Build Status"></a>
+<a href="https://app.saucelabs.com/builds/d427e84981c34e139c003bc265cf9057"><img src="https://app.saucelabs.com/buildstatus/hayalet" alt="Build Status"></a>
 </p>
 
 ## Introduction
