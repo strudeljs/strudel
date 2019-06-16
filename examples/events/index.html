@@ -35,12 +35,12 @@
 
     @Component('.count-control')
     class CountControl {
-      @Evt('click .control-increment')
+      @Evt('click', '.control-increment')
       increment() {
         this.$emit('counter.increment');
       }
 
-      @Evt('click .control-decrement')
+      @Evt('click', '.control-decrement')
       decrement() {
         this.$emit('counter.decrement');
       }

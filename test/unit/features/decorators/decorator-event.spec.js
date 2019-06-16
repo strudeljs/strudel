@@ -6,12 +6,12 @@ describe('Decorator Event', () => {
   it('attaches event', () => {
     @Component('test')
     class TestComponent {
-      @Evt('click .element1')
+      @Evt('click', '.element1')
       method() {
         return 'element1';
       }
 
-      @Evt('click .element2')
+      @Evt('click', '.element2')
       method2() {
         return 'element2';
       }

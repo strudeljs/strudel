@@ -1,10 +1,8 @@
 import handleError, { warn } from '../util/error';
 import { createDecorator } from '../util/helpers';
 
-const DELEGATE_EVENT_SPLITTER = /^(\S+)\s*(.*)$/;
-
 const delegate = (element, eventName, selector, listener) => {
-  if (selector) {
+  if (selector && typeof selector !== 'boolean') {
     element.on(eventName, selector, listener);
   } else {
     element.on(eventName, listener);
@@ -25,6 +23,10 @@ export default createDecorator((component, property, params) => {
     component._events = [];
   }
 
+  const shouldPreventDefault =
+    !!((typeof params[1] === 'boolean' && params[1] === true)
+    || (typeof params[2] === 'boolean' && params[2] === true));
+
   const cb = function handler(...args) {
     try {
       component[property].apply(this, args);
@@ -32,17 +34,16 @@ export default createDecorator((component, property, params) => {
       handleError(e, component.constructor, 'component handler');
     }
 
-    if (params[1]) {
+    if (shouldPreventDefault) {
       args[0].preventDefault();
     }
   };
 
   if (params && params[0]) {
-    component._events[params[0]] = cb;
+    const eventName = (typeof params[1] === 'boolean')
+      ? params[0] : `${params[0]} ${params[1]}`;
 
-    const match = params[0].match(DELEGATE_EVENT_SPLITTER);
-    if (match) {
-      delegate(component.$element, match[1], match[2], cb.bind(component));
-    }
+    component._events[eventName] = cb;
+    delegate(component.$element, params[0], params[1], cb.bind(component));
   }
 });

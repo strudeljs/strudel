@@ -35,7 +35,7 @@
 
       @Strudel.Component('.input-container')
       class InputContainer {
-        @Strudel.Evt('click .input-set')
+        @Strudel.Evt('click', '.input-set')
         setValue() {
           this.$emit('input.value-changed', Strudel.$('.input').first().value);
         }

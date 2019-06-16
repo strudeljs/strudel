@@ -28,7 +28,7 @@
     	@El('.tab-pane')
     	panes
 
-    	@Evt('click .tabs-nav a')
+    	@Evt('click', '.tabs-nav a')
     	toggleTab(evt) {
     		console.log(evt);
     		const target = evt.target.getAttribute('href').substring(1);
