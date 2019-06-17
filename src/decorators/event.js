@@ -2,7 +2,7 @@ import handleError, { warn } from '../util/error';
 import { createDecorator } from '../util/helpers';
 
 const delegate = (element, eventName, selector, listener) => {
-  if (selector && typeof selector !== 'boolean') {
+  if (selector) {
     element.on(eventName, selector, listener);
   } else {
     element.on(eventName, listener);
@@ -15,35 +15,31 @@ const delegate = (element, eventName, selector, listener) => {
  * @returns (Function} decorator
  */
 export default createDecorator((component, property, params) => {
+  let event;
+  let selector;
+
   if (!params || !params[0]) {
     warn('Event descriptor must be provided for Evt decorator');
+  } else {
+    [event, selector] = params;
   }
 
   if (!component._events) {
     component._events = [];
   }
 
-  const shouldPreventDefault =
-    !!((typeof params[1] === 'boolean' && params[1] === true)
-    || (typeof params[2] === 'boolean' && params[2] === true));
-
-  const cb = function handler(...args) {
+  const callback = function handler(...argz) {
     try {
-      component[property].apply(this, args);
+      component[property].apply(this, argz);
     } catch (e) {
       handleError(e, component.constructor, 'component handler');
     }
-
-    if (shouldPreventDefault) {
-      args[0].preventDefault();
-    }
   };
 
-  if (params && params[0]) {
-    const eventName = (typeof params[1] === 'boolean')
-      ? params[0] : `${params[0]} ${params[1]}`;
+  if (event) {
+    const eventName = (selector) ? `${event} ${selector}` : event;
 
-    component._events[eventName] = cb;
-    delegate(component.$element, params[0], params[1], cb.bind(component));
+    component._events[eventName] = callback;
+    delegate(component.$element, event, selector, callback.bind(component));
   }
 });
