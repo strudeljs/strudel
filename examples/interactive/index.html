@@ -10,7 +10,7 @@
 
   @Component('.clicker')
   class Clicker {
-    @Evt('click', '.clicker__btn', true)
+    @Evt('click', '.clicker__btn')
     click() {
       this.$element.append("<div class='alert' data-message='Hello'></div>")
     }
