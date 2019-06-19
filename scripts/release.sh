@@ -1,5 +1,7 @@
 set -e
 
+RELEASE_TAG="beta"
+
 if [[ -z $1 ]]; then
   echo "Enter new version: "
   read VERSION
