@@ -28,25 +28,25 @@
     class ButtonsContainer {
 
       @Debug
-      @Evt('click .button-log') 
+      @Evt('click', '.button-log') 
       buttonLog() {
         console.log('You have clicked a button.')
       }
 
       @Debug
-      @Evt('click .button-alert') 
+      @Evt('click', '.button-alert') 
       buttonAlert() {
         alert('You have clicked a button.')
       }      
       
       @Debug
-      @Evt('click .button-change') 
+      @Evt('click', '.button-change') 
       buttonChange() {
         document.querySelector('p').innerText = 'This text has been changed'
       }      
       
       @Debug
-      @Evt('click .button-remove') 
+      @Evt('click', '.button-remove') 
       buttonRemove() {
         document.querySelector('.button-remove').remove();
         this.buttonChange();
