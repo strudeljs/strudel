@@ -1,5 +1,5 @@
 import { warn } from '../util/error';
-import { mergeObjects } from '../util/helpers';
+import { mergeObjects, createCustomEvent } from '../util/helpers';
 
 /**
  * Simple registry for storing selector-constructor pairs
@@ -73,7 +73,7 @@ class Registry {
         this._isRegistrationScheduled = true;
 
         window.requestAnimationFrame(() => {
-          const ev = new Event('content:loaded');
+          const ev = createCustomEvent('content:loaded');
           document.dispatchEvent(ev);
         });
       }
