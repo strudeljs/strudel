@@ -80,21 +80,3 @@ export const mergeObjects = (obj1, obj2) => {
     return prev;
   });
 };
-
-/**
- * Util used in creating a custom event - IE polyfill
- * @param eventType
- * @returns {Event|CustomEvent}
- */
-export const createCustomEvent = (eventType) => {
-  if (typeof window.CustomEvent === 'function') {
-    return new Event(eventType);
-  }
-  const CustomEvent = (event, params = { bubbles: false, cancelable: false, detail: undefined }) => {
-    const evt = document.createEvent('customEvent');
-    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-    return evt;
-  };
-
-  return new CustomEvent(eventType);
-};
