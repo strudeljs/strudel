@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.0
+ * Strudel.js v1.0.0-beta.3
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -513,10 +513,13 @@
    * OnInit decorator - sets method to be run at init
    * @returns {Function} decorator
    */
-
   var onInit = createDecorator(function (component, property) {
     var emptyFnc = function () {};
     var org = component.init || emptyFnc;
+
+    if (property === 'init') {
+      return;
+    }
 
     component.init = function () {
       var ref;
@@ -1229,7 +1232,7 @@
     return new Element(selector, element);
   }
 
-  var VERSION = '1.0.0';
+  var VERSION = '1.0.0-beta.3';
   var INIT_CLASS = config.initializedClassName;
   var INIT_SELECTOR = config.initializedSelector;
 
