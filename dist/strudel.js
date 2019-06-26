@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v0.9.0
+ * Strudel.js v0.9.1
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1141,7 +1141,7 @@
     return new Element(selector, element);
   }
 
-  var version = '0.9.0';
+  var version = '0.9.1';
   var config$1 = config;
   var options = {
     components: registry.getData()
