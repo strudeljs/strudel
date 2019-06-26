@@ -37,7 +37,7 @@ const onAutoInitCallback = (mutation) => {
     return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
   })
   .forEach((node) => {
-    if (registeredSelectors.find((el) => {
+    if (registeredSelectors.filter((el) => {
       const lookupSelector = `${el}:not(${config.initializedSelector})`;
 
       return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;

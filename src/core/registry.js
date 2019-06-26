@@ -1,4 +1,5 @@
 import { warn } from '../util/error';
+import $ from '../dom/element';
 import { mergeObjects } from '../util/helpers';
 
 /**
@@ -73,8 +74,7 @@ class Registry {
         this._isRegistrationScheduled = true;
 
         window.requestAnimationFrame(() => {
-          const ev = new Event('content:loaded');
-          document.dispatchEvent(ev);
+          $(document).trigger('content:loaded');
         });
       }
     }
