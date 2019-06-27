@@ -490,8 +490,12 @@ class Element {
    */
   find(selector) {
     return this.map(function (node) {
-      if (selector[0] === '>') {
-        var hadId = true;
+      const startsWithImmediateChildrenSelector = selector[0] === '>';
+      let hadId;
+
+      if (startsWithImmediateChildrenSelector) {
+        hadId = true;
+
         if (!node.id) {
           hadId = false;
           node.id = `strudel-${Math.random().toString(36).substr(2, 9)}`;
@@ -502,7 +506,7 @@ class Element {
 
       const result = new Element(selector || '*', node);
 
-      if (!hadId) {
+      if (startsWithImmediateChildrenSelector && !hadId) {
         node.id = '';
       }
 
