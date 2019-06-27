@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.0-beta.3
+ * Strudel.js v1.0.0-beta.4
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -34,502 +34,6 @@
 
     console.error(err);
   };
-
-  /**
-   * List of instance methods that won't be overriden by a component
-   * when prototypes are mixed.
-   */
-  var protectedMethods = [
-    'constructor',
-    '$teardown',
-    '$on',
-    '$off',
-    '$emit'
-  ];
-
-  /**
-   * Check if passed parameter is a function
-   * @param obj
-   * @returns {boolean}
-   */
-  var isFunction = function (obj) {
-    return typeof obj === 'function' || false;
-  };
-
-  /**
-   * Small util for mixing prototypes
-   * @param {Function} target
-   * @param {Function} source
-   */
-  var mixPrototypes = function (target, source) {
-    var targetProto = target.prototype;
-    var sourceProto = source.prototype;
-    var inst = (typeof source === 'object') ? source : new source(); // eslint-disable-line new-cap
-
-    Object.getOwnPropertyNames(inst).forEach(function (name) {
-      var desc = Object.getOwnPropertyDescriptor(inst, name);
-      desc.writable = true;
-      Object.defineProperty(targetProto, name, desc);
-    });
-
-    Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
-      if (protectedMethods.indexOf(name) !== -1) {
-        if (name !== 'constructor') {
-          warn(("Component tried to override instance method " + name), source);
-        }
-      } else {
-        Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
-      }
-    });
-  };
-
-  /**
-   * Util used to create decorators
-   * @param {Function} factory - The function that the decorator will be created from
-   */
-  var createDecorator = function (factory) {
-    return function () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      return function (Ctor, property) {
-        if (!Ctor.__decorators__) {
-          Ctor.__decorators__ = [];
-        }
-
-        Ctor.__decorators__.push(function (component) {
-          return factory(component, property, args);
-        });
-      };
-    };
-  };
-
-  /**
-   * Util used to merge two objects together
-   * @param obj
-   * @param obj
-   * @returns {{}|*}
-   */
-  var mergeObjects = function (obj1, obj2) {
-    return [obj1, obj2].reduce(function (prev, curr) {
-      Object.keys(curr).forEach(function (key) {
-        prev[key] = curr[key];
-      });
-      return prev;
-    });
-  };
-
-  /**
-   * Simple registry for storing selector-constructor pairs
-   */
-  var Registry = function Registry() {
-    this._registry = {};
-    this._registrationQueue = {};
-    this._isRegistrationScheduled = false;
-  };
-
-  /**
-   * Returns both permanent registry and the registration queue entires as one object
-   * @returns {{}|*}
-   */
-  Registry.prototype.getData = function getData () {
-    return mergeObjects(this._registry, this._registrationQueue);
-  };
-
-  /**
-   * Returns an Array of registry entires
-   * @returns {Array} registry entries
-   */
-  Registry.prototype.getRegisteredSelectors = function getRegisteredSelectors () {
-    return Object
-      .keys(this._registry);
-  };
-
-  /**
-   * Returns an Array of temporary registry entires
-   * @returns {Array} registry entries
-   */
-  Registry.prototype.getSelectorsFromRegistrationQueue = function getSelectorsFromRegistrationQueue () {
-    return Object
-      .keys(this._registrationQueue);
-  };
-
-  /**
-   * Moves all entries from the registration queue to permanent registry and clears queue
-   * @param {string} selector
-   */
-  Registry.prototype.setSelectorsAsRegistered = function setSelectorsAsRegistered () {
-    this._registry = mergeObjects(this._registry, this._registrationQueue);
-    this._registrationQueue = {};
-  };
-
-  /**
-   * Returns component constructor for selector from map
-   * @param {string} selector
-   * @returns {Function} constructor
-   */
-  Registry.prototype.getComponent = function getComponent (selector) {
-    return this._registrationQueue[selector] || this._registry[selector];
-  };
-
-  /**
-   * Adds selector/constructor pair to map
-   * @param {string} selector
-   * @param {Function} constructor
-   */
-  Registry.prototype.registerComponent = function registerComponent (selector, klass) {
-    if (this._registry[selector] || this._registrationQueue[selector]) {
-      warn(("Component registered under selector: " + selector + " already exists."), klass);
-    } else {
-      this._registrationQueue[selector] = klass;
-
-      if (!this._isRegistrationScheduled) {
-        this._isRegistrationScheduled = true;
-
-        window.requestAnimationFrame(function () {
-          var ev = new Event('content:loaded');
-          document.dispatchEvent(ev);
-        });
-      }
-    }
-  };
-
-  var registry = new Registry();
-
-  var initializedClassName = 'strudel-init';
-
-  var config = {
-    /**
-     * Class added on components when initialised
-     */
-    initializedClassName: initializedClassName,
-    /**
-     * Selector for components that have been initialized
-     */
-    initializedSelector: ("." + initializedClassName),
-    /**
-     * Whether to enable devtools
-     */
-    devtools: "development" !== 'production',
-    /**
-     * Whether to show production mode tip message on boot
-     */
-    productionTip: "development" !== 'production'
-  };
-
-  /**
-   * Event listeners
-   * @type {{}}
-   */
-  var events = {};
-
-  /**
-   * @classdesc Simple Event Emitter implementation - global
-   * @class
-   */
-  var EventEmitter = function EventEmitter () {};
-
-  EventEmitter.getEvents = function getEvents () {
-    return events;
-  };
-
-  EventEmitter.removeAllListeners = function removeAllListeners () {
-    Object.keys(events).forEach(function (prop) {
-      delete events[prop];
-    });
-  };
-
-  /**
-   * Add event listener to the map
-   * @param {string} label
-   * @param {Function} callback
-   */
-  EventEmitter.prototype.$on = function $on (label, callback) {
-    if (!events[label]) {
-      events[label] = [];
-    }
-    events[label].push(callback);
-  };
-
-  /**
-   * Remove event listener from registry
-   * @param {string} label
-   * @param {Function} callback
-   * @returns {boolean}
-   */
-  EventEmitter.prototype.$off = function $off (label, callback) {
-    var listeners = events[label];
-
-    if (listeners && listeners.length) {
-      var index = listeners.reduce(function (i, listener, ind) {
-        return (isFunction(listener) && listener === callback) ? i = ind : i;
-      }, -1);
-
-      if (index > -1) {
-        listeners.splice(index, 1);
-        events[label] = listeners;
-        return true;
-      }
-    }
-    return false;
-  };
-
-  /**
-   * Notifies listeners attached to event
-   * @param {string} label
-   * @param args
-   * @returns {boolean}
-   */
-  EventEmitter.prototype.$emit = function $emit (label) {
-      var args = [], len = arguments.length - 1;
-      while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-    var listeners = events[label];
-
-    if (listeners && listeners.length) {
-      try {
-        listeners.forEach(function (listener) {
-          listener.apply(void 0, args);
-        });
-      } catch (e) {
-        handleError(e, this.constructor, 'event handler');
-      }
-      return true;
-    }
-    return false;
-  };
-
-  var mix = function (target, source) {
-    Object.keys(source).forEach(function (prop) {
-      if (!target[prop]) {
-        target[prop] = source[prop];
-      }
-    });
-  };
-
-  /**
-   * @classdesc Base class for all components, implementing event emitter
-   * @class
-   * @hideconstructor
-   */
-  var Component = (function (EventEmitter$$1) {
-    function Component(ref) {
-      var this$1 = this;
-      if ( ref === void 0 ) ref = {};
-      var element = ref.element;
-      var data = ref.data;
-
-      EventEmitter$$1.call(this);
-
-      try {
-        this.beforeInit();
-
-        this.$element = element;
-        this.$data = data;
-
-        if (this.__decorators__) {
-          this.__decorators__.forEach(function (fn) {
-            fn(this$1);
-          });
-          delete this.__decorators__;
-        }
-
-        if (this.mixins && this.mixins.length) {
-          this.mixins.forEach(function (mixin) {
-            if (isFunction(mixin.init)) {
-              mixin.init.call(this$1);
-            }
-            mix(this$1, mixin);
-          });
-        }
-
-        this.init();
-      } catch (e) {
-        handleError(e, this.constructor, 'component hook');
-      }
-
-      this.$element.addClass(config.initializedClassName);
-    }
-
-    if ( EventEmitter$$1 ) Component.__proto__ = EventEmitter$$1;
-    Component.prototype = Object.create( EventEmitter$$1 && EventEmitter$$1.prototype );
-    Component.prototype.constructor = Component;
-
-    /**
-     * Function called before component is initialized
-     * @interface
-     */
-    Component.prototype.beforeInit = function beforeInit () {};
-
-    /**
-     * Function called when component is initialized
-     * @interface
-     */
-    Component.prototype.init = function init () {};
-
-    /**
-     * Function called before component is destroyed
-     * @interface
-     */
-    Component.prototype.beforeDestroy = function beforeDestroy () {};
-
-    /**
-     * Function called after component is destroyed
-     * @interface
-     */
-    Component.prototype.destroy = function destroy () {};
-
-    /**
-     * Teardown the component and clear events
-     */
-    Component.prototype.$teardown = function $teardown () {
-      try {
-        this.beforeDestroy();
-        this.$element.off();
-        this.$element.removeClass(config.initializedClassName);
-        delete this.$element.first().scope;
-        delete this.$element;
-        this.destroy();
-      } catch (e) {
-        handleError(e, this.constructor, 'component hook');
-      }
-    };
-
-    return Component;
-  }(EventEmitter));
-
-  /**
-   * Component decorator - Registers decorated class in {@link Registry} as a component
-   * @param {string} CSS selector
-   */
-  var register = function (target, selector) {
-    if (!selector) {
-      warn('Selector must be provided for Component decorator', target);
-    }
-
-    if (!target.prototype) {
-      warn('Decorator works only for classes', target);
-      return target;
-    }
-
-    var component = (function (Component$$1) {
-      function component() {
-        var args = [], len = arguments.length;
-        while ( len-- ) args[ len ] = arguments[ len ];
-   /* eslint no-useless-constructor: 0 */
-        Component$$1.apply(this, args);
-      }
-
-      if ( Component$$1 ) component.__proto__ = Component$$1;
-      component.prototype = Object.create( Component$$1 && Component$$1.prototype );
-      component.prototype.constructor = component;
-
-      return component;
-    }(Component));
-
-    mixPrototypes(component, target);
-    Object.defineProperty(component.prototype, '_selector', { value: selector });
-    Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
-    Object.defineProperty(component.prototype, 'name', { value: target.name });
-    registry.registerComponent(selector, component);
-
-    return component;
-  };
-
-  function decorator(selector) {
-    return function _decorator(target) {
-      return register(target, selector);
-    };
-  }
-
-  var delegate = function (element, eventName, selector, listener) {
-    if (selector) {
-      element.on(eventName, selector, listener);
-    } else {
-      element.on(eventName, listener);
-    }
-  };
-
-  /**
-   * Event decorator - binds method to event based on the event string
-   * @param {string} event
-   * @returns (Function} decorator
-   */
-  var event = createDecorator(function (component, property, params) {
-    var assign;
-
-    var event;
-    var selector;
-
-    if (!params || !params[0]) {
-      warn('Event descriptor must be provided for Evt decorator');
-    } else {
-      (assign = params, event = assign[0], selector = assign[1]);
-    }
-
-    if (!component._events) {
-      component._events = [];
-    }
-
-    var callback = function handler() {
-      var argz = [], len = arguments.length;
-      while ( len-- ) argz[ len ] = arguments[ len ];
-
-      try {
-        component[property].apply(this, argz);
-      } catch (e) {
-        handleError(e, component.constructor, 'component handler');
-      }
-    };
-
-    if (event) {
-      var eventName = (selector) ? (event + " " + selector) : event;
-
-      component._events[eventName] = callback;
-      delegate(component.$element, event, selector, callback.bind(component));
-    }
-  });
-
-  /**
-   * Element decorator - Creates {@link Element} for matching selector and assigns to decorated property.
-   * @param {string} CSS selector
-   * @returns (Function} decorator
-   */
-  var el = createDecorator(function (component, property, params) {
-    if (params && params[0]) {
-      component[property] = component.$element.find(params[0]);
-    } else {
-      warn('Selector must be provided for El decorator');
-    }
-
-    if (!component._els) {
-      component._els = [];
-    }
-
-    component._els[property] = property;
-  });
-
-  /**
-   * OnInit decorator - sets method to be run at init
-   * @returns {Function} decorator
-   */
-  var onInit = createDecorator(function (component, property) {
-    var emptyFnc = function () {};
-    var org = component.init || emptyFnc;
-
-    if (property === 'init') {
-      return;
-    }
-
-    component.init = function () {
-      var ref;
-
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-      (ref = component[property]).apply.apply(ref, [ this ].concat( args ));
-      return org.apply.apply(org, [ this ].concat( args ));
-    };
-  })();
 
   /* eslint-disable */
 
@@ -1018,8 +522,12 @@
    */
   Element.prototype.find = function find (selector) {
     return this.map(function (node) {
-      if (selector[0] === '>') {
-        var hadId = true;
+      var startsWithImmediateChildrenSelector = selector[0] === '>';
+      var hadId;
+
+      if (startsWithImmediateChildrenSelector) {
+        hadId = true;
+
         if (!node.id) {
           hadId = false;
           node.id = "strudel-" + (Math.random().toString(36).substr(2, 9));
@@ -1030,7 +538,7 @@
 
       var result = new Element(selector || '*', node);
 
-      if (!hadId) {
+      if (startsWithImmediateChildrenSelector && !hadId) {
         node.id = '';
       }
 
@@ -1232,7 +740,502 @@
     return new Element(selector, element);
   }
 
-  var VERSION = '1.0.0-beta.3';
+  /**
+   * List of instance methods that won't be overriden by a component
+   * when prototypes are mixed.
+   */
+  var protectedMethods = [
+    'constructor',
+    '$teardown',
+    '$on',
+    '$off',
+    '$emit'
+  ];
+
+  /**
+   * Check if passed parameter is a function
+   * @param obj
+   * @returns {boolean}
+   */
+  var isFunction = function (obj) {
+    return typeof obj === 'function' || false;
+  };
+
+  /**
+   * Small util for mixing prototypes
+   * @param {Function} target
+   * @param {Function} source
+   */
+  var mixPrototypes = function (target, source) {
+    var targetProto = target.prototype;
+    var sourceProto = source.prototype;
+    var inst = (typeof source === 'object') ? source : new source(); // eslint-disable-line new-cap
+
+    Object.getOwnPropertyNames(inst).forEach(function (name) {
+      var desc = Object.getOwnPropertyDescriptor(inst, name);
+      desc.writable = true;
+      Object.defineProperty(targetProto, name, desc);
+    });
+
+    Object.getOwnPropertyNames(sourceProto).forEach(function (name) {
+      if (protectedMethods.indexOf(name) !== -1) {
+        if (name !== 'constructor') {
+          warn(("Component tried to override instance method " + name), source);
+        }
+      } else {
+        Object.defineProperty(targetProto, name, Object.getOwnPropertyDescriptor(sourceProto, name));
+      }
+    });
+  };
+
+  /**
+   * Util used to create decorators
+   * @param {Function} factory - The function that the decorator will be created from
+   */
+  var createDecorator = function (factory) {
+    return function () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      return function (Ctor, property) {
+        if (!Ctor.__decorators__) {
+          Ctor.__decorators__ = [];
+        }
+
+        Ctor.__decorators__.push(function (component) {
+          return factory(component, property, args);
+        });
+      };
+    };
+  };
+
+  /**
+   * Util used to merge two objects together
+   * @param obj
+   * @param obj
+   * @returns {{}|*}
+   */
+  var mergeObjects = function (obj1, obj2) {
+    return [obj1, obj2].reduce(function (prev, curr) {
+      Object.keys(curr).forEach(function (key) {
+        prev[key] = curr[key];
+      });
+      return prev;
+    });
+  };
+
+  /**
+   * Simple registry for storing selector-constructor pairs
+   */
+  var Registry = function Registry() {
+    this._registry = {};
+    this._registrationQueue = {};
+    this._isRegistrationScheduled = false;
+  };
+
+  /**
+   * Returns both permanent registry and the registration queue entires as one object
+   * @returns {{}|*}
+   */
+  Registry.prototype.getData = function getData () {
+    return mergeObjects(this._registry, this._registrationQueue);
+  };
+
+  /**
+   * Returns an Array of registry entires
+   * @returns {Array} registry entries
+   */
+  Registry.prototype.getRegisteredSelectors = function getRegisteredSelectors () {
+    return Object
+      .keys(this._registry);
+  };
+
+  /**
+   * Returns an Array of temporary registry entires
+   * @returns {Array} registry entries
+   */
+  Registry.prototype.getSelectorsFromRegistrationQueue = function getSelectorsFromRegistrationQueue () {
+    return Object
+      .keys(this._registrationQueue);
+  };
+
+  /**
+   * Moves all entries from the registration queue to permanent registry and clears queue
+   * @param {string} selector
+   */
+  Registry.prototype.setSelectorsAsRegistered = function setSelectorsAsRegistered () {
+    this._registry = mergeObjects(this._registry, this._registrationQueue);
+    this._registrationQueue = {};
+  };
+
+  /**
+   * Returns component constructor for selector from map
+   * @param {string} selector
+   * @returns {Function} constructor
+   */
+  Registry.prototype.getComponent = function getComponent (selector) {
+    return this._registrationQueue[selector] || this._registry[selector];
+  };
+
+  /**
+   * Adds selector/constructor pair to map
+   * @param {string} selector
+   * @param {Function} constructor
+   */
+  Registry.prototype.registerComponent = function registerComponent (selector, klass) {
+    if (this._registry[selector] || this._registrationQueue[selector]) {
+      warn(("Component registered under selector: " + selector + " already exists."), klass);
+    } else {
+      this._registrationQueue[selector] = klass;
+
+      if (!this._isRegistrationScheduled) {
+        this._isRegistrationScheduled = true;
+
+        window.requestAnimationFrame(function () {
+          $(document).trigger('content:loaded');
+        });
+      }
+    }
+  };
+
+  var registry = new Registry();
+
+  var initializedClassName = 'strudel-init';
+
+  var config = {
+    /**
+     * Class added on components when initialised
+     */
+    initializedClassName: initializedClassName,
+    /**
+     * Selector for components that have been initialized
+     */
+    initializedSelector: ("." + initializedClassName),
+    /**
+     * Whether to enable devtools
+     */
+    devtools: "development" !== 'production',
+    /**
+     * Whether to show production mode tip message on boot
+     */
+    productionTip: "development" !== 'production'
+  };
+
+  /**
+   * Event listeners
+   * @type {{}}
+   */
+  var events = {};
+
+  /**
+   * @classdesc Simple Event Emitter implementation - global
+   * @class
+   */
+  var EventEmitter = function EventEmitter () {};
+
+  EventEmitter.getEvents = function getEvents () {
+    return events;
+  };
+
+  EventEmitter.removeAllListeners = function removeAllListeners () {
+    Object.keys(events).forEach(function (prop) {
+      delete events[prop];
+    });
+  };
+
+  /**
+   * Add event listener to the map
+   * @param {string} label
+   * @param {Function} callback
+   */
+  EventEmitter.prototype.$on = function $on (label, callback) {
+    if (!events[label]) {
+      events[label] = [];
+    }
+    events[label].push(callback);
+  };
+
+  /**
+   * Remove event listener from registry
+   * @param {string} label
+   * @param {Function} callback
+   * @returns {boolean}
+   */
+  EventEmitter.prototype.$off = function $off (label, callback) {
+    var listeners = events[label];
+
+    if (listeners && listeners.length) {
+      var index = listeners.reduce(function (i, listener, ind) {
+        return (isFunction(listener) && listener === callback) ? i = ind : i;
+      }, -1);
+
+      if (index > -1) {
+        listeners.splice(index, 1);
+        events[label] = listeners;
+        return true;
+      }
+    }
+    return false;
+  };
+
+  /**
+   * Notifies listeners attached to event
+   * @param {string} label
+   * @param args
+   * @returns {boolean}
+   */
+  EventEmitter.prototype.$emit = function $emit (label) {
+      var args = [], len = arguments.length - 1;
+      while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+    var listeners = events[label];
+
+    if (listeners && listeners.length) {
+      try {
+        listeners.forEach(function (listener) {
+          listener.apply(void 0, args);
+        });
+      } catch (e) {
+        handleError(e, this.constructor, 'event handler');
+      }
+      return true;
+    }
+    return false;
+  };
+
+  var mix = function (target, source) {
+    Object.keys(source).forEach(function (prop) {
+      if (!target[prop]) {
+        target[prop] = source[prop];
+      }
+    });
+  };
+
+  /**
+   * @classdesc Base class for all components, implementing event emitter
+   * @class
+   * @hideconstructor
+   */
+  var Component = (function (EventEmitter$$1) {
+    function Component(ref) {
+      var this$1 = this;
+      if ( ref === void 0 ) ref = {};
+      var element = ref.element;
+      var data = ref.data;
+
+      EventEmitter$$1.call(this);
+
+      try {
+        this.beforeInit();
+
+        this.$element = element;
+        this.$data = data;
+
+        if (this.__decorators__) {
+          this.__decorators__.forEach(function (fn) {
+            fn(this$1);
+          });
+          delete this.__decorators__;
+        }
+
+        if (this.mixins && this.mixins.length) {
+          this.mixins.forEach(function (mixin) {
+            if (isFunction(mixin.init)) {
+              mixin.init.call(this$1);
+            }
+            mix(this$1, mixin);
+          });
+        }
+
+        this.init();
+      } catch (e) {
+        handleError(e, this.constructor, 'component hook');
+      }
+
+      this.$element.addClass(config.initializedClassName);
+    }
+
+    if ( EventEmitter$$1 ) Component.__proto__ = EventEmitter$$1;
+    Component.prototype = Object.create( EventEmitter$$1 && EventEmitter$$1.prototype );
+    Component.prototype.constructor = Component;
+
+    /**
+     * Function called before component is initialized
+     * @interface
+     */
+    Component.prototype.beforeInit = function beforeInit () {};
+
+    /**
+     * Function called when component is initialized
+     * @interface
+     */
+    Component.prototype.init = function init () {};
+
+    /**
+     * Function called before component is destroyed
+     * @interface
+     */
+    Component.prototype.beforeDestroy = function beforeDestroy () {};
+
+    /**
+     * Function called after component is destroyed
+     * @interface
+     */
+    Component.prototype.destroy = function destroy () {};
+
+    /**
+     * Teardown the component and clear events
+     */
+    Component.prototype.$teardown = function $teardown () {
+      try {
+        this.beforeDestroy();
+        this.$element.off();
+        this.$element.removeClass(config.initializedClassName);
+        delete this.$element.first().scope;
+        delete this.$element;
+        this.destroy();
+      } catch (e) {
+        handleError(e, this.constructor, 'component hook');
+      }
+    };
+
+    return Component;
+  }(EventEmitter));
+
+  /**
+   * Component decorator - Registers decorated class in {@link Registry} as a component
+   * @param {string} CSS selector
+   */
+  var register = function (target, selector) {
+    if (!selector) {
+      warn('Selector must be provided for Component decorator', target);
+    }
+
+    if (!target.prototype) {
+      warn('Decorator works only for classes', target);
+      return target;
+    }
+
+    var component = (function (Component$$1) {
+      function component() {
+        var args = [], len = arguments.length;
+        while ( len-- ) args[ len ] = arguments[ len ];
+   /* eslint no-useless-constructor: 0 */
+        Component$$1.apply(this, args);
+      }
+
+      if ( Component$$1 ) component.__proto__ = Component$$1;
+      component.prototype = Object.create( Component$$1 && Component$$1.prototype );
+      component.prototype.constructor = component;
+
+      return component;
+    }(Component));
+
+    mixPrototypes(component, target);
+    Object.defineProperty(component.prototype, '_selector', { value: selector });
+    Object.defineProperty(component.prototype, 'isStrudelClass', { value: true });
+    Object.defineProperty(component.prototype, 'name', { value: target.name });
+    registry.registerComponent(selector, component);
+
+    return component;
+  };
+
+  function decorator(selector) {
+    return function _decorator(target) {
+      return register(target, selector);
+    };
+  }
+
+  var delegate = function (element, eventName, selector, listener) {
+    if (selector) {
+      element.on(eventName, selector, listener);
+    } else {
+      element.on(eventName, listener);
+    }
+  };
+
+  /**
+   * Event decorator - binds method to event based on the event string
+   * @param {string} event
+   * @returns (Function} decorator
+   */
+  var event = createDecorator(function (component, property, params) {
+    var assign;
+
+    var event;
+    var selector;
+
+    if (!params || !params[0]) {
+      warn('Event descriptor must be provided for Evt decorator');
+    } else {
+      (assign = params, event = assign[0], selector = assign[1]);
+    }
+
+    if (!component._events) {
+      component._events = [];
+    }
+
+    var callback = function handler() {
+      var argz = [], len = arguments.length;
+      while ( len-- ) argz[ len ] = arguments[ len ];
+
+      try {
+        component[property].apply(this, argz);
+      } catch (e) {
+        handleError(e, component.constructor, 'component handler');
+      }
+    };
+
+    if (event) {
+      var eventName = (selector) ? (event + " " + selector) : event;
+
+      component._events[eventName] = callback;
+      delegate(component.$element, event, selector, callback.bind(component));
+    }
+  });
+
+  /**
+   * Element decorator - Creates {@link Element} for matching selector and assigns to decorated property.
+   * @param {string} CSS selector
+   * @returns (Function} decorator
+   */
+  var el = createDecorator(function (component, property, params) {
+    if (params && params[0]) {
+      component[property] = component.$element.find(params[0]);
+    } else {
+      warn('Selector must be provided for El decorator');
+    }
+
+    if (!component._els) {
+      component._els = [];
+    }
+
+    component._els[property] = property;
+  });
+
+  /**
+   * OnInit decorator - sets method to be run at init
+   * @returns {Function} decorator
+   */
+  var onInit = createDecorator(function (component, property) {
+    var emptyFnc = function () {};
+    var org = component.init || emptyFnc;
+
+    if (property === 'init') {
+      return;
+    }
+
+    component.init = function () {
+      var ref;
+
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+      (ref = component[property]).apply.apply(ref, [ this ].concat( args ));
+      return org.apply.apply(org, [ this ].concat( args ));
+    };
+  })();
+
+  var VERSION = '1.0.0-beta.4';
   var INIT_CLASS = config.initializedClassName;
   var INIT_SELECTOR = config.initializedSelector;
 
@@ -1419,7 +1422,7 @@
       return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
     })
     .forEach(function (node) {
-      if (registeredSelectors.find(function (el) {
+      if (registeredSelectors.filter(function (el) {
         var lookupSelector = el + ":not(" + (config.initializedSelector) + ")";
 
         return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
