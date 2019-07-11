@@ -2,8 +2,6 @@ import $ from '../dom/element';
 import config from '../config';
 import { warn } from '../util/error';
 
-const initializedSelector = `.${config.initializedClassName}`;
-
 /**
  * @classdesc Class linking components with DOM
  * @class
@@ -24,12 +22,12 @@ class Linker {
   unlink(container = document) {
     this.registry.getRegisteredSelectors().forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
-      if (container !== document && $(container).is(initializedSelector)) {
+      if (container !== document && $(container).is(config.initializedSelector)) {
         elements.push(container);
       }
       [].forEach.call(elements, (el) => {
-        if (el.component) {
-          el.component.$teardown();
+        if (el.__strudel__) {
+          el.__strudel__.$teardown();
         }
       });
     });
@@ -40,7 +38,17 @@ class Linker {
    * @param {DOMElement} container
    */
   link(container = document) {
-    this.registry.getRegisteredSelectors().forEach((selector) => {
+    const isRootNode = (container === document);
+
+    const selectors = (isRootNode)
+      ? this.registry.getSelectorsFromRegistrationQueue()
+      : this.registry.getRegisteredSelectors();
+
+    if (selectors.length === 0) {
+      return;
+    }
+
+    selectors.forEach((selector) => {
       const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
       if (container !== document && $(container).is(selector)) {
         elements.push(container);
@@ -56,6 +64,10 @@ class Linker {
         }
       });
     });
+
+    if (isRootNode) {
+      this.registry.setSelectorsAsRegistered();
+    }
   }
 }
 

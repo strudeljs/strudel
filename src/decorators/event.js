@@ -1,32 +1,45 @@
 import handleError, { warn } from '../util/error';
+import { createDecorator } from '../util/helpers';
+
+const delegate = (element, eventName, selector, listener) => {
+  if (selector) {
+    element.on(eventName, selector, listener);
+  } else {
+    element.on(eventName, listener);
+  }
+};
 
 /**
  * Event decorator - binds method to event based on the event string
  * @param {string} event
  * @returns (Function} decorator
  */
-export default function decorator(event, preventDefault) {
-  return function _decorator(klass, method) {
-    if (!event) {
-      warn('Event descriptor must be provided for Evt decorator');
+export default createDecorator((component, property, params) => {
+  let event;
+  let selector;
+
+  if (!params || !params[0]) {
+    warn('Event descriptor must be provided for Evt decorator');
+  } else {
+    [event, selector] = params;
+  }
+
+  if (!component._events) {
+    component._events = [];
+  }
+
+  const callback = function handler(...argz) {
+    try {
+      component[property].apply(this, argz);
+    } catch (e) {
+      handleError(e, component.constructor, 'component handler');
     }
-
-    if (!klass._events) {
-      klass._events = [];
-    }
-
-    const cb = function handler(...args) {
-      try {
-        klass[method].apply(this, args);
-      } catch (e) {
-        handleError(e, klass.constructor, 'component handler');
-      }
-
-      if (preventDefault) {
-        args[0].preventDefault();
-      }
-    };
-
-    klass._events[event] = cb;
   };
-}
+
+  if (event) {
+    const eventName = (selector) ? `${event} ${selector}` : event;
+
+    component._events[eventName] = callback;
+    delegate(component.$element, event, selector, callback.bind(component));
+  }
+});

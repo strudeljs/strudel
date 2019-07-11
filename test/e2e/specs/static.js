@@ -1,7 +1,7 @@
 module.exports = {
-  dynamic(browser) {
+  static(browser) {
     browser
-      .url('http://localhost:9876/examples/dynamic')
+      .url('http://localhost:9876/examples/static')
       .waitForElementVisible('.count', 5000)
       .assert.containsText('.count', '100')
       .click('.control-increment')

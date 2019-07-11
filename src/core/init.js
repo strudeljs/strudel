@@ -29,7 +29,6 @@ const bindContentEvents = () => {
   });
 };
 
-
 const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
@@ -39,23 +38,30 @@ const onAutoInitCallback = (mutation) => {
   })
   .forEach((node) => {
     if (registeredSelectors.filter((el) => {
-      return $(node).is(el) || $(node).find(el).length;
-    })[0]) {
+      const lookupSelector = `${el}:not(${config.initializedSelector})`;
+
+      return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
+    })) {
       bootstrap([node]);
     }
   });
 };
 
 const onAutoTeardownCallback = (mutation) => {
-  const initializedSelector = `.${config.initializedClassName}`;
-
   Array.prototype.slice.call(mutation.removedNodes)
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(initializedSelector);
+        && $(node).is(config.initializedSelector);
     })
     .forEach((node) => {
+      const initializedSubNodes = node.querySelector(config.initializedSelector);
+
+      if (initializedSubNodes) {
+        Array.prototype.slice.call(initializedSubNodes).forEach(
+          (subNode) => { linker.unlink(subNode); }
+        );
+      }
       linker.unlink(node);
     });
 };
@@ -63,8 +69,6 @@ const onAutoTeardownCallback = (mutation) => {
 const init = () => {
   if (/comp|inter|loaded/.test(document.readyState)) {
     setTimeout(bootstrap, 0);
-  } else {
-    channel.on('DOMContentLoaded', bootstrap);
   }
 
   mount();

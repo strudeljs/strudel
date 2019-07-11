@@ -1,14 +1,17 @@
 <body>
   <div class="dynamic-container"></div>
+  <div class="dynamic-input-container"></div>
 
   <script src="../../dist/strudel.js"></script>
   <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
   <script type="text/babel" data-plugins="transform-decorators-legacy">
-    @Strudel.Component('.count')
+    const { Component, Evt } = Strudel;
+
+    @Component('.count')
     class Count {
       init() {
-      	this.value = parseInt(this.$data.start, 10);
-
+        this.value = parseInt(this.$data.start, 10);
+        
       	this.$on('counter.increment', function () {
       		this.value++;
       		this.render();
@@ -19,6 +22,11 @@
           this.render();
         }.bind(this));
 
+        this.$on('counter.teardown', function () {
+          this.value = -1;
+          this.render();
+        }.bind(this));
+
         this.render();
       }
 
@@ -26,21 +34,28 @@
         this.$element.html(this.value);
       }
     }
-
-    @Strudel.Component('.count-control')
+    
+    @Component('.count-control')
     class CountControl {
-      @Strudel.Evt('click .control-increment')
+      @Evt('click', '.control-increment')
       increment() {
         this.$emit('counter.increment');
       }
 
-      @Strudel.Evt('click .control-decrement')
+      @Evt('click', '.control-decrement')
       decrement() {
         this.$emit('counter.decrement');
       }
-    }
 
-    Strudel.element(document).trigger('content:loaded');
+      @Evt('click', '.control-remove')
+      remove() {
+        this.$element.remove();
+      }
+      
+      destroy() {
+        this.$emit('counter.teardown');
+      }
+    }
 
     setTimeout(() => {
       Strudel.$('.dynamic-container').append(Strudel.$(`
@@ -48,6 +63,7 @@
        <div class="count-control">
         <button class="control-increment">+1</button>
         <button class="control-decrement">-1</button>
+        <button class="control-remove">Remove</button>
        </div>
       `))
     }, 500);

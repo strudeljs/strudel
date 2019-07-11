@@ -21,13 +21,14 @@
   <script src="../../dist/strudel.js"></script>
   <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
   <script type="text/babel" data-plugins="transform-decorators-legacy,transform-class-properties">
+    const { Component, Evt, El } = Strudel;  
 
-    @Strudel.Component('.tabs')
+    @Component('.tabs')
     class Tabs {
-    	@Strudel.El('.tab-pane')
+    	@El('.tab-pane')
     	panes
 
-    	@Strudel.Evt('click .tabs-nav a')
+    	@Evt('click', '.tabs-nav a')
     	toggleTab(evt) {
     		console.log(evt);
     		const target = evt.target.getAttribute('href').substring(1);

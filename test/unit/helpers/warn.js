@@ -46,22 +46,24 @@ function createCompareFn(spy) {
 
 beforeEach(() => {
   asserted = [];
+  spyOn(console, 'warn');
   spyOn(console, 'error');
   jasmine.addMatchers({
-    toHaveBeenWarned: () => { return createCompareFn(console.error); }
+    toHaveBeenWarned: () => createCompareFn(console.warn),
+    toHaveThrownError: () => createCompareFn(console.error)
   });
 });
 
 afterEach((done) => {
   const warned = (msg) => { return asserted.some((assertedMsg) => { return msg.toString().indexOf(assertedMsg) > -1; }); };
-  let count = console.error.calls.count();
+  let count = console.warn.calls.count();
 
   let args;
 
   while (count--) {
-    args = console.error.calls.argsFor(count);
+    args = console.warn.calls.argsFor(count);
     if (!warned(args[0])) {
-      done.fail(`Unexpected console.error message: ${args[0]}`);
+      done.fail(`Unexpected console.warn message: ${args[0]}`);
       return;
     }
   }
