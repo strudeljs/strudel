@@ -96,9 +96,9 @@ describe('Element', () => {
       element.on('click', spy);
       element.on('click', method);
       element.off('click', spy);
-      element.trigger('click')
+      element.trigger('click');
 
-      expect(element.get(0)._e.click[0][0]).toEqual('method');
+      expect(element.get(0)._e.click[0].handlerName).toEqual('method');
       expect(spy).not.toHaveBeenCalled();
     });
   });
