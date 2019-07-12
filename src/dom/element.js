@@ -598,20 +598,26 @@ class Element {
       this.each(function (node) {
         for (var evt in node._e) {
           node._e[evt].forEach(function (cb) {
-            node.removeEventListener(evt, cb);
+            node.removeEventListener(evt, cb[1]);
           })
         }
+        node._e = {};
       });
     }
 
     return this.eacharg(events, function (node, event) {
       new Element(node._e ? node._e[event] : []).each(function (cb, idx) {
-        if (callback.name === cb[0]) {
+        if(callback) {
+          if (callback.name === cb[0]) {
+            node.removeEventListener(event, cb[1]);
+            node._e[event] = [
+              ...node._e[event].slice(0, idx),
+              ...node._e[event].slice(idx + 1),
+            ];
+          }
+        } else {
           node.removeEventListener(event, cb[1]);
-          node._e[event] = [
-            ...node._e[event].slice(0, idx),
-            ...node._e[event].slice(idx + 1),
-          ];
+          node._e[event] = [];
         }
       });
     });
