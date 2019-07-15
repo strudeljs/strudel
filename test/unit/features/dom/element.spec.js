@@ -83,7 +83,7 @@ describe('Element', () => {
     });
   });
 
-  describe('events', () => {
+  describe('.off()', () => {
     it('removes specific event callback', () => {
       document.body.innerHTML = `
         <button>Button</button>
@@ -98,8 +98,85 @@ describe('Element', () => {
       element.off('click', spy);
       element.trigger('click');
 
-      expect(element.get(0)._e.click[0].handlerName).toEqual('method');
+      expect(element.get(0)._e.click[0].providedHandler).toEqual(method);
       expect(spy).not.toHaveBeenCalled();
     });
+
+    it('remove all events', () => {
+      document.body.innerHTML = `
+        <button>Button</button>
+      `;
+      const spyClick1 = jasmine.createSpy(),
+        spyClick2 = jasmine.createSpy(),
+        spyMouseover = jasmine.createSpy(),
+        element = new Element('button');
+
+      element.on('click', spyClick1);
+      element.on('click', spyClick2);
+      element.on('mouseover', spyMouseover);
+
+      element.off();
+
+      element.trigger('click');
+      element.trigger('mouseover');
+
+      expect(spyClick1).not.toHaveBeenCalled();
+      expect(spyClick2).not.toHaveBeenCalled();
+      expect(spyMouseover).not.toHaveBeenCalled();
+      expect(Object.keys(element.get(0)._e).length).toEqual(0);
+    });
+
+    it('remove all click events', () => {
+      document.body.innerHTML = `
+        <button>Button</button>
+      `;
+      const spyClick1 = jasmine.createSpy(),
+        spyClick2 = jasmine.createSpy(),
+        spyMouseover = jasmine.createSpy(),
+        element = new Element('button');
+
+      element.on('click', spyClick1);
+      element.on('click', spyClick2);
+      element.on('mouseover', spyMouseover);
+
+      element.off('click');
+
+      element.trigger('click');
+      element.trigger('mouseover');
+
+      expect(spyClick1).not.toHaveBeenCalled();
+      expect(spyClick2).not.toHaveBeenCalled();
+      expect(spyMouseover).toHaveBeenCalled();
+      expect(element.get(0)._e.click.length).toEqual(0);
+      expect(element.get(0)._e.mouseover.length).toEqual(1);
+    });
+
+    it('remove eventListener given via delegation', () => {
+      document.body.innerHTML = `
+        <div>
+            <button>Button</button>
+        </div>
+      `;
+      const spyClick1 = jasmine.createSpy(),
+        spyClick2 = jasmine.createSpy(),
+        spyMouseover = jasmine.createSpy(),
+        element = new Element('div');
+
+      element.on('click', 'button', spyClick1);
+      element.on('click', 'button', spyClick2);
+      element.on('mouseover', spyMouseover);
+
+      element.off('click', spyClick1);
+
+      new Element('button').trigger('click'); //there is a delegation, so the target for click is a button, not the div itself.
+      element.trigger('mouseover');
+
+      expect(spyClick1).not.toHaveBeenCalled();
+      expect(spyClick2).toHaveBeenCalled();
+      expect(spyMouseover).toHaveBeenCalled();
+      expect(element.get(0)._e.click.length).toEqual(1);
+      expect(element.get(0)._e.mouseover.length).toEqual(1);
+    });
+
   });
 });

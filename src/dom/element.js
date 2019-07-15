@@ -555,6 +555,7 @@ class Element {
    * @returns {Element}
    */
   on(events, cb, cb2) {
+    let providedHandler = cb;
     if (typeof cb === 'string') {
       let sel = cb;
       cb = function (e) {
@@ -574,6 +575,7 @@ class Element {
           }
         });
       };
+      providedHandler = cb2;
     }
 
     let eventHandler = function (e) {
@@ -586,7 +588,7 @@ class Element {
       node._e = node._e || {};
       node._e[event] = node._e[event] || [];
       node._e[event].push({
-        handlerName: cb.name,
+        providedHandler,
         eventHandler,
       });
     });
@@ -610,9 +612,9 @@ class Element {
     }
 
     return this.eacharg(events, function (node, event) {
-      new Element(node._e ? node._e[event] : []).each(function ({handlerName, eventHandler}, index) {
+      new Element(node._e ? node._e[event] : []).each(function ({providedHandler, eventHandler}, index) {
         if(handler) {
-          if (handler.name === handlerName) {
+          if (handler === providedHandler) {
             node.removeEventListener(event, eventHandler);
             node._e[event] = [
               ...node._e[event].slice(0, index),
