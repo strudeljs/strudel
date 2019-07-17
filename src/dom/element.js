@@ -555,6 +555,7 @@ class Element {
    * @returns {Element}
    */
   on(events, cb, cb2) {
+    let providedHandler = cb;
     if (typeof cb === 'string') {
       let sel = cb;
       cb = function (e) {
@@ -569,44 +570,61 @@ class Element {
                   return target;
                 }
               });
-            } catch (err) {}
+            } catch (err) { }
             cb2.apply(target, args);
           }
         });
       };
+      providedHandler = cb2;
     }
 
-    let callback = function (e) {
+    let eventHandler = function (e) {
       return cb.apply(this, [e].concat(e.detail || []));
     };
 
     return this.eacharg(events, function (node, event) {
-      node.addEventListener(event, callback);
+      node.addEventListener(event, eventHandler);
 
       node._e = node._e || {};
       node._e[event] = node._e[event] || [];
-      node._e[event].push(callback);
+      node._e[event].push({
+        providedHandler,
+        eventHandler,
+      });
     });
   }
 
   /**
    * Remove an event handler
    * @param {string} events
+   * @param {function} handler to be removed
    */
-  off(events) {
-    if (events === undefined) {
+  off(events, handler) {
+    if (events === undefined && handler === undefined) {
       this.each(function (node) {
-        for (var evt in node._e) {
-          node._e[evt].forEach(function (cb) {
-            node.removeEventListener(evt, cb);
+        for (let event in node._e) {
+          node._e[event].forEach(function ({eventHandler}) {
+            node.removeEventListener(event, eventHandler);
           })
         }
+        node._e = {};
       });
     }
 
     return this.eacharg(events, function (node, event) {
-      new Element(node._e ? node._e[event] : []).each(function (cb) {
-        node.removeEventListener(event, cb);
+      new Element(node._e ? node._e[event] : []).each(function ({providedHandler, eventHandler}, index) {
+        if(handler) {
+          if (handler === providedHandler) {
+            node.removeEventListener(event, eventHandler);
+            node._e[event] = [
+              ...node._e[event].slice(0, index),
+              ...node._e[event].slice(index + 1),
+            ];
+          }
+        } else {
+          node.removeEventListener(event, eventHandler);
+          node._e[event] = [];
+        }
       });
     });
   }
