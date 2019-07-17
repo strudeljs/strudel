@@ -34,7 +34,8 @@ const onAutoInitCallback = (mutation) => {
 
   Array.prototype.slice.call(mutation.addedNodes)
   .filter((node) => {
-    return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
+    const { nodeName, nodeType } = node;
+    return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
   })
   .forEach((node) => {
     if (registeredSelectors.filter((el) => {
