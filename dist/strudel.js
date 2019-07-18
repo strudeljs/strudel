@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.0-beta.4
+ * Strudel.js v1.0.0-beta.5
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -587,6 +587,7 @@
    * @returns {Element}
    */
   Element.prototype.on = function on (events, cb, cb2) {
+    var providedHandler = cb;
     if (typeof cb === 'string') {
       var sel = cb;
       cb = function (e) {
@@ -601,44 +602,65 @@
                   return target;
                 }
               });
-            } catch (err) {}
+            } catch (err) { }
             cb2.apply(target, args);
           }
         });
       };
+      providedHandler = cb2;
     }
 
-    var callback = function (e) {
+    var eventHandler = function (e) {
       return cb.apply(this, [e].concat(e.detail || []));
     };
 
     return this.eacharg(events, function (node, event) {
-      node.addEventListener(event, callback);
+      node.addEventListener(event, eventHandler);
 
       node._e = node._e || {};
       node._e[event] = node._e[event] || [];
-      node._e[event].push(callback);
+      node._e[event].push({
+        providedHandler: providedHandler,
+        eventHandler: eventHandler,
+      });
     });
   };
 
   /**
    * Remove an event handler
    * @param {string} events
+   * @param {function} handler to be removed
    */
-  Element.prototype.off = function off (events) {
-    if (events === undefined) {
+  Element.prototype.off = function off (events, handler) {
+    if (events === undefined && handler === undefined) {
       this.each(function (node) {
-        for (var evt in node._e) {
-          node._e[evt].forEach(function (cb) {
-            node.removeEventListener(evt, cb);
+        var loop = function ( event ) {
+          node._e[event].forEach(function (ref) {
+              var eventHandler = ref.eventHandler;
+
+            node.removeEventListener(event, eventHandler);
           });
-        }
+        };
+
+          for (var event in node._e) loop( event );
+        node._e = {};
       });
     }
 
     return this.eacharg(events, function (node, event) {
-      new Element(node._e ? node._e[event] : []).each(function (cb) {
-        node.removeEventListener(event, cb);
+      new Element(node._e ? node._e[event] : []).each(function (ref, index) {
+          var providedHandler = ref.providedHandler;
+          var eventHandler = ref.eventHandler;
+
+        if(handler) {
+          if (handler === providedHandler) {
+            node.removeEventListener(event, eventHandler);
+            node._e[event] = node._e[event].slice(0, index).concat( node._e[event].slice(index + 1) );
+          }
+        } else {
+          node.removeEventListener(event, eventHandler);
+          node._e[event] = [];
+        }
       });
     });
   };
@@ -1235,7 +1257,7 @@
     };
   })();
 
-  var VERSION = '1.0.0-beta.4';
+  var VERSION = '1.0.0-beta.5';
   var INIT_CLASS = config.initializedClassName;
   var INIT_SELECTOR = config.initializedSelector;
 
@@ -1418,8 +1440,11 @@
     var registeredSelectors = registry.getRegisteredSelectors();
 
     Array.prototype.slice.call(mutation.addedNodes)
-    .filter(function (node) {
-      return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
+    .filter(function (ref) {
+      var nodeName = ref.nodeName;
+      var nodeType = ref.nodeType;
+
+      return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
     })
     .forEach(function (node) {
       if (registeredSelectors.filter(function (el) {
