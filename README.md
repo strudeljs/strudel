@@ -17,7 +17,7 @@ Strudel.js is a lightweight framework that helps providing interactivity to back
 
 * **Declarative API**: Boilerplate reduced to minimum with handy decorators
 * **Component architecture**: Modularised and encapsulated way of writing code
-* **Small footprint**: Zero dependencies, concise API, ~4kb gzipped 
+* **Small footprint**: Zero dependencies, concise API, ~4.5kb gzipped 
 * **Ecosystem**: Bunch of tools for better day-to-day developer life
 
 ## Browser Support
