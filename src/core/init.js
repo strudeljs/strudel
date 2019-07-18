@@ -33,8 +33,8 @@ const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
   Array.prototype.slice.call(mutation.addedNodes)
-  .filter((node) => {
-    return node.nodeName !== 'SCRIPT' && node.nodeType === 1;
+  .filter(({ nodeName, nodeType }) => {
+    return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
   })
   .forEach((node) => {
     if (registeredSelectors.filter((el) => {
