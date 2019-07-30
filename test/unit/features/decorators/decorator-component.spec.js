@@ -15,11 +15,12 @@ describe('Decorator Component', () => {
         return 'test';
       }
     }
+
     TestComponent = TestComponentClass;
   });
 
   it('registers', () => {
-    expect(registry.getComponent('test')).toEqual(jasmine.any(Function));
+    expect(registry.getComponent('test')[0]).toEqual(jasmine.any(Function));
   });
 
   it('requires class', () => {
@@ -33,7 +34,8 @@ describe('Decorator Component', () => {
 
   it('fails without selector', () => {
     @Component()
-    class ComponentClass { }
+    class ComponentClass {}
+
     expect('Selector must be provided for Component decorator').toHaveBeenWarned();
   });
 

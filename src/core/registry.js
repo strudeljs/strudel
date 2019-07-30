@@ -67,16 +67,18 @@ class Registry {
   registerComponent(selector, klass) {
     if (this._registry[selector] || this._registrationQueue[selector]) {
       warn(`Component registered under selector: ${selector} already exists.`, klass);
-    } else {
-      this._registrationQueue[selector] = klass;
+    }
+    if (!this._registrationQueue[selector]) {
+      this._registrationQueue[selector] = [];
+    }
+    this._registrationQueue[selector].push(klass);
 
-      if (!this._isRegistrationScheduled) {
-        this._isRegistrationScheduled = true;
+    if (!this._isRegistrationScheduled) {
+      this._isRegistrationScheduled = true;
 
-        window.requestAnimationFrame(() => {
-          $(document).trigger('content:loaded');
-        });
-      }
+      window.requestAnimationFrame(() => {
+        $(document).trigger('content:loaded');
+      });
     }
   }
 }

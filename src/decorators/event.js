@@ -1,11 +1,11 @@
 import handleError, { warn } from '../util/error';
 import { createDecorator } from '../util/helpers';
 
-const delegate = (element, eventName, selector, listener) => {
+const delegate = (element, eventName, selector, listener, componentName) => {
   if (selector) {
-    element.on(eventName, selector, listener);
+    element.on(eventName, selector, listener, componentName);
   } else {
-    element.on(eventName, listener);
+    element.on(eventName, listener, null, componentName);
   }
 };
 
@@ -40,6 +40,6 @@ export default createDecorator((component, property, params) => {
     const eventName = (selector) ? `${event} ${selector}` : event;
 
     component._events[eventName] = callback;
-    delegate(component.$element, event, selector, callback.bind(component));
+    delegate(component.$element, event, selector, callback.bind(component), component.name);
   }
 });

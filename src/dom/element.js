@@ -1,5 +1,56 @@
 /* eslint-disable */
 
+function deleteAllEventsListeners() {
+  return this.each(function (node) {
+    for (let event in node._e) {
+      node._e[event].forEach(function ({ eventHandler }) {
+        node.removeEventListener(event, eventHandler);
+      })
+    }
+    node._e = {};
+  });
+}
+
+function deleteAllComponentsEventsListeners(component) {
+  return this.each(function (node) {
+    for (let event in node._e) {
+      const newEventArray = [];
+      node._e[event].forEach(function (eventObject) {
+        const { eventHandler, componentName } = eventObject;
+        if (componentName === component) {
+          node.removeEventListener(event, eventHandler);
+        } else {
+          newEventArray.push(eventObject)
+        }
+      });
+      node._e[event] = newEventArray;
+    }
+  });
+}
+
+function deleteAllEventsListenersForEvents(events) {
+  return this.eacharg(events, function (node, event) {
+    new Element(node._e ? node._e[event] : []).each(function ({ eventHandler }) {
+      node.removeEventListener(event, eventHandler)
+    });
+    node._e[event] = [];
+  });
+}
+
+function deleteCertainEventListener(events, handler) {
+  return this.eacharg(events, function (node, event) {
+    new Element(node._e ? node._e[event] : []).each(function ({ providedHandler, eventHandler }, index) {
+      if (handler === providedHandler) {
+        node.removeEventListener(event, eventHandler);
+        node._e[event] = [
+          ...node._e[event].slice(0, index),
+          ...node._e[event].slice(index + 1),
+        ];
+      }
+    })
+  })
+}
+
 const selectors = {};
 
 selectors[/^\.[\w\-]+$/] = function (param) {
@@ -82,7 +133,7 @@ const mirror = {
     if (new Element(src).is('textarea')) {
       dest.value = src.value;
     }
-  }
+  },
 };
 
 /**
@@ -554,7 +605,7 @@ class Element {
    * @param [Function] cb2 - Callback when second parameter is a selector
    * @returns {Element}
    */
-  on(events, cb, cb2) {
+  on(events, cb, cb2, componentName) {
     let providedHandler = cb;
     if (typeof cb === 'string') {
       let sel = cb;
@@ -568,7 +619,7 @@ class Element {
               Object.defineProperty(e, 'currentTarget', {
                 get: function () {
                   return target;
-                }
+                },
               });
             } catch (err) { }
             cb2.apply(target, args);
@@ -590,6 +641,7 @@ class Element {
       node._e[event].push({
         providedHandler,
         eventHandler,
+        componentName,
       });
     });
   }
@@ -598,35 +650,23 @@ class Element {
    * Remove an event handler
    * @param {string} events
    * @param {function} handler to be removed
+   * @param {string} component
    */
-  off(events, handler) {
-    if (events === undefined && handler === undefined) {
-      this.each(function (node) {
-        for (let event in node._e) {
-          node._e[event].forEach(function ({eventHandler}) {
-            node.removeEventListener(event, eventHandler);
-          })
-        }
-        node._e = {};
-      });
+  off(events, handler, component) {
+    if (component) {
+      return deleteAllComponentsEventsListeners.call(this, component);
     }
 
-    return this.eacharg(events, function (node, event) {
-      new Element(node._e ? node._e[event] : []).each(function ({providedHandler, eventHandler}, index) {
-        if(handler) {
-          if (handler === providedHandler) {
-            node.removeEventListener(event, eventHandler);
-            node._e[event] = [
-              ...node._e[event].slice(0, index),
-              ...node._e[event].slice(index + 1),
-            ];
-          }
-        } else {
-          node.removeEventListener(event, eventHandler);
-          node._e[event] = [];
-        }
-      });
-    });
+    if (events === undefined && handler === undefined) {
+      return deleteAllEventsListeners.call(this);
+    }
+
+    if (!handler) {
+      return deleteAllEventsListenersForEvents.call(this, events)
+    }
+
+    return deleteCertainEventListener.call(this, events, handler);
+
   }
 
   /**
