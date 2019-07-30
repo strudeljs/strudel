@@ -20,16 +20,19 @@ class Linker {
    * @param {DOMElement} container
    */
   unlink(container = document) {
+    let elements = [];
     this.registry.getRegisteredSelectors().forEach((selector) => {
-      const elements = Array.prototype.slice.call(container.querySelectorAll(selector));
+      elements = Array.prototype.slice.call(container.querySelectorAll(selector));
       if (container !== document && $(container).is(config.initializedSelector)) {
         elements.push(container);
       }
-      [].forEach.call(elements, (el) => {
-        if (el.__strudel__) {
-          el.__strudel__.$teardown();
-        }
-      });
+    });
+    Array.prototype.forEach.call(elements, (el) => {
+      if (el.__strudel__) {
+        el.__strudel__.forEach((strudelInstance) => {
+          strudelInstance.$teardown();
+        });
+      }
     });
   }
 
@@ -55,13 +58,16 @@ class Linker {
       }
       [].forEach.call(elements, (el) => {
         if (!el.__strudel__) {
-          const element = $(el);
-          const data = element.data();
-          const Instance = this.registry.getComponent(selector);
-          el.__strudel__ = new Instance({ element, data });
+          el.__strudel__ = [];
         } else {
-          warn(`Trying to attach component to already initialized node, component with selector ${selector} will not be attached`);
+          // eslint-disable-next-line max-len
+          warn(`Trying to attach component to already initialized node, ${selector}`);
         }
+        const element = $(el);
+        const data = element.data();
+        this.registry.getComponent(selector).forEach((Instance) => {
+          el.__strudel__.push(new Instance({ element, data }));
+        });
       });
     });
 

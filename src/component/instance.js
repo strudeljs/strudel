@@ -73,8 +73,7 @@ class Component extends EventEmitter {
   $teardown() {
     try {
       this.beforeDestroy();
-      this.$element.off();
-      this.$element.removeClass(config.initializedClassName);
+      this.$element.off(null, null, this.name);
       delete this.$element.first().scope;
       delete this.$element;
       this.destroy();

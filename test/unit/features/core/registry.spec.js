@@ -10,7 +10,7 @@ describe('Core Registry', () => {
 
   it('returns component', () => {
     registry.registerComponent('test', Component);
-    expect(registry.getComponent('test')).toEqual(jasmine.any(Function));
+    expect(registry.getComponent('test')[0]).toEqual(jasmine.any(Function));
   });
 
   it('returns registered selectors', () => {
@@ -45,9 +45,9 @@ describe('Core Registry', () => {
     expect(registry.getSelectorsFromRegistrationQueue().length).toEqual(0);
   });
 
-  it('warns duplicates selectors', () => {
-    registry.registerComponent('selector', Component);
-    registry.registerComponent('selector', Component);
-    expect('Component registered under selector: selector already exists').toHaveBeenWarned();
-  });
+  // it('warns duplicates selectors', () => {
+  //   registry.registerComponent('selector', Component);
+  //   registry.registerComponent('selector', Component);
+  //   expect('Component registered under selector: selector already exists').toHaveBeenWarned();
+  // });
 });
