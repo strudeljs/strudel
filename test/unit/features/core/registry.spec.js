@@ -45,9 +45,9 @@ describe('Core Registry', () => {
     expect(registry.getSelectorsFromRegistrationQueue().length).toEqual(0);
   });
 
-  // it('warns duplicates selectors', () => {
-  //   registry.registerComponent('selector', Component);
-  //   registry.registerComponent('selector', Component);
-  //   expect('Component registered under selector: selector already exists').toHaveBeenWarned();
-  // });
+  it('warns duplicates selectors', () => {
+    registry.registerComponent('selector', Component);
+    registry.registerComponent('selector', Component);
+    expect('Component registered under selector: selector already exists').toHaveBeenWarned();
+  });
 });
