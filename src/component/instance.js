@@ -13,7 +13,16 @@ class Component extends EventEmitter {
   constructor({ element, data } = {}) {
     super();
 
+    this.mixins = this.mixins || [];
+
     try {
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.beforeInit)) {
+          mixin.beforeInit.call(this);
+        }
+        mix(this, mixin);
+      });
+
       this.beforeInit();
 
       this.$element = element;
@@ -26,14 +35,11 @@ class Component extends EventEmitter {
         delete this.__decorators__;
       }
 
-      if (this.mixins && this.mixins.length) {
-        this.mixins.forEach((mixin) => {
-          if (isFunction(mixin.init)) {
-            mixin.init.call(this);
-          }
-          mix(this, mixin);
-        });
-      }
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.init)) {
+          mixin.init.call(this);
+        }
+      });
 
       this.init();
     } catch (e) {
@@ -72,11 +78,21 @@ class Component extends EventEmitter {
    */
   $teardown() {
     try {
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.beforeDestroy)) {
+          mixin.beforeDestroy.call(this);
+        }
+      });
       this.beforeDestroy();
       this.$element.off();
       this.$element.removeClass(config.initializedClassName);
       delete this.$element.first().scope;
       delete this.$element;
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.destroy)) {
+          mixin.destroy.call(this);
+        }
+      });
       this.destroy();
     } catch (e) {
       handleError(e, this.constructor, 'component hook');
