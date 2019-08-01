@@ -6,9 +6,13 @@ describe('Component Mixins', () => {
   let TestComponent;
 
   const mixin = {
-    init() {
-      this.property = true;
-    },
+    beforeInit() { },
+
+    init() { },
+
+    beforeDestroy() { },
+
+    destroy() { },
 
     method() {
       return this._selector;
@@ -19,10 +23,6 @@ describe('Component Mixins', () => {
     @Component('test2')
     class TestComponentClass {
       mixins = [mixin]
-
-      init() {
-        this.mirror = this.property;
-      }
     }
 
     TestComponent = TestComponentClass;
@@ -38,13 +38,20 @@ describe('Component Mixins', () => {
     expect(component.method).toEqual(jasmine.any(Function));
   });
 
-  it('runs init', () => {
+  it('runs init hooks', () => {
+    spyOn(mixin, 'beforeInit');
+    spyOn(mixin, 'init');
     const component = new TestComponent({ element });
-    expect(component.property).toBeDefined();
+    expect(mixin.beforeInit).toHaveBeenCalled();
+    expect(mixin.init).toHaveBeenCalled();
   });
 
-  it('inits before component', () => {
+  it('runs destroy hooks', () => {
+    spyOn(mixin, 'beforeDestroy');
+    spyOn(mixin, 'destroy');
     const component = new TestComponent({ element });
-    expect(component.mirror).toBeDefined();
+    component.$teardown();
+    expect(mixin.beforeDestroy).toHaveBeenCalled();
+    expect(mixin.destroy).toHaveBeenCalled();
   });
 });
