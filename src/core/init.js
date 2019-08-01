@@ -52,7 +52,7 @@ const onAutoTeardownCallback = (mutation) => {
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(config.initializedSelector);
+        && ($(node).is(config.initializedSelector) || $(node).find(config.initializedSelector).length);
     })
     .forEach((node) => {
       const initializedSubNodes = node.querySelector(config.initializedSelector);
