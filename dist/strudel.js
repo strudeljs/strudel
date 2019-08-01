@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.0-beta.6
+ * Strudel.js v1.0.1
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1275,7 +1275,7 @@
     };
   })();
 
-  var VERSION = '1.0.0-beta.6';
+  var VERSION = '1.0.1';
   var INIT_CLASS = config.initializedClassName;
   var INIT_SELECTOR = config.initializedSelector;
 

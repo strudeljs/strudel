@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.0-beta.6
+ * Strudel.js v1.0.1
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1237,7 +1237,7 @@ var onInit = createDecorator((component, property) => {
   };
 })();
 
-const VERSION = '1.0.0-beta.6';
+const VERSION = '1.0.1';
 const INIT_CLASS = config.initializedClassName;
 const INIT_SELECTOR = config.initializedSelector;
 
