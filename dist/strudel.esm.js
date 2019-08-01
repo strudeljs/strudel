@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.0-beta.5
+ * Strudel.js v1.0.0-beta.6
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1035,7 +1035,16 @@ class Component extends EventEmitter {
   constructor({ element, data } = {}) {
     super();
 
+    this.mixins = this.mixins || [];
+
     try {
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.beforeInit)) {
+          mixin.beforeInit.call(this);
+        }
+        mix(this, mixin);
+      });
+
       this.beforeInit();
 
       this.$element = element;
@@ -1048,14 +1057,11 @@ class Component extends EventEmitter {
         delete this.__decorators__;
       }
 
-      if (this.mixins && this.mixins.length) {
-        this.mixins.forEach((mixin) => {
-          if (isFunction(mixin.init)) {
-            mixin.init.call(this);
-          }
-          mix(this, mixin);
-        });
-      }
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.init)) {
+          mixin.init.call(this);
+        }
+      });
 
       this.init();
     } catch (e) {
@@ -1094,11 +1100,21 @@ class Component extends EventEmitter {
    */
   $teardown() {
     try {
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.beforeDestroy)) {
+          mixin.beforeDestroy.call(this);
+        }
+      });
       this.beforeDestroy();
       this.$element.off();
       this.$element.removeClass(config.initializedClassName);
       delete this.$element.first().scope;
       delete this.$element;
+      this.mixins.forEach((mixin) => {
+        if (isFunction(mixin.destroy)) {
+          mixin.destroy.call(this);
+        }
+      });
       this.destroy();
     } catch (e) {
       handleError(e, this.constructor, 'component hook');
@@ -1221,7 +1237,7 @@ var onInit = createDecorator((component, property) => {
   };
 })();
 
-const VERSION = '1.0.0-beta.5';
+const VERSION = '1.0.0-beta.6';
 const INIT_CLASS = config.initializedClassName;
 const INIT_SELECTOR = config.initializedSelector;
 
@@ -1424,7 +1440,7 @@ const onAutoTeardownCallback = (mutation) => {
     .filter((node) => {
       return node.nodeName !== 'SCRIPT'
         && node.nodeType === 1
-        && $(node).is(config.initializedSelector);
+        && ($(node).is(config.initializedSelector) || $(node).find(config.initializedSelector).length);
     })
     .forEach((node) => {
       const initializedSubNodes = node.querySelector(config.initializedSelector);

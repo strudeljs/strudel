@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.0-beta.5
+ * Strudel.js v1.0.0-beta.6
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1047,7 +1047,16 @@
 
       EventEmitter$$1.call(this);
 
+      this.mixins = this.mixins || [];
+
       try {
+        this.mixins.forEach(function (mixin) {
+          if (isFunction(mixin.beforeInit)) {
+            mixin.beforeInit.call(this$1);
+          }
+          mix(this$1, mixin);
+        });
+
         this.beforeInit();
 
         this.$element = element;
@@ -1060,14 +1069,11 @@
           delete this.__decorators__;
         }
 
-        if (this.mixins && this.mixins.length) {
-          this.mixins.forEach(function (mixin) {
-            if (isFunction(mixin.init)) {
-              mixin.init.call(this$1);
-            }
-            mix(this$1, mixin);
-          });
-        }
+        this.mixins.forEach(function (mixin) {
+          if (isFunction(mixin.init)) {
+            mixin.init.call(this$1);
+          }
+        });
 
         this.init();
       } catch (e) {
@@ -1109,12 +1115,24 @@
      * Teardown the component and clear events
      */
     Component.prototype.$teardown = function $teardown () {
+      var this$1 = this;
+
       try {
+        this.mixins.forEach(function (mixin) {
+          if (isFunction(mixin.beforeDestroy)) {
+            mixin.beforeDestroy.call(this$1);
+          }
+        });
         this.beforeDestroy();
         this.$element.off();
         this.$element.removeClass(config.initializedClassName);
         delete this.$element.first().scope;
         delete this.$element;
+        this.mixins.forEach(function (mixin) {
+          if (isFunction(mixin.destroy)) {
+            mixin.destroy.call(this$1);
+          }
+        });
         this.destroy();
       } catch (e) {
         handleError(e, this.constructor, 'component hook');
@@ -1257,7 +1275,7 @@
     };
   })();
 
-  var VERSION = '1.0.0-beta.5';
+  var VERSION = '1.0.0-beta.6';
   var INIT_CLASS = config.initializedClassName;
   var INIT_SELECTOR = config.initializedSelector;
 
@@ -1462,7 +1480,7 @@
       .filter(function (node) {
         return node.nodeName !== 'SCRIPT'
           && node.nodeType === 1
-          && $(node).is(config.initializedSelector);
+          && ($(node).is(config.initializedSelector) || $(node).find(config.initializedSelector).length);
       })
       .forEach(function (node) {
         var initializedSubNodes = node.querySelector(config.initializedSelector);
