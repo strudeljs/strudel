@@ -1,0 +1,44 @@
+<body>
+    <div class="container">
+        <div class="nested">
+            <button class="nested-remove">Remove parent</button>
+        </div>
+    </div>
+    <div class="removal-result"></div>
+  
+    <script src="../../dist/strudel.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
+    <script type="text/babel" data-plugins="transform-decorators-legacy">
+      const { Component, Evt } = Strudel;
+  
+      @Component('.nested')
+      class Nested {
+        @Evt('click', '.nested-remove')
+        onRemove() {
+            this.$element.parent().remove();
+        }
+
+        beforeDestroy() {
+            this.$emit('nested.destroy');
+        }
+      }
+      
+      @Component('.removal-result')
+      class RemovalResult {
+        init() {
+            this.value = '';
+
+            this.$on('nested.destroy', function() {
+                this.value = 'destroyed';
+                this.render();
+            }.bind(this));
+
+            this.render();
+        }
+
+        render() {
+            this.$element.html(this.value);
+        }
+      }
+    </script>
+  </body>
