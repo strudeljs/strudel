@@ -86,7 +86,7 @@ class Component extends EventEmitter {
       this.beforeDestroy();
       this.$element.off();
       this.$element.removeClass(config.initializedClassName);
-      delete this.$element.first().scope;
+      delete this.$element.first().__strudel__;
       delete this.$element;
       this.mixins.forEach((mixin) => {
         if (isFunction(mixin.destroy)) {
