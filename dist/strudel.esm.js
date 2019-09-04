@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.1
+ * Strudel.js v1.0.2
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1108,7 +1108,7 @@ class Component extends EventEmitter {
       this.beforeDestroy();
       this.$element.off();
       this.$element.removeClass(config.initializedClassName);
-      delete this.$element.first().scope;
+      delete this.$element.first().__strudel__;
       delete this.$element;
       this.mixins.forEach((mixin) => {
         if (isFunction(mixin.destroy)) {
@@ -1237,7 +1237,7 @@ var onInit = createDecorator((component, property) => {
   };
 })();
 
-const VERSION = '1.0.1';
+const VERSION = '1.0.2';
 const INIT_CLASS = config.initializedClassName;
 const INIT_SELECTOR = config.initializedSelector;
 
@@ -1421,18 +1421,18 @@ const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
   Array.prototype.slice.call(mutation.addedNodes)
-  .filter(({ nodeName, nodeType }) => {
-    return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
-  })
-  .forEach((node) => {
-    if (registeredSelectors.filter((el) => {
-      const lookupSelector = `${el}:not(${config.initializedSelector})`;
+    .filter(({ nodeName, nodeType }) => {
+      return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
+    })
+    .forEach((node) => {
+      if (registeredSelectors.some((el) => {
+        const lookupSelector = `${el}:not(${config.initializedSelector})`;
 
-      return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
-    })) {
-      bootstrap([node]);
-    }
-  });
+        return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
+      })) {
+        bootstrap([node]);
+      }
+    });
 };
 
 const onAutoTeardownCallback = (mutation) => {
@@ -1447,7 +1447,7 @@ const onAutoTeardownCallback = (mutation) => {
 
       if (initializedSubNodes) {
         Array.prototype.slice.call(initializedSubNodes).forEach(
-          (subNode) => { linker.unlink(subNode); }
+          (subNode) => { linker.unlink(subNode); },
         );
       }
       linker.unlink(node);

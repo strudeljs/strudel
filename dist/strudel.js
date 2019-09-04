@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.1
+ * Strudel.js v1.0.2
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1126,7 +1126,7 @@
         this.beforeDestroy();
         this.$element.off();
         this.$element.removeClass(config.initializedClassName);
-        delete this.$element.first().scope;
+        delete this.$element.first().__strudel__;
         delete this.$element;
         this.mixins.forEach(function (mixin) {
           if (isFunction(mixin.destroy)) {
@@ -1275,7 +1275,7 @@
     };
   })();
 
-  var VERSION = '1.0.1';
+  var VERSION = '1.0.2';
   var INIT_CLASS = config.initializedClassName;
   var INIT_SELECTOR = config.initializedSelector;
 
@@ -1458,21 +1458,21 @@
     var registeredSelectors = registry.getRegisteredSelectors();
 
     Array.prototype.slice.call(mutation.addedNodes)
-    .filter(function (ref) {
-      var nodeName = ref.nodeName;
-      var nodeType = ref.nodeType;
+      .filter(function (ref) {
+        var nodeName = ref.nodeName;
+        var nodeType = ref.nodeType;
 
-      return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
-    })
-    .forEach(function (node) {
-      if (registeredSelectors.filter(function (el) {
-        var lookupSelector = el + ":not(" + (config.initializedSelector) + ")";
+        return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
+      })
+      .forEach(function (node) {
+        if (registeredSelectors.some(function (el) {
+          var lookupSelector = el + ":not(" + (config.initializedSelector) + ")";
 
-        return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
-      })) {
-        bootstrap([node]);
-      }
-    });
+          return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
+        })) {
+          bootstrap([node]);
+        }
+      });
   };
 
   var onAutoTeardownCallback = function (mutation) {
