@@ -33,18 +33,18 @@ const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
   Array.prototype.slice.call(mutation.addedNodes)
-  .filter(({ nodeName, nodeType }) => {
-    return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
-  })
-  .forEach((node) => {
-    if (registeredSelectors.filter((el) => {
-      const lookupSelector = `${el}:not(${config.initializedSelector})`;
+    .filter(({ nodeName, nodeType }) => {
+      return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
+    })
+    .forEach((node) => {
+      if (registeredSelectors.some((el) => {
+        const lookupSelector = `${el}:not(${config.initializedSelector})`;
 
-      return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
-    })) {
-      bootstrap([node]);
-    }
-  });
+        return $(node).is(lookupSelector) || $(node).find(lookupSelector).length;
+      })) {
+        bootstrap([node]);
+      }
+    });
 };
 
 const onAutoTeardownCallback = (mutation) => {
@@ -59,7 +59,7 @@ const onAutoTeardownCallback = (mutation) => {
 
       if (initializedSubNodes) {
         Array.prototype.slice.call(initializedSubNodes).forEach(
-          (subNode) => { linker.unlink(subNode); }
+          (subNode) => { linker.unlink(subNode); },
         );
       }
       linker.unlink(node);
