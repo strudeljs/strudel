@@ -74,6 +74,7 @@ class Registry {
         this._isRegistrationScheduled = true;
 
         window.requestAnimationFrame(() => {
+          this._isRegistrationScheduled = false;
           $(document).trigger('content:loaded');
         });
       }
