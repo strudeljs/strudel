@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.2
+ * Strudel.js v1.0.3
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -905,6 +905,8 @@
    * @param {Function} constructor
    */
   Registry.prototype.registerComponent = function registerComponent (selector, klass) {
+      var this$1 = this;
+
     if (this._registry[selector] || this._registrationQueue[selector]) {
       warn(("Component registered under selector: " + selector + " already exists."), klass);
     } else {
@@ -914,6 +916,7 @@
         this._isRegistrationScheduled = true;
 
         window.requestAnimationFrame(function () {
+          this$1._isRegistrationScheduled = false;
           $(document).trigger('content:loaded');
         });
       }
@@ -1275,7 +1278,7 @@
     };
   })();
 
-  var VERSION = '1.0.2';
+  var VERSION = '1.0.3';
   var INIT_CLASS = config.initializedClassName;
   var INIT_SELECTOR = config.initializedSelector;
 

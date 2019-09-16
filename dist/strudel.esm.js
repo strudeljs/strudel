@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.2
+ * Strudel.js v1.0.3
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -909,6 +909,7 @@ class Registry {
         this._isRegistrationScheduled = true;
 
         window.requestAnimationFrame(() => {
+          this._isRegistrationScheduled = false;
           $(document).trigger('content:loaded');
         });
       }
@@ -1237,7 +1238,7 @@ var onInit = createDecorator((component, property) => {
   };
 })();
 
-const VERSION = '1.0.2';
+const VERSION = '1.0.3';
 const INIT_CLASS = config.initializedClassName;
 const INIT_SELECTOR = config.initializedSelector;
 
