@@ -1,7 +1,7 @@
 import Linker from './linker';
 import registry from './registry';
 import $ from '../dom/element';
-import { attachNewInitObserver, attachNewTeardownObserver } from './observer';
+import attachDOMObserver from './observer';
 import config from '../config';
 import mount from '../util/devtools';
 
@@ -73,8 +73,7 @@ const init = () => {
 
   mount();
   bindContentEvents();
-  attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
-  attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
+  attachDOMObserver(channel._nodes[0].body, onAutoInitCallback, onAutoTeardownCallback);
 };
 
 export default init;
