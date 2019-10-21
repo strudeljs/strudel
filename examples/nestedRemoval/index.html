@@ -3,33 +3,90 @@
         <div class="nested">
             <button class="nested-remove">Remove parent</button>
         </div>
+        <button class="detach-nested">Detach nested</button>
+        <button class="reattach-nested">Reattach nested</button>
+        <button class="wrap-nested">Wrap</button>
     </div>
-    <div class="removal-result"></div>
+    <div class="removal-result">
+        <div class="nested-removal-result"></div>
+        <div class="container-removal-result"></div>
+    </div>
   
     <script src="../../dist/strudel.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.24.0/babel.min.js"></script>
     <script type="text/babel" data-plugins="transform-decorators-legacy">
-      const { Component, Evt } = Strudel;
+      const { Component, Evt, $ } = Strudel;
+
+      @Component('.container')
+      class Container {
+        init() {
+            this.$nested = this.$element.find('.nested');
+
+            this.$on('container.destroy', function() {
+                this.$element.remove();
+            }.bind(this));
+        }
+
+        beforeDestroy() {
+            this.$emit('container.destroyed');
+        }
+
+        @Evt('click', '.detach-nested')
+        detachNested() {
+            this.$nested.remove();
+        }
+
+        @Evt('click', '.reattach-nested')
+        reattachNested() {
+            this.$element.prepend(this.$nested);
+        }
+
+        @Evt('click', '.wrap-nested')
+        wrapNested() {
+            this.$nested.remove();
+            const $wrappedNested = $('<div class="nested-wrapper"></div>');
+            $wrappedNested.append(this.$nested);
+            this.$element.prepend($wrappedNested);
+        }
+      }
   
       @Component('.nested')
       class Nested {
         @Evt('click', '.nested-remove')
         onRemove() {
-            this.$element.parent().remove();
+            this.$emit('container.destroy');
+        }
+
+        beforeInit() {
+            this.$emit('nested.init')
         }
 
         beforeDestroy() {
-            this.$emit('nested.destroy');
+            this.$emit('nested.destroyed');
         }
       }
       
       @Component('.removal-result')
       class RemovalResult {
         init() {
-            this.value = '';
+            this.$nestedRemovalResult = this.$element.find('.nested-removal-result');
+            this.$containerRemovalResult = this.$element.find('.container-removal-result');
 
-            this.$on('nested.destroy', function() {
-                this.value = 'destroyed';
+            this.nestedRemovalValue = '';
+            this.containerRemovalValue = '';
+
+            this.$on('nested.init', function() {
+                this.nestedRemovalValue = '';
+                this.render();
+            }.bind(this))
+
+            this.$on('nested.destroyed', function() {
+                this.nestedRemovalValue = 'Nested destroyed';
+                this.render();
+            }.bind(this));
+
+            this.$on('container.destroyed', function() {
+                this.containerRemovalValue = 'Container destroyed';
                 this.render();
             }.bind(this));
 
@@ -37,7 +94,8 @@
         }
 
         render() {
-            this.$element.html(this.value);
+            this.$nestedRemovalResult.html(this.nestedRemovalValue);
+            this.$containerRemovalResult.html(this.containerRemovalValue);
         }
       }
     </script>

@@ -1,23 +1,19 @@
-const onChildrenAddition = (mutations, callback) => {
-  mutations.forEach((mutation) => {
-    if (
-        mutation.type === 'childList'
-        && mutation.addedNodes.length > 0
-    ) {
-      callback(mutation);
-    }
-  });
+const onChildrenAddition = (mutation, callback) => {
+  if (
+      mutation.type === 'childList'
+      && mutation.addedNodes.length > 0
+  ) {
+    callback(mutation);
+  }
 };
 
-const onChildrenRemoval = (mutations, callback) => {
-  mutations.forEach((mutation) => {
-    if (
-        mutation.type === 'childList'
-        && mutation.removedNodes.length > 0
-    ) {
-      callback(mutation);
-    }
-  });
+const onChildrenRemoval = (mutation, callback) => {
+  if (
+      mutation.type === 'childList'
+      && mutation.removedNodes.length > 0
+  ) {
+    callback(mutation);
+  }
 };
 
 const defaultObserverConfig = {
@@ -25,15 +21,19 @@ const defaultObserverConfig = {
   subtree: true
 };
 
-const attachNewObserver = (observerRoot, callback, mutationCallback) => {
-  const initializationObserver = new MutationObserver((mutations) => { mutationCallback(mutations, callback); });
-  initializationObserver.observe(observerRoot, defaultObserverConfig);
+const mutationCallback = (mutations, additionCallback, removalCallback) => {
+  mutations.forEach((mutation) => {
+    onChildrenRemoval(mutation, removalCallback);
+    onChildrenAddition(mutation, additionCallback);
+  });
 };
 
-export const attachNewInitObserver = (observerRoot, callback) => {
-  attachNewObserver(observerRoot, callback, onChildrenAddition);
+const attachDOMObserver = (observerRoot, additionCallback, removalCallback) => {
+  const DOMObserver = new MutationObserver((mutations) => {
+    mutationCallback(mutations, additionCallback, removalCallback);
+  });
+
+  DOMObserver.observe(observerRoot, defaultObserverConfig);
 };
 
-export const attachNewTeardownObserver = (observerRoot, callback) => {
-  attachNewObserver(observerRoot, callback, onChildrenRemoval);
-};
+export default attachDOMObserver;
