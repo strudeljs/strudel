@@ -507,7 +507,7 @@ class Element {
       const result = new Element(selector || '*', node);
 
       if (startsWithImmediateChildrenSelector && !hadId) {
-        node.id = '';
+        node.removeAttribute('id');
       }
 
       return result;
