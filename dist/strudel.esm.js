@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.3
+ * Strudel.js v1.0.4
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -538,7 +538,7 @@ class Element {
       const result = new Element(selector || '*', node);
 
       if (startsWithImmediateChildrenSelector && !hadId) {
-        node.id = '';
+        node.removeAttribute('id');
       }
 
       return result;
@@ -1238,7 +1238,7 @@ var onInit = createDecorator((component, property) => {
   };
 })();
 
-const VERSION = '1.0.3';
+const VERSION = '1.0.4';
 const INIT_CLASS = config.initializedClassName;
 const INIT_SELECTOR = config.initializedSelector;
 
@@ -1331,26 +1331,22 @@ class Linker {
   }
 }
 
-const onChildrenAddition = (mutations, callback) => {
-  mutations.forEach((mutation) => {
-    if (
-        mutation.type === 'childList'
-        && mutation.addedNodes.length > 0
-    ) {
-      callback(mutation);
-    }
-  });
+const onChildrenAddition = (mutation, callback) => {
+  if (
+      mutation.type === 'childList'
+      && mutation.addedNodes.length > 0
+  ) {
+    callback(mutation);
+  }
 };
 
-const onChildrenRemoval = (mutations, callback) => {
-  mutations.forEach((mutation) => {
-    if (
-        mutation.type === 'childList'
-        && mutation.removedNodes.length > 0
-    ) {
-      callback(mutation);
-    }
-  });
+const onChildrenRemoval = (mutation, callback) => {
+  if (
+      mutation.type === 'childList'
+      && mutation.removedNodes.length > 0
+  ) {
+    callback(mutation);
+  }
 };
 
 const defaultObserverConfig = {
@@ -1358,17 +1354,19 @@ const defaultObserverConfig = {
   subtree: true
 };
 
-const attachNewObserver = (observerRoot, callback, mutationCallback) => {
-  const initializationObserver = new MutationObserver((mutations) => { mutationCallback(mutations, callback); });
-  initializationObserver.observe(observerRoot, defaultObserverConfig);
+const mutationCallback = (mutations, additionCallback, removalCallback) => {
+  mutations.forEach((mutation) => {
+    onChildrenRemoval(mutation, removalCallback);
+    onChildrenAddition(mutation, additionCallback);
+  });
 };
 
-const attachNewInitObserver = (observerRoot, callback) => {
-  attachNewObserver(observerRoot, callback, onChildrenAddition);
-};
+const attachDOMObserver = (observerRoot, additionCallback, removalCallback) => {
+  const DOMObserver = new MutationObserver((mutations) => {
+    mutationCallback(mutations, additionCallback, removalCallback);
+  });
 
-const attachNewTeardownObserver = (observerRoot, callback) => {
-  attachNewObserver(observerRoot, callback, onChildrenRemoval);
+  DOMObserver.observe(observerRoot, defaultObserverConfig);
 };
 
 const devtools = window.__STRUDEL_DEVTOOLS_GLOBAL_HOOK__;
@@ -1462,8 +1460,7 @@ const init = () => {
 
   mount();
   bindContentEvents();
-  attachNewInitObserver(channel._nodes[0].body, onAutoInitCallback);
-  attachNewTeardownObserver(channel._nodes[0].body, onAutoTeardownCallback);
+  attachDOMObserver(channel._nodes[0].body, onAutoInitCallback, onAutoTeardownCallback);
 };
 
 /**
