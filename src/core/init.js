@@ -8,11 +8,15 @@ import mount from '../util/devtools';
 const linker = new Linker(registry);
 const channel = $(document);
 
+const isValidNode = ({ nodeName, nodeType }) => {
+  return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
+};
+
 const getElement = (detail) => {
   let element;
 
   if (detail && detail.length > 0) {
-    element = (detail[0] instanceof HTMLElement) ? detail[0] : detail[0].first();
+    element = isValidNode(detail[0]) ? detail[0] : detail[0].first();
   }
 
   return element;
@@ -33,8 +37,8 @@ const onAutoInitCallback = (mutation) => {
   const registeredSelectors = registry.getRegisteredSelectors();
 
   Array.prototype.slice.call(mutation.addedNodes)
-    .filter(({ nodeName, nodeType }) => {
-      return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
+    .filter((node) => {
+      return isValidNode(node);
     })
     .forEach((node) => {
       if (registeredSelectors.some((el) => {
@@ -50,9 +54,7 @@ const onAutoInitCallback = (mutation) => {
 const onAutoTeardownCallback = (mutation) => {
   Array.prototype.slice.call(mutation.removedNodes)
     .filter((node) => {
-      return node.nodeName !== 'SCRIPT'
-        && node.nodeType === 1
-        && ($(node).is(config.initializedSelector) || $(node).find(config.initializedSelector).length);
+      return isValidNode(node) && ($(node).is(config.initializedSelector) || $(node).find(config.initializedSelector).length);
     })
     .forEach((node) => {
       const initializedSubNodes = node.querySelector(config.initializedSelector);
