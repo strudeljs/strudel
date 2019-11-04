@@ -1,5 +1,5 @@
 /*!
- * Strudel.js v1.0.4
+ * Strudel.js v1.0.5
  * (c) 2016-2019 Mateusz Łuczak
  * Released under the MIT License.
  */
@@ -1278,7 +1278,7 @@
     };
   })();
 
-  var VERSION = '1.0.4';
+  var VERSION = '1.0.5';
   var INIT_CLASS = config.initializedClassName;
   var INIT_SELECTOR = config.initializedSelector;
 
@@ -1434,11 +1434,18 @@
   var linker = new Linker(registry);
   var channel = $(document);
 
+  var isValidNode = function (ref) {
+    var nodeName = ref.nodeName;
+    var nodeType = ref.nodeType;
+
+    return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
+  };
+
   var getElement = function (detail) {
     var element;
 
     if (detail && detail.length > 0) {
-      element = (detail[0] instanceof HTMLElement) ? detail[0] : detail[0].first();
+      element = isValidNode(detail[0]) ? detail[0] : detail[0].first();
     }
 
     return element;
@@ -1459,11 +1466,8 @@
     var registeredSelectors = registry.getRegisteredSelectors();
 
     Array.prototype.slice.call(mutation.addedNodes)
-      .filter(function (ref) {
-        var nodeName = ref.nodeName;
-        var nodeType = ref.nodeType;
-
-        return nodeName !== 'SCRIPT' && nodeName !== 'svg' && nodeType === 1;
+      .filter(function (node) {
+        return isValidNode(node);
       })
       .forEach(function (node) {
         if (registeredSelectors.some(function (el) {
@@ -1479,9 +1483,7 @@
   var onAutoTeardownCallback = function (mutation) {
     Array.prototype.slice.call(mutation.removedNodes)
       .filter(function (node) {
-        return node.nodeName !== 'SCRIPT'
-          && node.nodeType === 1
-          && ($(node).is(config.initializedSelector) || $(node).find(config.initializedSelector).length);
+        return isValidNode(node) && ($(node).is(config.initializedSelector) || $(node).find(config.initializedSelector).length);
       })
       .forEach(function (node) {
         var initializedSubNodes = node.querySelector(config.initializedSelector);
