@@ -60,7 +60,7 @@
     "buble-register": "^1.0.1",
     "chalk": "^2.4.1",
     "chromedriver": "^2.32.3",
-    "codecov": "^2.1.0",
+    "codecov": "^3.6.5",
     "commitizen": "^2.10.1",
     "conventional-changelog": "^2.0.1",
     "cross-spawn": "^5.1.0",
