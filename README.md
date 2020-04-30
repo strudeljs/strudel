@@ -26,7 +26,7 @@ Strudel.js supports all the browsers that are [ES5-compliant](http://kangax.gith
 
 ## Documentation
 
-To check examples and docs visit [strudeljs.org](https://strudeljs.org).
+To check examples and docs visit [strudel.js.org](https://strudel.js.org).
 
 ## Ecosystem
 
