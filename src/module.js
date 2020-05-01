@@ -16,4 +16,4 @@ export { default as El } from './decorators/el';
 export { default as OnInit } from './decorators/onInit';
 export { default as EventEmitter } from './util/eventEmitter';
 export { createDecorator } from './util/helpers';
-export { default as element, default as $ } from './dom/element';
+export { default as Element, default as $ } from './dom/element';
